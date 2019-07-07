@@ -38,54 +38,57 @@ open class ScientifikPublishPlugin : Plugin<Project> {
         project.plugins.apply("maven-publish")
         val extension = project.extensions.create<ScientifikExtension>("scientifik")
 
-        val bintrayRepo = project.bintrayRepo
-        val vcs = project.vcs
+        project.afterEvaluate {
 
-        if (bintrayRepo == null || vcs == null) {
-            project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
-        }
+            val bintrayRepo = project.bintrayRepo
+            val vcs = project.vcs
 
-        project.configure<PublishingExtension> {
-            repositories {
-                maven("https://bintray.com/mipt-npm/$bintrayRepo")
+            if (bintrayRepo == null || vcs == null) {
+                project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
+                return@afterEvaluate
             }
 
-            // Process each publication we have in this project
-            publications.filterIsInstance<MavenPublication>().forEach { publication ->
+            project.configure<PublishingExtension> {
+                repositories {
+                    maven("https://bintray.com/mipt-npm/$bintrayRepo")
+                }
 
-                @Suppress("UnstableApiUsage")
-                publication.pom {
-                    name.set(project.name)
-                    description.set(project.description)
-                    url.set(vcs)
+                // Process each publication we have in this project
+                publications.filterIsInstance<MavenPublication>().forEach { publication ->
 
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("MIPT-NPM")
-                            name.set("MIPT nuclear physics methods laboratory")
-                            organization.set("MIPT")
-                            organizationUrl.set("http://npm.mipt.ru")
-                        }
-
-                    }
-                    scm {
+                    @Suppress("UnstableApiUsage")
+                    publication.pom {
+                        name.set(project.name)
+                        description.set(project.description)
                         url.set(vcs)
+
+                        licenses {
+                            license {
+                                name.set("The Apache Software License, Version 2.0")
+                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("MIPT-NPM")
+                                name.set("MIPT nuclear physics methods laboratory")
+                                organization.set("MIPT")
+                                organizationUrl.set("http://npm.mipt.ru")
+                            }
+
+                        }
+                        scm {
+                            url.set(vcs)
+                        }
                     }
                 }
             }
-        }
 
-        if (extension.kdoc) {
-            project.plugins.apply("org.jetbrains.dokka")
+            if (extension.kdoc) {
+                project.plugins.apply("org.jetbrains.dokka")
 
-            project.afterEvaluate {
+
                 extensions.findByType<KotlinMultiplatformExtension>()?.apply {
                     val dokka by tasks.getting(DokkaTask::class) {
                         outputFormat = "html"
@@ -165,69 +168,70 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                         }
                     }
                 }
+
             }
-        }
 
-        project.plugins.apply("com.jfrog.bintray")
+            project.plugins.apply("com.jfrog.bintray")
 
-        project.configure<BintrayExtension> {
-            user = project.findProperty("bintrayUser") as? String ?: System.getenv("BINTRAY_USER")
-            key = project.findProperty("bintrayApiKey") as? String? ?: System.getenv("BINTRAY_API_KEY")
-            publish = true
-            override = true // for multi-platform Kotlin/Native publishing
+            project.configure<BintrayExtension> {
+                user = project.findProperty("bintrayUser") as? String ?: System.getenv("BINTRAY_USER")
+                key = project.findProperty("bintrayApiKey") as? String? ?: System.getenv("BINTRAY_API_KEY")
+                publish = true
+                override = true // for multi-platform Kotlin/Native publishing
 
-            // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
-            // this is a problem of this plugin
-            pkg.apply {
-                userOrg = "mipt-npm"
-                repo = bintrayRepo
-                name = project.name
-                issueTrackerUrl = "${vcs}/issues"
-                setLicenses("Apache-2.0")
-                vcsUrl = vcs
-                version.apply {
-                    name = project.version.toString()
-                    vcsTag = project.version.toString()
-                    released = java.util.Date().toString()
+                // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
+                // this is a problem of this plugin
+                pkg.apply {
+                    userOrg = "mipt-npm"
+                    repo = bintrayRepo
+                    name = project.name
+                    issueTrackerUrl = "${vcs}/issues"
+                    setLicenses("Apache-2.0")
+                    vcsUrl = vcs
+                    version.apply {
+                        name = project.version.toString()
+                        vcsTag = project.version.toString()
+                        released = java.util.Date().toString()
+                    }
                 }
-            }
 
-            //workaround bintray bug
-            project.afterEvaluate {
+                //workaround bintray bug
+
                 setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
-            }
+
 
 //            project.tasks.figetByPath("bintrayUpload") {
 //                    dependsOn(publishToMavenLocal)
 //            }
-        }
+            }
 
-        project.plugins.apply("com.jfrog.artifactory")
+            project.plugins.apply("com.jfrog.artifactory")
 
-        project.configure<ArtifactoryPluginConvention> {
-            val artifactoryUser: String? by project
-            val artifactoryPassword: String? by project
-            val artifactoryContextUrl = "http://npm.mipt.ru:8081/artifactory"
+            project.configure<ArtifactoryPluginConvention> {
+                val artifactoryUser: String? by project
+                val artifactoryPassword: String? by project
+                val artifactoryContextUrl = "http://npm.mipt.ru:8081/artifactory"
 
-            setContextUrl(artifactoryContextUrl)//The base Artifactory URL if not overridden by the publisher/resolver
-            publish(delegateClosureOf<PublisherConfig> {
-                repository(delegateClosureOf<GroovyObject> {
-                    setProperty("repoKey", "gradle-dev-local")
-                    setProperty("username", artifactoryUser)
-                    setProperty("password", artifactoryPassword)
+                setContextUrl(artifactoryContextUrl)//The base Artifactory URL if not overridden by the publisher/resolver
+                publish(delegateClosureOf<PublisherConfig> {
+                    repository(delegateClosureOf<GroovyObject> {
+                        setProperty("repoKey", "gradle-dev-local")
+                        setProperty("username", artifactoryUser)
+                        setProperty("password", artifactoryPassword)
+                    })
+
+                    defaults(delegateClosureOf<GroovyObject> {
+                        invokeMethod("publications", arrayOf("jvm", "js", "kotlinMultiplatform", "metadata"))
+                    })
                 })
-
-                defaults(delegateClosureOf<GroovyObject> {
-                    invokeMethod("publications", arrayOf("jvm", "js", "kotlinMultiplatform", "metadata"))
+                resolve(delegateClosureOf<ResolverConfig> {
+                    repository(delegateClosureOf<GroovyObject> {
+                        setProperty("repoKey", "gradle-dev")
+                        setProperty("username", artifactoryUser)
+                        setProperty("password", artifactoryPassword)
+                    })
                 })
-            })
-            resolve(delegateClosureOf<ResolverConfig> {
-                repository(delegateClosureOf<GroovyObject> {
-                    setProperty("repoKey", "gradle-dev")
-                    setProperty("username", artifactoryUser)
-                    setProperty("password", artifactoryPassword)
-                })
-            })
+            }
         }
     }
 }
