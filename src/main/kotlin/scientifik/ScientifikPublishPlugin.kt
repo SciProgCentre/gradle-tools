@@ -38,6 +38,10 @@ open class ScientifikPublishPlugin : Plugin<Project> {
         project.plugins.apply("maven-publish")
         val extension = project.extensions.create<ScientifikExtension>("scientifik")
 
+        if (extension.kdoc) {
+            project.plugins.apply("org.jetbrains.dokka")
+        }
+
         project.afterEvaluate {
 
             val bintrayRepo = project.bintrayRepo
@@ -47,6 +51,9 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
                 return@afterEvaluate
             }
+
+            project.plugins.apply("com.jfrog.bintray")
+            project.plugins.apply("com.jfrog.artifactory")
 
             project.configure<PublishingExtension> {
                 repositories {
@@ -86,8 +93,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             }
 
             if (extension.kdoc) {
-                project.plugins.apply("org.jetbrains.dokka")
-
 
                 extensions.findByType<KotlinMultiplatformExtension>()?.apply {
                     val dokka by tasks.getting(DokkaTask::class) {
@@ -171,8 +176,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 
             }
 
-            project.plugins.apply("com.jfrog.bintray")
-
             project.configure<BintrayExtension> {
                 user = project.findProperty("bintrayUser") as? String ?: System.getenv("BINTRAY_USER")
                 key = project.findProperty("bintrayApiKey") as? String? ?: System.getenv("BINTRAY_API_KEY")
@@ -204,8 +207,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 //                    dependsOn(publishToMavenLocal)
 //            }
             }
-
-            project.plugins.apply("com.jfrog.artifactory")
 
             project.configure<ArtifactoryPluginConvention> {
                 val artifactoryUser: String? by project
