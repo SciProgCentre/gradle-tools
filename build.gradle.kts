@@ -8,14 +8,14 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     gradlePluginPortal()
     jcenter()
 }
 
-val kotlinVersion = "1.3.40"
+val kotlinVersion = "1.3.41"
 
 // Add plugins used in buildSrc as dependencies, also we should specify version only here
 dependencies {

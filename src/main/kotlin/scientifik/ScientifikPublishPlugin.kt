@@ -9,6 +9,7 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
@@ -26,10 +27,16 @@ private val Project.bintrayRepo: String?
         ?: parent?.bintrayRepo
         ?: (findProperty("bintrayRepo") as? String)
 
+private val Project.githubProject: String?
+    get() = extensions.findByType<ScientifikExtension>()?.vcs
+        ?: parent?.githubProject
+        ?: (findProperty("githubProject") as? String)
+
 private val Project.vcs: String?
     get() = extensions.findByType<ScientifikExtension>()?.vcs
         ?: parent?.vcs
         ?: (findProperty("vcs") as? String)
+        ?: githubProject?.let { "https://github.com/mipt-npm/$it" }
 
 open class ScientifikPublishPlugin : Plugin<Project> {
 
@@ -47,7 +54,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             val bintrayRepo = project.bintrayRepo
             val vcs = project.vcs
 
-            if (bintrayRepo == null || vcs == null) {
+            if (vcs == null) {
                 project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
                 return@afterEvaluate
             }
@@ -56,10 +63,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             project.plugins.apply("com.jfrog.artifactory")
 
             project.configure<PublishingExtension> {
-                repositories {
-                    maven("https://bintray.com/mipt-npm/$bintrayRepo")
-                }
-
                 // Process each publication we have in this project
                 publications.filterIsInstance<MavenPublication>().forEach { publication ->
 
@@ -88,6 +91,38 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                         scm {
                             url.set(vcs)
                         }
+                    }
+                }
+
+                val githubUser: String? by project
+                val githubToken: String? by project
+
+                val githubProject = project.githubProject
+
+                if (githubProject != null && githubUser != null && githubToken != null) {
+                    repositories {
+                        val repository = maven {
+                            name = "github"
+                            url = uri("https://maven.pkg.github.com/mipt-npm/$githubProject/")
+                            credentials {
+                                username = githubUser
+                                password = githubToken
+                            }
+                        }
+
+                        val githubPublishTasks = publications.filterIsInstance<MavenPublication>().map { publication ->
+                            tasks.register<PublishToMavenRepository>("publish${publication.name.capitalize()}ToGithub") {
+                                group = "publishing"
+                                this.publication = publication
+                                this.repository = repository
+                            }
+                        }
+
+                        tasks.register<PublishToMavenRepository>("publishToGithub") {
+                            group = "publishing"
+                            dependsOn(githubPublishTasks)
+                        }
+
                     }
                 }
             }
@@ -176,38 +211,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 
             }
 
-            project.configure<BintrayExtension> {
-                user = project.findProperty("bintrayUser") as? String ?: System.getenv("BINTRAY_USER")
-                key = project.findProperty("bintrayApiKey") as? String? ?: System.getenv("BINTRAY_API_KEY")
-                publish = true
-                override = true // for multi-platform Kotlin/Native publishing
-
-                // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
-                // this is a problem of this plugin
-                pkg.apply {
-                    userOrg = "mipt-npm"
-                    repo = bintrayRepo
-                    name = project.name
-                    issueTrackerUrl = "${vcs}/issues"
-                    setLicenses("Apache-2.0")
-                    vcsUrl = vcs
-                    version.apply {
-                        name = project.version.toString()
-                        vcsTag = project.version.toString()
-                        released = java.util.Date().toString()
-                    }
-                }
-
-                //workaround bintray bug
-
-                setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
-
-
-//            project.tasks.figetByPath("bintrayUpload") {
-//                    dependsOn(publishToMavenLocal)
-//            }
-            }
-
             project.configure<ArtifactoryPluginConvention> {
                 val artifactoryUser: String? by project
                 val artifactoryPassword: String? by project
@@ -232,6 +235,43 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                         setProperty("password", artifactoryPassword)
                     })
                 })
+            }
+
+            if (bintrayRepo == null) {
+                project.logger.warn("[${project.name}] Bintray repository not defined")
+            } else {
+
+                project.configure<PublishingExtension> {
+                    repositories {
+                        maven("https://bintray.com/mipt-npm/$bintrayRepo")
+                    }
+                }
+
+                project.configure<BintrayExtension> {
+                    user = project.findProperty("bintrayUser") as? String?
+                    key = project.findProperty("bintrayApiKey") as? String?
+                    publish = true
+                    override = true
+
+                    // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
+                    // this is a problem of this plugin
+                    pkg.apply {
+                        userOrg = "mipt-npm"
+                        repo = bintrayRepo
+                        name = project.name
+                        issueTrackerUrl = "$vcs/issues"
+                        setLicenses("Apache-2.0")
+                        vcsUrl = vcs
+                        version.apply {
+                            name = project.version.toString()
+                            vcsTag = project.version.toString()
+                            released = java.util.Date().toString()
+                        }
+                    }
+
+                    //workaround bintray bug
+                    setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
+                }
             }
         }
     }
