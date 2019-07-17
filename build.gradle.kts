@@ -3,12 +3,11 @@ import java.util.*
 plugins {
     `kotlin-dsl`
     `maven-publish`
-//    id("com.gradle.plugin-publish") version "0.10.1"
     id("com.jfrog.bintray") version "1.8.4"
 }
 
 group = "scientifik"
-version = "0.1.3"
+version = "0.1.4"
 
 repositories {
     gradlePluginPortal()

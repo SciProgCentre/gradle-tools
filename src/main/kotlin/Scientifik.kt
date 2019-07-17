@@ -2,8 +2,8 @@
  * Build constants
  */
 object Scientifik {
-    val ioVersion = "0.1.10"
-    val coroutinesVersion = "1.2.2"
-    val atomicfuVersion = "0.12.9"
-    val serializationVersion = "0.11.1"
+    const val ioVersion = "0.1.11"
+    const val coroutinesVersion = "1.2.2"
+    const val atomicfuVersion = "0.12.9"
+    const val serializationVersion = "0.11.1"
 }

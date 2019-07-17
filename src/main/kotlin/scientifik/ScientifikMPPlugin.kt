@@ -2,15 +2,14 @@ package scientifik
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.getting
-import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.apply("org.jetbrains.kotlin.multiplatform")
+
+        val extension = project.scientifik
 
         project.configure<KotlinMultiplatformExtension> {
             jvm {
@@ -29,6 +28,11 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         moduleKind = "umd"
                     }
                 }
+            }
+
+            if(extension.enableNative){
+                linuxX64()
+                mingwX64()
             }
 
             sourceSets.invoke {
@@ -64,12 +68,25 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         implementation(kotlin("test-js"))
                     }
                 }
+
+                if(extension.enableNative){
+                    val native by creating {
+                        dependsOn(commonMain)
+                    }
+                    mingwX64().compilations["main"].defaultSourceSet {
+                        dependsOn(native)
+                    }
+                    linuxX64().compilations["main"].defaultSourceSet {
+                        dependsOn(native)
+                    }
+                }
             }
 
             targets.all {
                 sourceSets.all {
                     languageSettings.apply{
                         progressiveMode = true
+                        this.
                         enableLanguageFeature("InlineClasses")
                         useExperimentalAnnotation("ExperimentalUnsignedType")
                     }

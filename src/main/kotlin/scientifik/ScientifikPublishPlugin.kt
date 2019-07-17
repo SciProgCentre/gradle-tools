@@ -43,7 +43,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
     override fun apply(project: Project) {
 
         project.plugins.apply("maven-publish")
-        val extension = project.extensions.create<ScientifikExtension>("scientifik")
+        val extension = project.scientifik
 
         if (extension.kdoc) {
             project.plugins.apply("org.jetbrains.dokka")
