@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.1.4"
+version = "0.1.4-dev"
 
 repositories {
     gradlePluginPortal()
