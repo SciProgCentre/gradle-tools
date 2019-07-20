@@ -45,11 +45,11 @@ open class ScientifikPublishPlugin : Plugin<Project> {
         project.plugins.apply("maven-publish")
         val extension = project.scientifik
 
-        if (extension.kdoc) {
-            project.plugins.apply("org.jetbrains.dokka")
-        }
-
         project.afterEvaluate {
+
+            if (extension.kdoc) {
+                project.plugins.apply("org.jetbrains.dokka")
+            }
 
             val bintrayRepo = project.bintrayRepo
             val vcs = project.vcs

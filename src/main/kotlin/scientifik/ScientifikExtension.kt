@@ -9,7 +9,8 @@ open class ScientifikExtension {
     var vcs: String? = null
     var bintrayRepo: String? = null
     var kdoc: Boolean = true
-    var enableNative = false
+    var native = false
+    var serialization = false
 }
 
 internal val Project.scientifik: ScientifikExtension

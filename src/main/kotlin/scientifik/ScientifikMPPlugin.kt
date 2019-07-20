@@ -1,5 +1,6 @@
 package scientifik
 
+import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
@@ -7,9 +8,19 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        project.plugins.apply("org.jetbrains.kotlin.multiplatform")
-
         val extension = project.scientifik
+
+        project.plugins.apply("org.jetbrains.kotlin.multiplatform")
+        project.plugins.apply("kotlinx-serialization")
+
+        project.repositories {
+            mavenCentral()
+            jcenter()
+            maven("https://dl.bintray.com/kotlin/kotlin-eap")
+            maven("https://kotlin.bintray.com/kotlinx")
+            maven("https://dl.bintray.com/mipt-npm/dev")
+            maven("https://dl.bintray.com/mipt-npm/scientifik")
+        }
 
         project.configure<KotlinMultiplatformExtension> {
             jvm {
@@ -30,7 +41,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 }
             }
 
-            if(extension.enableNative){
+            if (extension.native) {
                 linuxX64()
                 mingwX64()
             }
@@ -39,6 +50,11 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val commonMain by getting {
                     dependencies {
                         api(kotlin("stdlib"))
+                        project.afterEvaluate {
+                            if (extension.serialization) {
+                                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                            }
+                        }
                     }
                 }
                 val commonTest by getting {
@@ -69,24 +85,25 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     }
                 }
 
-                if(extension.enableNative){
-                    val native by creating {
-                        dependsOn(commonMain)
-                    }
-                    mingwX64().compilations["main"].defaultSourceSet {
-                        dependsOn(native)
-                    }
-                    linuxX64().compilations["main"].defaultSourceSet {
-                        dependsOn(native)
+                project.afterEvaluate {
+                    if (extension.native) {
+                        val native by creating {
+                            dependsOn(commonMain)
+                        }
+                        mingwX64().compilations["main"].defaultSourceSet {
+                            dependsOn(native)
+                        }
+                        linuxX64().compilations["main"].defaultSourceSet {
+                            dependsOn(native)
+                        }
                     }
                 }
             }
 
             targets.all {
                 sourceSets.all {
-                    languageSettings.apply{
+                    languageSettings.apply {
                         progressiveMode = true
-                        this.
                         enableLanguageFeature("InlineClasses")
                         useExperimentalAnnotation("ExperimentalUnsignedType")
                     }
