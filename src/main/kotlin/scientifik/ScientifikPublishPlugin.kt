@@ -257,7 +257,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     // this is a problem of this plugin
                     pkg.apply {
                         userOrg = "mipt-npm"
-                        repo = bintrayRepo
+                        repo = if (project.version.toString().contains("dev")) "dev" else bintrayRepo
                         name = project.name
                         issueTrackerUrl = "$vcs/issues"
                         setLicenses("Apache-2.0")
