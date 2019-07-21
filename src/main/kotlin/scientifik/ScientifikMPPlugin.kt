@@ -12,6 +12,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
 
         project.plugins.apply("org.jetbrains.kotlin.multiplatform")
         project.plugins.apply("kotlinx-serialization")
+        project.plugins.apply("kotlinx-atomicfu")
 
         project.repositories {
             mavenCentral()
@@ -30,8 +31,8 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 }
             }
 
-            js{
-                browser{}
+            js {
+                browser {}
             }
 
             if (extension.native) {
@@ -45,7 +46,13 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         api(kotlin("stdlib"))
                         project.afterEvaluate {
                             if (extension.serialization) {
-                                 api("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                            }
+                            if(extension.atomicfu){
+                                implementation("org.jetbrains.kotlinx:atomicfu-common:${Scientifik.atomicfuVersion}")
+                            }
+                            if(extension.io){
+                                api("org.jetbrains.kotlinx:kotlinx-io-common:${Scientifik.ioVersion}")
                             }
                         }
                     }
@@ -59,6 +66,12 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val jvmMain by getting {
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
+                        if(extension.atomicfu){
+                            implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
+                        }
+                        if(extension.io){
+                            api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                        }
                     }
                 }
                 val jvmTest by getting {
@@ -70,6 +83,12 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val jsMain by getting {
                     dependencies {
                         api(kotlin("stdlib-js"))
+                        if(extension.atomicfu){
+                            implementation("org.jetbrains.kotlinx:atomicfu-common-js:${Scientifik.atomicfuVersion}")
+                        }
+                        if(extension.io){
+                            api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                        }
                     }
                 }
                 val jsTest by getting {

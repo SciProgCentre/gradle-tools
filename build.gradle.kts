@@ -12,6 +12,7 @@ version = "0.1.4-dev"
 repositories {
     gradlePluginPortal()
     jcenter()
+    maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
@@ -21,6 +22,7 @@ val kotlinVersion = "1.3.50-eap-5"
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.12.9")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.9.7")
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.9.18")
@@ -33,10 +35,23 @@ gradlePlugin {
             description = "The publication plugin for bintray and artifactory"
             implementationClass = "scientifik.ScientifikPublishPlugin"
         }
+
         create("scientifik-mpp") {
             id = "scientifik.mpp"
             description = "Pre-configured multiplatform project"
             implementationClass = "scientifik.ScientifikMPPlugin"
+        }
+
+        create("scientifik-jvm") {
+            id = "scientifik.jvm"
+            description = "Pre-configured JVM project"
+            implementationClass = "scientifik.ScientifikJVMPlugin"
+        }
+
+        create("scientifik-js") {
+            id = "scientifik.js"
+            description = "Pre-configured JS project"
+            implementationClass = "scientifik.ScientifikJSPlugin"
         }
     }
 }
