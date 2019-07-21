@@ -52,7 +52,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                                 implementation("org.jetbrains.kotlinx:atomicfu-common:${Scientifik.atomicfuVersion}")
                             }
                             if(extension.io){
-                                api("org.jetbrains.kotlinx:kotlinx-io-common:${Scientifik.ioVersion}")
+                                api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
                             }
                         }
                     }
