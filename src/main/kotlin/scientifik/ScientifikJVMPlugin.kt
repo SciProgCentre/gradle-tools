@@ -52,7 +52,6 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     }
                 }
             }
-
         }
 
     }

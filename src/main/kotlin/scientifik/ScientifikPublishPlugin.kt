@@ -194,6 +194,12 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 
 
                 extensions.findByType<KotlinJvmProjectExtension>()?.apply {
+
+                    val sourcesJar by tasks.registering(Jar::class) {
+                        archiveClassifier.set("sources")
+                        from(sourceSets["main"].kotlin.srcDirs.first())
+                    }
+
                     val dokka by tasks.getting(DokkaTask::class) {
                         outputFormat = "html"
                         outputDirectory = "$buildDir/javadoc"
@@ -208,8 +214,12 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     }
 
                     configure<PublishingExtension> {
-                        publications.filterIsInstance<MavenPublication>().forEach { publication ->
-                            publication.artifact(kdocJar.get())
+                        publications {
+                            register("jvm", MavenPublication::class) {
+                                from(components["java"])
+                                artifact(sourcesJar.get())
+                                artifact(kdocJar.get())
+                            }
                         }
                     }
                 }
