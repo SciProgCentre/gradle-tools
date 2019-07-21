@@ -28,7 +28,7 @@ private val Project.bintrayRepo: String?
         ?: (findProperty("bintrayRepo") as? String)
 
 private val Project.githubProject: String?
-    get() = extensions.findByType<ScientifikExtension>()?.vcs
+    get() = extensions.findByType<ScientifikExtension>()?.githubProject
         ?: parent?.githubProject
         ?: (findProperty("githubProject") as? String)
 
@@ -51,7 +51,12 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 project.plugins.apply("org.jetbrains.dokka")
             }
 
-            val bintrayRepo = project.bintrayRepo
+            val bintrayRepo = if (project.version.toString().contains("dev")) {
+                "dev"
+            } else {
+                project.bintrayRepo
+            }
+
             val vcs = project.vcs
 
             if (vcs == null) {
@@ -257,7 +262,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     // this is a problem of this plugin
                     pkg.apply {
                         userOrg = "mipt-npm"
-                        repo = if (project.version.toString().contains("dev")) "dev" else bintrayRepo
+                        repo = bintrayRepo
                         name = project.name
                         issueTrackerUrl = "$vcs/issues"
                         setLicenses("Apache-2.0")

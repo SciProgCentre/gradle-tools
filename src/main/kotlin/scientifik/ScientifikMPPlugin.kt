@@ -19,7 +19,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
             maven("https://dl.bintray.com/kotlin/kotlin-eap")
             maven("https://kotlin.bintray.com/kotlinx")
             maven("https://dl.bintray.com/mipt-npm/dev")
-            maven("https://dl.bintray.com/mipt-npm/scientifik")
         }
 
         project.configure<KotlinMultiplatformExtension> {
@@ -31,14 +30,8 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 }
             }
 
-            js {
-                compilations.all {
-                    kotlinOptions {
-                        sourceMap = true
-                        sourceMapEmbedSources = "always"
-                        moduleKind = "umd"
-                    }
-                }
+            js{
+                browser{}
             }
 
             if (extension.native) {
