@@ -66,11 +66,13 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val jvmMain by getting {
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
-                        if(extension.atomicfu){
-                            implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
-                        }
-                        if(extension.io){
-                            api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                        project.afterEvaluate {
+                            if (extension.atomicfu) {
+                                implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
+                            }
+                            if (extension.io) {
+                                api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                            }
                         }
                     }
                 }
@@ -83,11 +85,13 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val jsMain by getting {
                     dependencies {
                         api(kotlin("stdlib-js"))
-                        if(extension.atomicfu){
-                            implementation("org.jetbrains.kotlinx:atomicfu-common-js:${Scientifik.atomicfuVersion}")
-                        }
-                        if(extension.io){
-                            api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                        project.afterEvaluate {
+                            if (extension.atomicfu) {
+                                implementation("org.jetbrains.kotlinx:atomicfu-common-js:${Scientifik.atomicfuVersion}")
+                            }
+                            if (extension.io) {
+                                api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                            }
                         }
                     }
                 }
