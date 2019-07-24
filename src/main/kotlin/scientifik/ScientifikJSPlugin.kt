@@ -3,11 +3,10 @@ package scientifik
 import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.repositories
+import org.gradle.api.tasks.Copy
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 open class ScientifikJSPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -19,37 +18,53 @@ open class ScientifikJSPlugin : Plugin<Project> {
             plugins.apply("kotlinx-atomicfu")
 
 
-            repositories {
-                mavenCentral()
-                jcenter()
-                maven("https://dl.bintray.com/kotlin/kotlin-eap")
-                maven("https://kotlin.bintray.com/kotlinx")
-                maven("https://dl.bintray.com/mipt-npm/dev")
-            }
+            repositories.applyRepos()
 
             configure<KotlinJsProjectExtension> {
                 target {
                     browser()
                 }
                 sourceSets["main"].apply {
-                    languageSettings.apply {
-                        progressiveMode = true
-                        enableLanguageFeature("InlineClasses")
-                        useExperimentalAnnotation("ExperimentalUnsignedType")
-                    }
+                    languageSettings.applySettings()
 
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
-                        if (extension.serialization) {
-                            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                        }
-                        if (extension.atomicfu) {
-                            implementation("org.jetbrains.kotlinx:atomicfu-js:${Scientifik.atomicfuVersion}")
-                        }
-                        if (extension.io) {
-                            api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                        afterEvaluate {
+                            if (extension.serialization) {
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                            }
+                            if (extension.atomicfu) {
+                                implementation("org.jetbrains.kotlinx:atomicfu-js:${Scientifik.atomicfuVersion}")
+                            }
+                            if (extension.io) {
+                                api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                            }
                         }
                     }
+                }
+            }
+
+            tasks.apply {
+                val browserWebpack by getting(KotlinWebpack::class) {
+                    afterEvaluate {
+                        val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
+                            .filter { it != null && it.isNotBlank() }
+                            .joinToString("-")
+                        destinationDirectory = destinationDirectory?.resolve(destination)
+                    }
+                    archiveFileName = "main.bundle.js"
+                }
+
+                afterEvaluate {
+                    val installJsDist by creating(Copy::class) {
+                        group = "distribution"
+                        dependsOn(browserWebpack)
+                        from(fileTree("src/main/web"))
+                        into(browserWebpack.destinationDirectory!!)
+                    }
+
+                    findByName("assemble")?.dependsOn(installJsDist)
+
                 }
             }
         }

@@ -9,7 +9,6 @@ open class ScientifikExtension {
     var vcs: String? = null
     var bintrayRepo: String? = null
     var kdoc: Boolean = true
-    internal var native = false
     var serialization = false
     var atomicfu = false
     var io = false

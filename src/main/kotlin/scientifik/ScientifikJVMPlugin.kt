@@ -3,7 +3,9 @@ package scientifik
 import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -16,13 +18,7 @@ open class ScientifikJVMPlugin : Plugin<Project> {
             plugins.apply("kotlinx-serialization")
             plugins.apply("kotlinx-atomicfu")
 
-            repositories {
-                mavenCentral()
-                jcenter()
-                maven("https://dl.bintray.com/kotlin/kotlin-eap")
-                maven("https://kotlin.bintray.com/kotlinx")
-                maven("https://dl.bintray.com/mipt-npm/dev")
-            }
+            repositories.applyRepos()
 
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
@@ -32,22 +28,20 @@ open class ScientifikJVMPlugin : Plugin<Project> {
 
             configure<KotlinJvmProjectExtension> {
                 sourceSets["main"].apply {
-                    languageSettings.apply {
-                        progressiveMode = true
-                        enableLanguageFeature("InlineClasses")
-                        useExperimentalAnnotation("ExperimentalUnsignedType")
-                    }
+                    languageSettings.applySettings()
 
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
-                        if (extension.serialization) {
-                            implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                        }
-                        if (extension.atomicfu) {
-                            implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
-                        }
-                        if (extension.io) {
-                            api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                        afterEvaluate {
+                            if (extension.serialization) {
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                            }
+                            if (extension.atomicfu) {
+                                implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
+                            }
+                            if (extension.io) {
+                                api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                            }
                         }
                     }
                 }

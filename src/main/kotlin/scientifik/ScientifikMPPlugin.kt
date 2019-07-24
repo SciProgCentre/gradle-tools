@@ -3,8 +3,10 @@ package scientifik
 import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -14,13 +16,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
         project.plugins.apply("kotlinx-serialization")
         project.plugins.apply("kotlinx-atomicfu")
 
-        project.repositories {
-            mavenCentral()
-            jcenter()
-            maven("https://dl.bintray.com/kotlin/kotlin-eap")
-            maven("https://kotlin.bintray.com/kotlinx")
-            maven("https://dl.bintray.com/mipt-npm/dev")
-        }
+        project.repositories.applyRepos()
 
         project.configure<KotlinMultiplatformExtension> {
             jvm {
@@ -35,10 +31,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 browser {}
             }
 
-            if (extension.native) {
-                linuxX64()
-                mingwX64()
-            }
 
             sourceSets.invoke {
                 val commonMain by getting {
@@ -100,30 +92,36 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         implementation(kotlin("test-js"))
                     }
                 }
-
-                project.afterEvaluate {
-                    if (extension.native) {
-                        val native by creating {
-                            dependsOn(commonMain)
-                        }
-                        mingwX64().compilations["main"].defaultSourceSet {
-                            dependsOn(native)
-                        }
-                        linuxX64().compilations["main"].defaultSourceSet {
-                            dependsOn(native)
-                        }
-                    }
-                }
             }
 
             targets.all {
                 sourceSets.all {
-                    languageSettings.apply {
-                        progressiveMode = true
-                        enableLanguageFeature("InlineClasses")
-                        useExperimentalAnnotation("ExperimentalUnsignedType")
-                    }
+                    languageSettings.applySettings()
                 }
+            }
+        }
+
+        project.tasks.apply {
+            val jsBrowserWebpack by getting(KotlinWebpack::class) {
+                archiveClassifier = "js"
+                project.afterEvaluate {
+                    val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
+                        .filter { it != null && it.isNotBlank() }
+                        .joinToString("-")
+                    destinationDirectory = destinationDirectory?.resolve(destination)
+                }
+                archiveFileName = "main.bundle.js"
+            }
+
+            project.afterEvaluate {
+                val installJsDist by creating(Copy::class) {
+                    group = "distribution"
+                    dependsOn(jsBrowserWebpack)
+                    from(project.fileTree("src/jsMain/web"))
+                    into(jsBrowserWebpack.destinationDirectory!!)
+                }
+
+                findByName("assemble")?.dependsOn(installJsDist)
             }
         }
 
