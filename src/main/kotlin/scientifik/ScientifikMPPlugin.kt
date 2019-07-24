@@ -14,7 +14,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
 
         project.plugins.apply("org.jetbrains.kotlin.multiplatform")
         project.plugins.apply("kotlinx-serialization")
-        project.plugins.apply("kotlinx-atomicfu")
 
         project.repositories.applyRepos()
 
@@ -40,9 +39,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                             if (extension.serialization) {
                                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
                             }
-                            if(extension.atomicfu){
-                                implementation("org.jetbrains.kotlinx:atomicfu-common:${Scientifik.atomicfuVersion}")
-                            }
                             if(extension.io){
                                 api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
                             }
@@ -59,9 +55,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
                         project.afterEvaluate {
-                            if (extension.atomicfu) {
-                                implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
-                            }
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
                             }
@@ -78,9 +71,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     dependencies {
                         api(kotlin("stdlib-js"))
                         project.afterEvaluate {
-                            if (extension.atomicfu) {
-                                implementation("org.jetbrains.kotlinx:atomicfu-common-js:${Scientifik.atomicfuVersion}")
-                            }
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
                             }

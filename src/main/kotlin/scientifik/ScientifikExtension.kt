@@ -10,7 +10,6 @@ open class ScientifikExtension {
     var bintrayRepo: String? = null
     var kdoc: Boolean = true
     var serialization = false
-    var atomicfu = false
     var io = false
 }
 

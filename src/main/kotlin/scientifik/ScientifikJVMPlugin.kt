@@ -16,7 +16,6 @@ open class ScientifikJVMPlugin : Plugin<Project> {
         with(project) {
             plugins.apply("org.jetbrains.kotlin.jvm")
             plugins.apply("kotlinx-serialization")
-            plugins.apply("kotlinx-atomicfu")
 
             repositories.applyRepos()
 
@@ -35,9 +34,6 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                         afterEvaluate {
                             if (extension.serialization) {
                                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                            }
-                            if (extension.atomicfu) {
-                                implementation("org.jetbrains.kotlinx:atomicfu:${Scientifik.atomicfuVersion}")
                             }
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")

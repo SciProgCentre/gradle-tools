@@ -54,6 +54,12 @@ gradlePlugin {
             description = "Pre-configured JS project"
             implementationClass = "scientifik.ScientifikJSPlugin"
         }
+
+        create("scientifik-atomic") {
+            id = "scientifik.atomic"
+            description = "Add kotlin atomic plugin to any flafor"
+            implementationClass = "scientifik.ScientifikAtomicPlugin"
+        }
     }
 }
 

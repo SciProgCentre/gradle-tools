@@ -33,9 +33,6 @@ open class ScientifikJSPlugin : Plugin<Project> {
                             if (extension.serialization) {
                                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
                             }
-                            if (extension.atomicfu) {
-                                implementation("org.jetbrains.kotlinx:atomicfu-js:${Scientifik.atomicfuVersion}")
-                            }
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
                             }
