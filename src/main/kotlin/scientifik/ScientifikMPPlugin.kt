@@ -38,7 +38,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         api(kotlin("stdlib"))
                         project.afterEvaluate {
                             if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Scientifik.serializationVersion}")
                             }
                             if(extension.io){
                                 api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
@@ -56,6 +56,10 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
                         project.afterEvaluate {
+                            if (extension.serialization) {
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                            }
+
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
                             }
@@ -72,6 +76,10 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     dependencies {
                         api(kotlin("stdlib-js"))
                         project.afterEvaluate {
+                            if (extension.serialization) {
+                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Scientifik.serializationVersion}")
+                            }
+
                             if (extension.io) {
                                 api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
                             }
@@ -111,7 +119,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     from(project.fileTree("src/jsMain/web"))
                     into(jsBrowserWebpack.destinationDirectory!!)
                     doLast{
-                        val indexFile = File(browserWebpack.destinationDirectory!!,"index.html")
+                        val indexFile = File(jsBrowserWebpack.destinationDirectory!!,"index.html")
                         if(indexFile.exists()){
                             println("Run JS distribution at: ${indexFile.canonicalPath}")
                         }
