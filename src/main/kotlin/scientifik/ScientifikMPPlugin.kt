@@ -7,6 +7,7 @@ import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+import java.io.File
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -109,6 +110,12 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     dependsOn(jsBrowserWebpack)
                     from(project.fileTree("src/jsMain/web"))
                     into(jsBrowserWebpack.destinationDirectory!!)
+                    doLast{
+                        val indexFile = File(browserWebpack.destinationDirectory!!,"index.html")
+                        if(indexFile.exists()){
+                            println("Run JS distribution at: ${indexFile.canonicalPath}")
+                        }
+                    }
                 }
 
                 findByName("assemble")?.dependsOn(installJsDist)
