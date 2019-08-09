@@ -3,8 +3,13 @@ package scientifik
 import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import java.io.File
@@ -13,120 +18,167 @@ open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = project.scientifik
 
-        project.plugins.apply("org.jetbrains.kotlin.multiplatform")
-        project.plugins.apply("kotlinx-serialization")
+        project.run {
 
-        project.repositories.applyRepos()
+            plugins.apply("org.jetbrains.kotlin.multiplatform")
 
-        project.configure<KotlinMultiplatformExtension> {
-            jvm {
-                compilations.all {
-                    kotlinOptions {
-                        jvmTarget = "1.8"
-                    }
-                }
-            }
+            repositories.applyRepos()
 
-            js {
-                browser {}
-            }
-
-
-            sourceSets.invoke {
-                val commonMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib"))
-                        project.afterEvaluate {
-                            if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Scientifik.serializationVersion}")
-                            }
-                            if(extension.io){
-                                api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
-                            }
-                        }
-                    }
-                }
-                val commonTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-common"))
-                        implementation(kotlin("test-annotations-common"))
-                    }
-                }
-                val jvmMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib-jdk8"))
-                        project.afterEvaluate {
-                            if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                            }
-
-                            if (extension.io) {
-                                api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
-                            }
-                        }
-                    }
-                }
-                val jvmTest by getting {
-                    dependencies {
-                        implementation(kotlin("test"))
-                        implementation(kotlin("test-junit"))
-                    }
-                }
-                val jsMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib-js"))
-                        project.afterEvaluate {
-                            if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Scientifik.serializationVersion}")
-                            }
-
-                            if (extension.io) {
-                                api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
-                            }
-                        }
-                    }
-                }
-                val jsTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-js"))
-                    }
-                }
-            }
-
-            targets.all {
-                sourceSets.all {
-                    languageSettings.applySettings()
-                }
-            }
-        }
-
-        project.tasks.apply {
-            val jsBrowserWebpack by getting(KotlinWebpack::class) {
-                archiveClassifier = "js"
-                project.afterEvaluate {
-                    val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
-                        .filter { it != null && it.isNotBlank() }
-                        .joinToString("-")
-                    destinationDirectory = destinationDirectory?.resolve(destination)
-                }
-                archiveFileName = "main.bundle.js"
-            }
-
-            project.afterEvaluate {
-                val installJsDist by creating(Copy::class) {
-                    group = "distribution"
-                    dependsOn(jsBrowserWebpack)
-                    from(project.fileTree("src/jsMain/web"))
-                    into(jsBrowserWebpack.destinationDirectory!!)
-                    doLast{
-                        val indexFile = File(jsBrowserWebpack.destinationDirectory!!,"index.html")
-                        if(indexFile.exists()){
-                            println("Run JS distribution at: ${indexFile.canonicalPath}")
+            configure<KotlinMultiplatformExtension> {
+                jvm {
+                    compilations.all {
+                        kotlinOptions {
+                            jvmTarget = "1.8"
                         }
                     }
                 }
 
-                findByName("assemble")?.dependsOn(installJsDist)
+                js {
+                    browser {}
+                }
+
+
+                sourceSets.invoke {
+                    val commonMain by getting {
+                        dependencies {
+                            api(kotlin("stdlib"))
+                            project.afterEvaluate {
+                                if (extension.serialization) {
+                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Scientifik.serializationVersion}")
+                                }
+                                if (extension.io) {
+                                    api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
+                                }
+                            }
+                        }
+                    }
+                    val commonTest by getting {
+                        dependencies {
+                            implementation(kotlin("test-common"))
+                            implementation(kotlin("test-annotations-common"))
+                        }
+                    }
+                    val jvmMain by getting {
+                        dependencies {
+                            api(kotlin("stdlib-jdk8"))
+                            project.afterEvaluate {
+                                if (extension.serialization) {
+                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
+                                }
+
+                                if (extension.io) {
+                                    api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
+                                }
+                            }
+                        }
+                    }
+                    val jvmTest by getting {
+                        dependencies {
+                            implementation(kotlin("test"))
+                            implementation(kotlin("test-junit"))
+                        }
+                    }
+                    val jsMain by getting {
+                        dependencies {
+                            api(kotlin("stdlib-js"))
+                            project.afterEvaluate {
+                                if (extension.serialization) {
+                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Scientifik.serializationVersion}")
+                                }
+
+                                if (extension.io) {
+                                    api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
+                                }
+                            }
+                        }
+                    }
+                    val jsTest by getting {
+                        dependencies {
+                            implementation(kotlin("test-js"))
+                        }
+                    }
+                }
+
+                targets.all {
+                    sourceSets.all {
+                        languageSettings.applySettings()
+                    }
+                }
+
+                pluginManager.withPlugin("org.jetbrains.dokka") {
+                    val dokka by tasks.getting(DokkaTask::class) {
+                        outputFormat = "html"
+                        outputDirectory = "$buildDir/javadoc"
+                        jdkVersion = 8
+
+                        kotlinTasks {
+                            // dokka fails to retrieve sources from MPP-tasks so we only define the jvm task
+                            listOf(tasks.getByPath("compileKotlinJvm"))
+                        }
+                        sourceRoot {
+                            // assuming only single source dir
+                            path = sourceSets["commonMain"].kotlin.srcDirs.first().toString()
+                            platforms = listOf("Common")
+                        }
+                        // although the JVM sources are now taken from the task,
+                        // we still define the jvm source root to get the JVM marker in the generated html
+                        sourceRoot {
+                            // assuming only single source dir
+                            path = sourceSets["jvmMain"].kotlin.srcDirs.first().toString()
+                            platforms = listOf("JVM")
+                        }
+
+                    }
+
+                    val kdocJar by tasks.registering(Jar::class) {
+                        group = JavaBasePlugin.DOCUMENTATION_GROUP
+                        dependsOn(dokka)
+                        archiveClassifier.set("javadoc")
+                        from("$buildDir/javadoc")
+                    }
+
+                    configure<PublishingExtension> {
+
+                        targets.all {
+                            val publication = publications.findByName(name) as MavenPublication
+
+                            // Patch publications with fake javadoc
+                            publication.artifact(kdocJar.get())
+                        }
+                    }
+                }
+            }
+
+
+
+            tasks.apply {
+                val jsBrowserWebpack by getting(KotlinWebpack::class) {
+                    archiveClassifier = "js"
+                    project.afterEvaluate {
+                        val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
+                            .filter { it != null && it.isNotBlank() }
+                            .joinToString("-")
+                        destinationDirectory = destinationDirectory?.resolve(destination)
+                    }
+                    archiveFileName = "main.bundle.js"
+                }
+
+                afterEvaluate {
+                    val installJsDist by creating(Copy::class) {
+                        group = "distribution"
+                        dependsOn(jsBrowserWebpack)
+                        from(project.fileTree("src/jsMain/web"))
+                        into(jsBrowserWebpack.destinationDirectory!!)
+                        doLast {
+                            val indexFile = File(jsBrowserWebpack.destinationDirectory!!, "index.html")
+                            if (indexFile.exists()) {
+                                println("Run JS distribution at: ${indexFile.canonicalPath}")
+                            }
+                        }
+                    }
+
+                    findByName("assemble")?.dependsOn(installJsDist)
+                }
             }
         }
 
