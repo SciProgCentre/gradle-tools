@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.1.5"
+version = "0.1.6"
 
 repositories {
     gradlePluginPortal()
@@ -16,14 +16,14 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.50-eap-5"
+val kotlinVersion = "1.3.50"
 
 // Add plugins used in buildSrc as dependencies, also we should specify version only here
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.12.9")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.12.10")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.9.7")
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.9.18")

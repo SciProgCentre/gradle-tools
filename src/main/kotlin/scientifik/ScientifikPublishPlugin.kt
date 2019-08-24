@@ -183,14 +183,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     //workaround bintray bug
                     setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
                 }
-
-//                tasks.withType<BintrayUploadTask>{
-//                    doFirst {
-//                        logger.info("repoName = $repoName")
-//                        logger.info("versionName = $versionName")
-//                        logger.info("packageName = $packageName")
-//                    }
-//                }
             }
         }
     }
