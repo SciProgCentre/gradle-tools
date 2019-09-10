@@ -29,7 +29,7 @@ open class ScientifikJSPlugin : Plugin<Project> {
                     languageSettings.applySettings()
 
                     dependencies {
-                        api(kotlin("stdlib-jdk8"))
+                        api(kotlin("stdlib-js"))
                         afterEvaluate {
                             if (extension.serialization) {
                                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
