@@ -17,7 +17,7 @@ open class ScientifikExtension {
 
     fun Project.withSerialization() {
         apply(plugin = "kotlinx-serialization")
-        _serialization = true
+        serialization = true
         //recursively apply to all subprojecs
         subprojects{
             this.scientifik.apply{
@@ -26,11 +26,18 @@ open class ScientifikExtension {
         }
     }
 
-    private var _serialization = false
     var serialization = false
+        private set
 
+    fun Project.withIO(){
+        io = true
+        subprojects{
+            withIO()
+        }
+    }
 
     var io = false
+        private set
 }
 
 internal val Project.scientifik: ScientifikExtension
