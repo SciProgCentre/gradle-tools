@@ -19,4 +19,5 @@ internal fun RepositoryHandler.applyRepos(): Unit{
     maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/mipt-npm/scientifik")
     maven("https://dl.bintray.com/mipt-npm/dev")
+    maven("https://dl.bintray.com/mipt-npm/dataforge")
 }
