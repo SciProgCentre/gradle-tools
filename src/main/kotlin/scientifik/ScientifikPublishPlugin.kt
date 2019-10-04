@@ -2,7 +2,6 @@ package scientifik
 
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
-import groovy.lang.GroovyObject
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -10,10 +9,6 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.*
-import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention
-import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
-import org.jfrog.gradle.plugin.artifactory.dsl.ResolverConfig
-import org.jfrog.gradle.plugin.artifactory.task.ArtifactoryTask
 
 
 open class ScientifikPublishPlugin : Plugin<Project> {
@@ -39,7 +34,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             }
 
             project.plugins.apply("com.jfrog.bintray")
-            project.plugins.apply("com.jfrog.artifactory")
 
             project.configure<PublishingExtension> {
                 // Process each publication we have in this project
@@ -104,7 +98,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 }
 
                 pluginManager.withPlugin("scientifik.mpp"){
-                    tasks.filter { it is ArtifactoryTask || it is BintrayUploadTask }.forEach {
+                    tasks.filterIsInstance<BintrayUploadTask>().forEach {
                         it.doFirst {
                             publications.filterIsInstance<MavenPublication>()
                                 .forEach { publication ->
@@ -120,32 +114,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     }
                 }
 
-            }
-
-            project.configure<ArtifactoryPluginConvention> {
-                val artifactoryUser: String? by project
-                val artifactoryPassword: String? by project
-                val artifactoryContextUrl = "http://npm.mipt.ru:8081/artifactory"
-
-                setContextUrl(artifactoryContextUrl)//The base Artifactory URL if not overridden by the publisher/resolver
-                publish(delegateClosureOf<PublisherConfig> {
-                    repository(delegateClosureOf<GroovyObject> {
-                        setProperty("repoKey", "gradle-dev-local")
-                        setProperty("username", artifactoryUser)
-                        setProperty("password", artifactoryPassword)
-                    })
-
-                    defaults(delegateClosureOf<GroovyObject> {
-                        invokeMethod("publications", arrayOf("jvm", "js", "kotlinMultiplatform", "metadata"))
-                    })
-                })
-                resolve(delegateClosureOf<ResolverConfig> {
-                    repository(delegateClosureOf<GroovyObject> {
-                        setProperty("repoKey", "gradle-dev")
-                        setProperty("username", artifactoryUser)
-                        setProperty("password", artifactoryPassword)
-                    })
-                })
             }
 
             if (bintrayRepo == null) {
