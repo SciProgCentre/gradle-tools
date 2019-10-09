@@ -1,6 +1,5 @@
 package scientifik
 
-import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -31,17 +30,8 @@ open class ScientifikJVMPlugin : Plugin<Project> {
             configure<KotlinJvmProjectExtension> {
                 val sourceSet = sourceSets["main"].apply {
                     languageSettings.applySettings()
-
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
-                        afterEvaluate {
-                            if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                            }
-                            if (extension.io) {
-                                api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
-                            }
-                        }
                     }
                 }
 

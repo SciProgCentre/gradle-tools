@@ -1,6 +1,5 @@
 package scientifik
 
-import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -42,14 +41,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     val commonMain by getting {
                         dependencies {
                             api(kotlin("stdlib"))
-                            project.afterEvaluate {
-                                if (extension.serialization) {
-                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:${Scientifik.serializationVersion}")
-                                }
-                                if (extension.io) {
-                                    api("org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}")
-                                }
-                            }
                         }
                     }
                     val commonTest by getting {
@@ -61,15 +52,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     val jvmMain by getting {
                         dependencies {
                             api(kotlin("stdlib-jdk8"))
-                            project.afterEvaluate {
-                                if (extension.serialization) {
-                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                                }
-
-                                if (extension.io) {
-                                    api("org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}")
-                                }
-                            }
                         }
                     }
                     val jvmTest by getting {
@@ -81,15 +63,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     val jsMain by getting {
                         dependencies {
                             api(kotlin("stdlib-js"))
-                            project.afterEvaluate {
-                                if (extension.serialization) {
-                                    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:${Scientifik.serializationVersion}")
-                                }
-
-                                if (extension.io) {
-                                    api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
-                                }
-                            }
                         }
                     }
                     val jsTest by getting {

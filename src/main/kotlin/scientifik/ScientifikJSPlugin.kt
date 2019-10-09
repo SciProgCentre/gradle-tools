@@ -1,6 +1,5 @@
 package scientifik
 
-import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
@@ -30,14 +29,6 @@ open class ScientifikJSPlugin : Plugin<Project> {
 
                     dependencies {
                         api(kotlin("stdlib-js"))
-                        afterEvaluate {
-                            if (extension.serialization) {
-                                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:${Scientifik.serializationVersion}")
-                            }
-                            if (extension.io) {
-                                api("org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}")
-                            }
-                        }
                     }
                 }
             }
