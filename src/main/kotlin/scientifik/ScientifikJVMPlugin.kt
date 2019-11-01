@@ -17,7 +17,6 @@ open class ScientifikJVMPlugin : Plugin<Project> {
 
         with(project) {
             plugins.apply("org.jetbrains.kotlin.jvm")
-            plugins.apply("maven-publish")
 
             repositories.applyRepos()
 
@@ -49,38 +48,43 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     from(sourceSet.kotlin.srcDirs.first())
                 }
 
-                configure<PublishingExtension> {
-                    publications {
-                        register("jvm", MavenPublication::class) {
-                            from(components["java"])
-                            artifact(sourcesJar.get())
+                pluginManager.withPlugin("maven-publish") {
+
+                    configure<PublishingExtension> {
+                        publications {
+                            register("jvm", MavenPublication::class) {
+                                from(components["java"])
+                                artifact(sourcesJar.get())
+                            }
+                        }
+                    }
+
+                    pluginManager.withPlugin("org.jetbrains.dokka") {
+                        val dokka by tasks.getting(DokkaTask::class) {
+                            outputFormat = "html"
+                            outputDirectory = "$buildDir/javadoc"
+                        }
+
+                        val kdocJar by tasks.registering(Jar::class) {
+                            group = JavaBasePlugin.DOCUMENTATION_GROUP
+                            dependsOn(dokka)
+                            archiveClassifier.set("javadoc")
+                            from("$buildDir/javadoc")
+                        }
+
+                        configure<PublishingExtension> {
+                            publications {
+                                getByName("jvm") {
+                                    this as MavenPublication
+                                    artifact(kdocJar.get())
+                                }
+                            }
                         }
                     }
                 }
             }
 
-            pluginManager.withPlugin("org.jetbrains.dokka") {
-                val dokka by tasks.getting(DokkaTask::class) {
-                    outputFormat = "html"
-                    outputDirectory = "$buildDir/javadoc"
-                }
 
-                val kdocJar by tasks.registering(Jar::class) {
-                    group = JavaBasePlugin.DOCUMENTATION_GROUP
-                    dependsOn(dokka)
-                    archiveClassifier.set("javadoc")
-                    from("$buildDir/javadoc")
-                }
-
-                configure<PublishingExtension> {
-                    publications {
-                        getByName("jvm") {
-                            this as MavenPublication
-                            artifact(kdocJar.get())
-                        }
-                    }
-                }
-            }
 
         }
 

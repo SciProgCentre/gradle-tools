@@ -82,7 +82,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     val dokka by tasks.getting(DokkaTask::class) {
                         outputFormat = "html"
                         outputDirectory = "$buildDir/javadoc"
-                        multiplatform{
+                        multiplatform {
 
                         }
                     }
@@ -94,13 +94,15 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         from("$buildDir/javadoc")
                     }
 
-                    configure<PublishingExtension> {
+                    pluginManager.withPlugin("maven-publish") {
+                        configure<PublishingExtension> {
 
-                        targets.all {
-                            val publication = publications.findByName(name) as MavenPublication
+                            targets.all {
+                                val publication = publications.findByName(name) as MavenPublication
 
-                            // Patch publications with fake javadoc
-                            publication.artifact(kdocJar.get())
+                                // Patch publications with fake javadoc
+                                publication.artifact(kdocJar.get())
+                            }
                         }
                     }
                 }

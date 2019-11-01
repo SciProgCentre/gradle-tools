@@ -120,7 +120,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             if (bintrayRepo == null) {
                 project.logger.warn("[${project.name}] Bintray repository not defined")
             } else {
-
+                project.logger.info("Adding bintray publishing to project [${project.name}]")
                 project.configure<PublishingExtension> {
                     repositories {
                         maven("https://bintray.com/mipt-npm/$bintrayRepo")
@@ -143,14 +143,16 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                         setLicenses("Apache-2.0")
                         vcsUrl = vcs
                         version.apply {
-                            name = project.version.toString()
-                            vcsTag = project.version.toString()
-                            released = java.util.Date().toString()
+                            this.name = project.version.toString()
+                            this.vcsTag = project.version.toString()
+                            this.released = java.util.Date().toString()
                         }
                     }
 
                     //workaround bintray bug
-                    setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
+                    afterEvaluate {
+                        setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
+                    }
                 }
             }
         }
