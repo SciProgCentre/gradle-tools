@@ -19,10 +19,8 @@ class ScientifikNativePlugin : Plugin<Project> {
                         dependsOn(commonMain)
 
                         dependencies {
+                            api(kotlin("native"))
                             //TODO add stdlib here
-                            target.afterEvaluate {
-                                //TODO add optional libraries here
-                            }
                         }
                     }
 

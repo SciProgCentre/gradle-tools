@@ -50,9 +50,9 @@ open class ScientifikJSPlugin : Plugin<Project> {
                         dependsOn(browserWebpack)
                         from(fileTree("src/main/web"))
                         into(browserWebpack.destinationDirectory!!)
-                        doLast{
-                            val indexFile = File(browserWebpack.destinationDirectory!!,"index.html")
-                            if(indexFile.exists()){
+                        doLast {
+                            val indexFile = File(browserWebpack.destinationDirectory!!, "index.html")
+                            if (indexFile.exists()) {
                                 println("Run JS distribution at: ${indexFile.canonicalPath}")
                             }
                         }

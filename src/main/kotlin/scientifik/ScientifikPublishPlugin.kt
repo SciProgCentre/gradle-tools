@@ -79,6 +79,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                                 username = githubUser
                                 password = githubToken
                             }
+
                         }
 
                         val githubPublishTasks = publications.filterIsInstance<MavenPublication>().map { publication ->

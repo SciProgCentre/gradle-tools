@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.2.1"
+version = "0.2.2"
 
 repositories {
     gradlePluginPortal()
@@ -23,16 +23,17 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.12.10")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.13.2")
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.9.18")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
+    implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.10.0")
 }
 
 gradlePlugin {
     plugins {
         create("scientifik-publish") {
             id = "scientifik.publish"
-            description = "The publication plugin for bintray and bitbucket"
+            description = "The publication plugin for bintray and github"
             implementationClass = "scientifik.ScientifikPublishPlugin"
         }
 

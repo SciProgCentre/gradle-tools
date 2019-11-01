@@ -28,10 +28,19 @@ open class ScientifikJVMPlugin : Plugin<Project> {
             }
 
             configure<KotlinJvmProjectExtension> {
+
                 val sourceSet = sourceSets["main"].apply {
                     languageSettings.applySettings()
                     dependencies {
                         api(kotlin("stdlib-jdk8"))
+                    }
+                }
+
+                sourceSets["test"].apply {
+                    languageSettings.applySettings()
+                    dependencies {
+                        implementation(kotlin("test"))
+                        implementation(kotlin("test-junit"))
                     }
                 }
 
@@ -54,7 +63,6 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                 val dokka by tasks.getting(DokkaTask::class) {
                     outputFormat = "html"
                     outputDirectory = "$buildDir/javadoc"
-                    jdkVersion = 8
                 }
 
                 val kdocJar by tasks.registering(Jar::class) {
