@@ -6,4 +6,5 @@ object Scientifik {
     const val coroutinesVersion = "1.3.2"
     const val atomicfuVersion = "0.12.11"
     const val serializationVersion = "0.13.0"
+    const val JVM_VERSION = "11"
 }

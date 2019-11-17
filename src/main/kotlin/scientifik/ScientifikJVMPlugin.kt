@@ -6,6 +6,7 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -22,7 +23,7 @@ open class ScientifikJVMPlugin : Plugin<Project> {
 
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "11"
                 }
             }
 
@@ -39,7 +40,9 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test"))
-                        implementation(kotlin("test-junit"))
+                        //implementation(kotlin("test-junit"))
+                        implementation(kotlin("test-junit5"))
+                        implementation("org.junit.jupiter:junit-jupiter:5.5.2")
                     }
                 }
 
@@ -60,6 +63,8 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     }
 
                     pluginManager.withPlugin("org.jetbrains.dokka") {
+                        logger.info("Adding dokka functionality to project ${this@with.name}")
+
                         val dokka by tasks.getting(DokkaTask::class) {
                             outputFormat = "html"
                             outputDirectory = "$buildDir/javadoc"
@@ -83,9 +88,9 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     }
                 }
             }
-
-
-
+            tasks.withType<Test>(){
+                useJUnitPlatform()
+            }
         }
 
     }

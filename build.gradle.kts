@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.2.2"
+version = "0.2.4"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.50"
+val kotlinVersion = "1.3.60"
 
 // Add plugins used in buildSrc as dependencies, also we should specify version only here
 dependencies {

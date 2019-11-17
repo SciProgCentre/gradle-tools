@@ -36,12 +36,10 @@ open class ScientifikJSPlugin : Plugin<Project> {
             tasks.apply {
                 val browserWebpack by getting(KotlinWebpack::class) {
                     afterEvaluate {
-                        val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
-                            .filter { it != null && it.isNotBlank() }
-                            .joinToString("-")
+                        val destination = listOf(name, version.toString()).joinToString("-")
                         destinationDirectory = destinationDirectory?.resolve(destination)
                     }
-                    archiveFileName = "main.bundle.js"
+                    outputFileName = "main.bundle.js"
                 }
 
                 afterEvaluate {

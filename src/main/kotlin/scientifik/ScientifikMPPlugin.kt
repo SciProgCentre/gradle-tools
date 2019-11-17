@@ -7,6 +7,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -27,7 +28,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-                            jvmTarget = "1.8"
+                            jvmTarget = "11"
                         }
                     }
                 }
@@ -57,7 +58,9 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     val jvmTest by getting {
                         dependencies {
                             implementation(kotlin("test"))
-                            implementation(kotlin("test-junit"))
+                            //implementation(kotlin("test-junit"))
+                            implementation(kotlin("test-junit5"))
+                            implementation("org.junit.jupiter:junit-jupiter:5.5.2")
                         }
                     }
                     val jsMain by getting {
@@ -79,6 +82,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 }
 
                 pluginManager.withPlugin("org.jetbrains.dokka") {
+                    logger.info("Adding dokka functionality to project ${this@run.name}")
                     val dokka by tasks.getting(DokkaTask::class) {
                         outputFormat = "html"
                         outputDirectory = "$buildDir/javadoc"
@@ -112,14 +116,11 @@ open class ScientifikMPPlugin : Plugin<Project> {
 
             tasks.apply {
                 val jsBrowserWebpack by getting(KotlinWebpack::class) {
-                    archiveClassifier = "js"
-                    project.afterEvaluate {
-                        val destination = listOf(archiveBaseName, archiveAppendix, archiveVersion, archiveClassifier)
-                            .filter { it != null && it.isNotBlank() }
-                            .joinToString("-")
+                    afterEvaluate {
+                        val destination = listOf(name, version.toString()).joinToString("-")
                         destinationDirectory = destinationDirectory?.resolve(destination)
                     }
-                    archiveFileName = "main.bundle.js"
+                    outputFileName = "main.bundle.js"
                 }
 
                 afterEvaluate {
@@ -137,6 +138,10 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     }
 
                     findByName("assemble")?.dependsOn(installJsDist)
+                }
+
+                withType<Test>(){
+                    useJUnitPlatform()
                 }
             }
         }
