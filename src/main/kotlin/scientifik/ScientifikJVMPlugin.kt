@@ -6,7 +6,6 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -40,9 +39,9 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test"))
-                        //implementation(kotlin("test-junit"))
-                        implementation(kotlin("test-junit5"))
-                        implementation("org.junit.jupiter:junit-jupiter:5.5.2")
+                        implementation(kotlin("test-junit"))
+//                        implementation(kotlin("test-junit5"))
+//                        implementation("org.junit.jupiter:junit-jupiter:5.5.2")
                     }
                 }
 
@@ -88,9 +87,9 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                     }
                 }
             }
-            tasks.withType<Test>(){
-                useJUnitPlatform()
-            }
+//            tasks.withType<Test>(){
+//                useJUnitPlatform()
+//            }
         }
 
     }

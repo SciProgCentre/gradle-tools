@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.2.4"
+version = "0.2.5"
 
 repositories {
     gradlePluginPortal()
@@ -23,7 +23,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.13.2")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.1")
     implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
     implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.10.0")

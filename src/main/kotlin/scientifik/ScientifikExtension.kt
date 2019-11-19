@@ -64,18 +64,18 @@ open class ScientifikExtension {
         }
     }
 
-    fun Project.withIO() {
-        applyMPPDependency(
-            "commonMain" to "org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}",
-            "jvmMain" to "org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}",
-            "jsMain" to "org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}"
-        )
-        subprojects {
-            scientifik.apply {
-                withIO()
-            }
-        }
-    }
+//    fun Project.withIO() {
+//        applyMPPDependency(
+//            "commonMain" to "org.jetbrains.kotlinx:kotlinx-io:${Scientifik.ioVersion}",
+//            "jvmMain" to "org.jetbrains.kotlinx:kotlinx-io-jvm:${Scientifik.ioVersion}",
+//            "jsMain" to "org.jetbrains.kotlinx:kotlinx-io-js:${Scientifik.ioVersion}"
+//        )
+//        subprojects {
+//            scientifik.apply {
+//                withIO()
+//            }
+//        }
+//    }
 }
 
 internal val Project.scientifik: ScientifikExtension
