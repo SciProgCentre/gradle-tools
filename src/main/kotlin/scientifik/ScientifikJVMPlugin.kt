@@ -1,8 +1,11 @@
 package scientifik
 
+import Scientifik
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
@@ -20,9 +23,13 @@ open class ScientifikJVMPlugin : Plugin<Project> {
 
             repositories.applyRepos()
 
+            extensions.findByType<JavaPluginExtension>()?.apply {
+                targetCompatibility = JavaVersion.VERSION_11
+            }
+
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
-                    jvmTarget = "11"
+                    jvmTarget = Scientifik.JVM_VERSION
                 }
             }
 

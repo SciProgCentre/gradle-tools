@@ -1,5 +1,6 @@
 package scientifik
 
+import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -27,7 +28,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-                            jvmTarget = "11"
+                            jvmTarget = Scientifik.JVM_VERSION
                         }
                     }
                 }

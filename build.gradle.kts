@@ -18,6 +18,10 @@ repositories {
 
 val kotlinVersion = "1.3.60"
 
+java {
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 // Add plugins used in buildSrc as dependencies, also we should specify version only here
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
@@ -73,7 +77,6 @@ publishing {
     // Process each publication we have in this project
     publications.filterIsInstance<MavenPublication>().forEach { publication ->
 
-        @Suppress("UnstableApiUsage")
         publication.pom {
             name.set(project.name)
             description.set(project.description)
