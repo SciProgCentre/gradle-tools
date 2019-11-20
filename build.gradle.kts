@@ -19,7 +19,7 @@ repositories {
 val kotlinVersion = "1.3.60"
 
 java {
-    targetCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 // Add plugins used in buildSrc as dependencies, also we should specify version only here
