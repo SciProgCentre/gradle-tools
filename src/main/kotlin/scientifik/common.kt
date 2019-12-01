@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
     progressiveMode = true
     enableLanguageFeature("InlineClasses")
+    useExperimentalAnnotation("kotlin.Experimental")
     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
     useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
     useExperimentalAnnotation("kotlin.time.ExperimentalTime")
