@@ -98,7 +98,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     }
                 }
 
-                pluginManager.withPlugin("scientifik.mpp"){
+                pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform"){
                     tasks.filterIsInstance<BintrayUploadTask>().forEach {
                         it.doFirst {
                             publications.filterIsInstance<MavenPublication>()
