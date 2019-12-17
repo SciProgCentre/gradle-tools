@@ -16,8 +16,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class ScientifikJVMPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.scientifik
-
         with(project) {
             plugins.apply("org.jetbrains.kotlin.jvm")
 

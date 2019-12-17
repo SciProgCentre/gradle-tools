@@ -10,13 +10,9 @@ import java.io.File
 
 open class ScientifikJSPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.scientifik
 
         with(project) {
             plugins.apply("org.jetbrains.kotlin.js")
-            plugins.apply("kotlinx-serialization")
-            plugins.apply("kotlinx-atomicfu")
-
 
             repositories.applyRepos()
 
@@ -29,6 +25,13 @@ open class ScientifikJSPlugin : Plugin<Project> {
 
                     dependencies {
                         api(kotlin("stdlib-js"))
+                    }
+                }
+
+                sourceSets["test"].apply {
+                    languageSettings.applySettings()
+                    dependencies {
+                        implementation(kotlin("test-js"))
                     }
                 }
             }

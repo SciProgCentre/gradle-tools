@@ -16,8 +16,6 @@ import java.io.File
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val extension = project.scientifik
-
         project.run {
 
             plugins.apply("org.jetbrains.kotlin.multiplatform")
