@@ -6,7 +6,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 internal fun Project.useDependency(vararg pairs: Pair<String, String>) {
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
@@ -24,11 +23,10 @@ internal fun Project.useDependency(vararg pairs: Pair<String, String>) {
     }
     pairs.find { it.first == "jvmMain" }?.let { dep ->
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            sourceSets.findByName("main")?.apply {
-                this as KotlinSourceSet
-                dependencies {
-                    implementation(dep)
-                }
+           sourceSets.findByName("main")?.apply {
+               dependencies.apply{
+                   add(implementationConfigurationName, dep.second)
+               }
             }
         }
     }
@@ -36,9 +34,10 @@ internal fun Project.useDependency(vararg pairs: Pair<String, String>) {
     pairs.find { it.first == "jsMain" }?.let { dep ->
         pluginManager.withPlugin("org.jetbrains.kotlin.js") {
             sourceSets.findByName("main")?.apply {
-                this as KotlinSourceSet
-                dependencies {
-                    implementation(dep)
+                sourceSets.findByName("main")?.apply {
+                    dependencies.apply{
+                        add(implementationConfigurationName, dep.second)
+                    }
                 }
             }
         }
