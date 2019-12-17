@@ -46,12 +46,15 @@ internal fun Project.useDependency(vararg pairs: Pair<String, String>) {
 }
 
 
-fun Project.useSerialization(version: String = Scientifik.serializationVersion) = useDependency(
-    "commonMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$version",
-    "jvmMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$version",
-    "jsMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$version",
-    "nativeMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$version"
-)
+fun Project.useSerialization(version: String = Scientifik.serializationVersion) {
+    plugins.apply("org.jetbrains.kotlin.plugin.serialization")
+    useDependency(
+        "commonMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-common:$version",
+        "jvmMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$version",
+        "jsMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$version",
+        "nativeMain" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$version"
+    )
+}
 
 fun Project.useCoroutines(version: String = Scientifik.coroutinesVersion) = useDependency(
     "commonMain" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version",
@@ -59,3 +62,13 @@ fun Project.useCoroutines(version: String = Scientifik.coroutinesVersion) = useD
     "jsMain" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version",
     "nativeMain" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$version"
 )
+
+//fun Project.useAtomic(version: String = Scientifik.atomicfuVersion) {
+//    plugins.apply("kotlinx-atomicfu")
+//    useDependency(
+//        "commonMain" to "org.jetbrains.kotlinx:atomicfu-common:$version",
+//        "jvmMain" to "org.jetbrains.kotlinx:atomicfu:$version",
+//        "jsMain" to "org.jetbrains.kotlinx:atomicfu-js:$version",
+//        "nativeMain" to "org.jetbrains.kotlinx:atomicfu-native:$version"
+//    )
+//}
