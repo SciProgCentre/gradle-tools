@@ -115,17 +115,18 @@ open class ScientifikMPPlugin : Plugin<Project> {
             tasks.apply {
                 val jsBrowserWebpack by getting(KotlinWebpack::class) {
                     afterEvaluate {
-                        val destination = listOf(name, version.toString()).joinToString("-")
+                        val destination = listOf(name, "js", version.toString()).joinToString("-")
                         destinationDirectory = destinationDirectory?.resolve(destination)
                     }
                     outputFileName = "main.bundle.js"
                 }
 
-                afterEvaluate {
-                    val installJsDist by creating(Copy::class) {
-                        group = "distribution"
-                        dependsOn(jsBrowserWebpack)
-                        from(project.fileTree("src/jsMain/web"))
+
+                val installJsDist by creating(Copy::class) {
+                    group = "distribution"
+                    dependsOn(jsBrowserWebpack)
+                    from(project.fileTree("src/jsMain/web"))
+                    afterEvaluate {
                         into(jsBrowserWebpack.destinationDirectory!!)
                         doLast {
                             val indexFile = File(jsBrowserWebpack.destinationDirectory!!, "index.html")
@@ -134,9 +135,9 @@ open class ScientifikMPPlugin : Plugin<Project> {
                             }
                         }
                     }
-
-                    findByName("assemble")?.dependsOn(installJsDist)
                 }
+
+                findByName("assemble")?.dependsOn(installJsDist)
 
 //                withType<Test>(){
 //                    useJUnitPlatform()

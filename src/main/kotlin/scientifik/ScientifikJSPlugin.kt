@@ -45,11 +45,12 @@ open class ScientifikJSPlugin : Plugin<Project> {
                     outputFileName = "main.bundle.js"
                 }
 
-                afterEvaluate {
-                    val installJsDist by creating(Copy::class) {
-                        group = "distribution"
-                        dependsOn(browserWebpack)
-                        from(fileTree("src/main/web"))
+
+                val installJsDist by creating(Copy::class) {
+                    group = "distribution"
+                    dependsOn(browserWebpack)
+                    from(fileTree("src/main/web"))
+                    afterEvaluate {
                         into(browserWebpack.destinationDirectory!!)
                         doLast {
                             val indexFile = File(browserWebpack.destinationDirectory!!, "index.html")
@@ -58,10 +59,10 @@ open class ScientifikJSPlugin : Plugin<Project> {
                             }
                         }
                     }
-
-                    findByName("assemble")?.dependsOn(installJsDist)
-
                 }
+
+                findByName("assemble")?.dependsOn(installJsDist)
+
             }
         }
 
