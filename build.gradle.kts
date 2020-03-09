@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.3.2"
+version = "0.4.0"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.61"
+val kotlinVersion = "1.3.70"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -26,11 +26,8 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.1")
-    implementation("com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.0")
-    implementation("org.jfrog.buildinfo:build-info-extractor-gradle:4.10.0")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.2")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
 }
 
 gradlePlugin {

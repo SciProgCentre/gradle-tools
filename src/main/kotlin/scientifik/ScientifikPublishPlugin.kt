@@ -1,14 +1,14 @@
 package scientifik
 
-import com.jfrog.bintray.gradle.BintrayExtension
-import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.internal.artifact.FileBasedMavenArtifact
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 
 
 open class ScientifikPublishPlugin : Plugin<Project> {
@@ -18,12 +18,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
         project.plugins.apply("maven-publish")
 
         project.run {
-            val bintrayRepo = if (project.version.toString().contains("dev")) {
-                "dev"
-            } else {
-                findProperty("bintrayRepo") as? String
-            }
-
             val githubProject = findProperty("githubProject") as? String
             val vcs = findProperty("vcs") as? String
                 ?: githubProject?.let { "https://github.com/mipt-npm/$it" }
@@ -33,11 +27,9 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 return@apply
             }
 
-            project.plugins.apply("com.jfrog.bintray")
-
             project.configure<PublishingExtension> {
                 // Process each publication we have in this project
-                publications.filterIsInstance<MavenPublication>().forEach { publication ->
+                publications.withType<MavenPublication>().forEach { publication ->
 
                     @Suppress("UnstableApiUsage")
                     publication.pom {
@@ -71,8 +63,9 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 val githubToken: String? by project
 
                 if (githubProject != null && githubUser != null && githubToken != null) {
+                    project.logger.info("Adding github publishing to project [${project.name}]")
                     repositories {
-                        val repository = maven {
+                        val githubMavenRepository = maven {
                             name = "github"
                             url = uri("https://maven.pkg.github.com/mipt-npm/$githubProject/")
                             credentials {
@@ -86,7 +79,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                             tasks.register<PublishToMavenRepository>("publish${publication.name.capitalize()}ToGithub") {
                                 group = "publishing"
                                 this.publication = publication
-                                this.repository = repository
+                                this.repository = githubMavenRepository
                             }
                         }
 
@@ -98,60 +91,42 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     }
                 }
 
-                pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform"){
-                    tasks.filterIsInstance<BintrayUploadTask>().forEach {
-                        it.doFirst {
-                            publications.filterIsInstance<MavenPublication>()
-                                .forEach { publication ->
-                                    val moduleFile =
-                                        buildDir.resolve("publications/${publication.name}/module.json")
-                                    if (moduleFile.exists()) {
-                                        publication.artifact(object : FileBasedMavenArtifact(moduleFile) {
-                                            override fun getDefaultExtension() = "module"
-                                        })
-                                    }
-                                }
-                        }
-                    }
+
+                val bintrayRepo = if (project.version.toString().contains("dev")) {
+                    "dev"
+                } else {
+                    findProperty("bintrayRepo") as? String
                 }
 
-            }
+                val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
+                val bintrayUser = project.findProperty("bintrayUser") as? String
+                val bintrayKey = project.findProperty("bintrayApiKey") as? String
 
-            if (bintrayRepo == null) {
-                project.logger.warn("[${project.name}] Bintray repository not defined")
-            } else {
-                project.logger.info("Adding bintray publishing to project [${project.name}]")
-                project.configure<PublishingExtension> {
+                if (bintrayRepo != null && bintrayUser != null && bintrayKey != null) {
+                    project.logger.info("Adding bintray publishing to project [${project.name}]")
+
                     repositories {
-                        maven("https://bintray.com/mipt-npm/$bintrayRepo")
-                    }
-                }
-
-                project.configure<BintrayExtension> {
-                    user = project.findProperty("bintrayUser") as? String?
-                    key = project.findProperty("bintrayApiKey") as? String?
-                    publish = true
-                    override = true
-
-                    // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
-                    // this is a problem of this plugin
-                    pkg.apply {
-                        userOrg = "mipt-npm"
-                        repo = bintrayRepo
-                        name = project.name
-                        issueTrackerUrl = "$vcs/issues"
-                        setLicenses("Apache-2.0")
-                        vcsUrl = vcs
-                        version.apply {
-                            this.name = project.version.toString()
-                            this.vcsTag = project.version.toString()
-                            this.released = java.util.Date().toString()
+                        val bintrayMavenRepository = maven {
+                            name = "bintray"
+                            uri("https://api.bintray.com/maven/$bintrayOrg/$bintrayRepo/${project.name}/;publish=0;override=1")
+                            credentials {
+                                this.username = bintrayUser
+                                this.password = bintrayKey
+                            }
                         }
-                    }
 
-                    //workaround bintray bug
-                    afterEvaluate {
-                        setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
+                        val bintrayPublishTasks = publications.withType<MavenPublication>().map { publication ->
+                            tasks.register<PublishToMavenRepository>("publish${publication.name.capitalize()}ToBintray") {
+                                group = "publishing"
+                                this.publication = publication
+                                this.repository = bintrayMavenRepository
+                            }
+                        }
+
+                        tasks.register<PublishToMavenRepository>("publishToBintray") {
+                            group = "publishing"
+                            dependsOn(bintrayPublishTasks)
+                        }
                     }
                 }
             }
