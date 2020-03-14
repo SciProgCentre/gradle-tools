@@ -2,11 +2,11 @@ package scientifik
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Copy
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
-import java.io.File
 
 open class ScientifikJSPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -18,7 +18,14 @@ open class ScientifikJSPlugin : Plugin<Project> {
 
             configure<KotlinJsProjectExtension> {
                 target {
-                    browser()
+                    browser {
+                        webpackTask {
+                            outputFileName = "main.bundle.js"
+                        }
+                        distribution {
+                            directory = project.jsDistDirectory
+                        }
+                    }
                 }
                 sourceSets["main"].apply {
                     languageSettings.applySettings()
@@ -37,31 +44,18 @@ open class ScientifikJSPlugin : Plugin<Project> {
             }
 
             tasks.apply {
-                val browserWebpack by getting(KotlinWebpack::class) {
-                    afterEvaluate {
-                        val destination = listOf(name, version.toString()).joinToString("-")
-                        destinationDirectory = destinationDirectory?.resolve(destination)
-                    }
-                    outputFileName = "main.bundle.js"
-                }
 
-
-                val installJsDist by creating(Copy::class) {
-                    group = "distribution"
-                    dependsOn(browserWebpack)
-                    from(fileTree("src/main/web"))
-                    afterEvaluate {
-                        into(browserWebpack.destinationDirectory!!)
-                        doLast {
-                            val indexFile = File(browserWebpack.destinationDirectory!!, "index.html")
-                            if (indexFile.exists()) {
-                                println("Run JS distribution at: ${indexFile.canonicalPath}")
-                            }
+                val browserDistribution by getting {
+                    doLast {
+                        val indexFile = project.jsDistDirectory.resolve("index.html")
+                        if (indexFile.exists()) {
+                            println("Run JS distribution at: ${indexFile.canonicalPath}")
                         }
                     }
+                    group = "distribution"
                 }
 
-                findByName("assemble")?.dependsOn(installJsDist)
+//                findByName("assemble")?.dependsOn(installJsDist)
 
             }
         }

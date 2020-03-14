@@ -4,10 +4,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 
 
@@ -30,7 +28,6 @@ open class ScientifikPublishPlugin : Plugin<Project> {
             project.configure<PublishingExtension> {
                 // Process each publication we have in this project
                 publications.withType<MavenPublication>().forEach { publication ->
-
                     @Suppress("UnstableApiUsage")
                     publication.pom {
                         name.set(project.name)
@@ -55,6 +52,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                         }
                         scm {
                             url.set(vcs)
+                            tag.set(project.version.toString())
                         }
                     }
                 }
@@ -65,7 +63,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 if (githubProject != null && githubUser != null && githubToken != null) {
                     project.logger.info("Adding github publishing to project [${project.name}]")
                     repositories {
-                        val githubMavenRepository = maven {
+                        maven {
                             name = "github"
                             url = uri("https://maven.pkg.github.com/mipt-npm/$githubProject/")
                             credentials {
@@ -74,22 +72,13 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                             }
 
                         }
-
-                        val githubPublishTasks = publications.filterIsInstance<MavenPublication>().map { publication ->
-                            tasks.register<PublishToMavenRepository>("publish${publication.name.capitalize()}ToGithub") {
-                                group = "publishing"
-                                this.publication = publication
-                                this.repository = githubMavenRepository
-                            }
-                        }
-
-                        tasks.register<PublishToMavenRepository>("publishToGithub") {
-                            group = "publishing"
-                            dependsOn(githubPublishTasks)
-                        }
-
                     }
                 }
+
+
+                val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
+                val bintrayUser = project.findProperty("bintrayUser") as? String
+                val bintrayKey = project.findProperty("bintrayApiKey") as? String
 
 
                 val bintrayRepo = if (project.version.toString().contains("dev")) {
@@ -98,36 +87,24 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     findProperty("bintrayRepo") as? String
                 }
 
-                val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
-                val bintrayUser = project.findProperty("bintrayUser") as? String
-                val bintrayKey = project.findProperty("bintrayApiKey") as? String
+                val projectName = project.name
 
                 if (bintrayRepo != null && bintrayUser != null && bintrayKey != null) {
-                    project.logger.info("Adding bintray publishing to project [${project.name}]")
+                    project.logger.info("Adding bintray publishing to project [$projectName]")
 
                     repositories {
-                        val bintrayMavenRepository = maven {
+                        maven {
                             name = "bintray"
-                            uri("https://api.bintray.com/maven/$bintrayOrg/$bintrayRepo/${project.name}/;publish=0;override=1")
+                            url = uri(
+                                "https://api.bintray.com/maven/$bintrayOrg/$bintrayRepo/$projectName/;publish=0;override=1"
+                            )
                             credentials {
-                                this.username = bintrayUser
-                                this.password = bintrayKey
+                                username = bintrayUser
+                                password = bintrayKey
                             }
-                        }
-
-                        val bintrayPublishTasks = publications.withType<MavenPublication>().map { publication ->
-                            tasks.register<PublishToMavenRepository>("publish${publication.name.capitalize()}ToBintray") {
-                                group = "publishing"
-                                this.publication = publication
-                                this.repository = bintrayMavenRepository
-                            }
-                        }
-
-                        tasks.register<PublishToMavenRepository>("publishToBintray") {
-                            group = "publishing"
-                            dependsOn(bintrayPublishTasks)
                         }
                     }
+
                 }
             }
         }

@@ -6,13 +6,10 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
-import java.io.File
 
 open class ScientifikMPPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -23,6 +20,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
             repositories.applyRepos()
 
             configure<KotlinMultiplatformExtension> {
+
                 jvm {
                     compilations.all {
                         kotlinOptions {
@@ -32,9 +30,15 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 }
 
                 js {
-                    browser {}
+                    browser {
+                        webpackTask {
+                            outputFileName = "main.bundle.js"
+                        }
+                        distribution {
+                            directory = project.jsDistDirectory
+                        }
+                    }
                 }
-
 
                 sourceSets.invoke {
                     val commonMain by getting {
@@ -108,42 +112,31 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         }
                     }
                 }
-            }
 
 
 
-            tasks.apply {
-                val jsBrowserWebpack by getting(KotlinWebpack::class) {
-                    afterEvaluate {
-                        val destination = listOf(name, "js", version.toString()).joinToString("-")
-                        destinationDirectory = destinationDirectory?.resolve(destination)
-                    }
-                    outputFileName = "main.bundle.js"
-                }
 
+                tasks.apply {
 
-                val installJsDist by creating(Copy::class) {
-                    group = "distribution"
-                    dependsOn(jsBrowserWebpack)
-                    from(project.fileTree("src/jsMain/web"))
-                    afterEvaluate {
-                        into(jsBrowserWebpack.destinationDirectory!!)
+                    val jsBrowserDistribution by getting {
                         doLast {
-                            val indexFile = File(jsBrowserWebpack.destinationDirectory!!, "index.html")
+                            val indexFile = project.jsDistDirectory.resolve("index.html")
                             if (indexFile.exists()) {
                                 println("Run JS distribution at: ${indexFile.canonicalPath}")
                             }
                         }
+                        group = "distribution"
                     }
-                }
 
-                findByName("assemble")?.dependsOn(installJsDist)
+//                findByName("assemble")?.dependsOn(installJsDist)
 
 //                withType<Test>(){
 //                    useJUnitPlatform()
 //                }
+//            }
+                }
+
             }
         }
-
     }
 }
