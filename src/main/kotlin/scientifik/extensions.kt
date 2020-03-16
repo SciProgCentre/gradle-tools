@@ -5,6 +5,8 @@ import kotlinx.atomicfu.plugin.gradle.sourceSets
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.maven
+import org.gradle.kotlin.dsl.repositories
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 enum class DependencyConfiguration {
@@ -106,10 +108,13 @@ class SerializationTargets(
     fun Project.xml(
         version: String = Scientifik.Serialization.xmlVersion
     ) {
+        repositories {
+            maven("https://dl.bintray.com/pdvrieze/maven")
+        }
         useDependency(
-            "common" to "net.devrieze:xmlutil:$version",
-            "jvm" to "net.devrieze:xmlutil:$version",
-            "js" to "net.devrieze:xmlutil:$version",
+            "common" to "net.devrieze:xmlutil-serialization:$version",
+            "jvm" to "net.devrieze:xmlutil-serialization:$version",
+            "js" to "net.devrieze:xmlutil-serialization:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )

@@ -35,6 +35,6 @@ val Project.jsDistDirectory: File
         ).joinToString("-")
 
         return buildDir.resolve(
-            "distributions/$distributionName}"
+            "distributions/$distributionName"
         )
     }
