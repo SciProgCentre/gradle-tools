@@ -9,7 +9,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 enum class DependencyConfiguration {
     API,
-    IMPLEMENTATION
+    IMPLEMENTATION,
+    COMPILE_ONLY
 }
 
 enum class DependencySourceSet(val setName: String, val suffix: String) {
@@ -32,6 +33,7 @@ internal fun Project.useDependency(
                             when (dependencyConfiguration) {
                                 DependencyConfiguration.API -> api(dep)
                                 DependencyConfiguration.IMPLEMENTATION -> implementation(dep)
+                                DependencyConfiguration.COMPILE_ONLY-> compileOnly(dep)
                             }
                         }
                     }
@@ -47,6 +49,7 @@ internal fun Project.useDependency(
                     val configurationName = when (dependencyConfiguration) {
                         DependencyConfiguration.API -> apiConfigurationName
                         DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY-> compileOnlyConfigurationName
                     }
                     add(configurationName, dep.second)
                 }
@@ -61,6 +64,7 @@ internal fun Project.useDependency(
                     val configurationName = when (dependencyConfiguration) {
                         DependencyConfiguration.API -> apiConfigurationName
                         DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY-> compileOnlyConfigurationName
                     }
                     add(configurationName, dep.second)
                 }
