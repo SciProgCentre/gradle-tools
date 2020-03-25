@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "scientifik"
-version = "0.4.0"
+version = "0.4.1"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.70"
+val kotlinVersion = "1.3.71"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8

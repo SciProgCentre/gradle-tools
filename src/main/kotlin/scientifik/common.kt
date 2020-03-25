@@ -8,7 +8,7 @@ import java.io.File
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
     progressiveMode = true
-    enableLanguageFeature("InlineClasses")
+    //enableLanguageFeature("InlineClasses")
     useExperimentalAnnotation("kotlin.Experimental")
     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
     useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
