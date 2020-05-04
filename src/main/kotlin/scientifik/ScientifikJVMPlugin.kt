@@ -1,7 +1,6 @@
 package scientifik
 
 import Scientifik
-import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -23,7 +22,7 @@ open class ScientifikJVMPlugin : Plugin<Project> {
             repositories.applyRepos()
 
             extensions.findByType<JavaPluginExtension>()?.apply {
-                targetCompatibility = JavaVersion.VERSION_11
+                targetCompatibility = enumValueOf(Scientifik.JVM_VERSION)
             }
 
             tasks.withType<KotlinCompile> {

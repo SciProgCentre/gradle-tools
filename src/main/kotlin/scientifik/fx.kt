@@ -46,12 +46,12 @@ fun KotlinDependencyHandler.addFXDependencies(
     }
 }
 
-fun Project.fx(
+fun Project.useFx(
     vararg modules: FXModule,
     configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
     version: String = "14",
     platform: FXPlatform = defaultPlatform
-) {
+): Unit = afterEvaluate{
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         extensions.findByType<KotlinMultiplatformExtension>()?.apply {
             sourceSets.findByName("jvmMain")?.apply {

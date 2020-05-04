@@ -2,6 +2,7 @@ package scientifik
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getValue
@@ -44,6 +45,9 @@ open class ScientifikJSPlugin : Plugin<Project> {
             }
 
             tasks.apply {
+
+                val processResources by getting(Copy::class)
+                processResources.copyJSResources(configurations["runtimeClasspath"])
 
                 val browserDistribution by getting {
                     doLast {

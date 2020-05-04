@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
@@ -30,7 +31,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     }
                 }
 
-                js {
+                val js = js {
                     browser {
                         webpackTask {
                             outputFileName = "main.bundle.js"
@@ -114,10 +115,9 @@ open class ScientifikMPPlugin : Plugin<Project> {
                     }
                 }
 
-
-
-
                 tasks.apply {
+                    val jsProcessResources by getting(Copy::class)
+                    jsProcessResources.copyJSResources(configurations["jsRuntimeClasspath"])
 
                     val jsBrowserDistribution by getting {
                         doLast {
@@ -128,6 +128,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         }
                         group = "distribution"
                     }
+
                     withType<Test>() {
                         useJUnitPlatform()
                     }

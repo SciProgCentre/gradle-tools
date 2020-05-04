@@ -3,11 +3,11 @@ import java.util.*
 plugins {
     `kotlin-dsl`
     `maven-publish`
-    id("com.jfrog.bintray") version "1.8.4"
+    id("com.jfrog.bintray") version "1.8.5"
 }
 
 group = "scientifik"
-version = "0.4.2"
+version = "0.5.0"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.71"
+val kotlinVersion = "1.3.72"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -26,7 +26,7 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.2")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.3")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
 }
 
@@ -56,11 +56,11 @@ gradlePlugin {
             implementationClass = "scientifik.ScientifikJSPlugin"
         }
 
-        create("scientifik-atomic") {
-            id = "scientifik.atomic"
-            description = "Add kotlin atomic plugin to any flafor"
-            implementationClass = "scientifik.ScientifikAtomicPlugin"
-        }
+//        create("scientifik-atomic") {
+//            id = "scientifik.atomic"
+//            description = "Add kotlin atomic plugin to any flafor"
+//            implementationClass = "scientifik.ScientifikAtomicPlugin"
+//        }
     }
 }
 
