@@ -22,12 +22,12 @@ open class ScientifikJVMPlugin : Plugin<Project> {
             repositories.applyRepos()
 
             extensions.findByType<JavaPluginExtension>()?.apply {
-                targetCompatibility = enumValueOf(Scientifik.JVM_VERSION)
+                targetCompatibility = Scientifik.JVM_TARGET
             }
 
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
-                    jvmTarget = Scientifik.JVM_VERSION
+                    jvmTarget = Scientifik.JVM_TARGET.toString()
                 }
             }
 

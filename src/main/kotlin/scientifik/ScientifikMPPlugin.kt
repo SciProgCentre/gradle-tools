@@ -26,7 +26,7 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-                            jvmTarget = Scientifik.JVM_VERSION
+                            jvmTarget = Scientifik.JVM_TARGET.toString()
                         }
                     }
                 }
