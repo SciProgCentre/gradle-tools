@@ -83,7 +83,8 @@ fun Project.useSerialization(
         "jvm" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$version",
         "js" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-js:$version",
         "native" to "org.jetbrains.kotlinx:kotlinx-serialization-runtime-native:$version",
-        dependencySourceSet = sourceSet
+        dependencySourceSet = sourceSet,
+        dependencyConfiguration = configuration
     )
     SerializationTargets(sourceSet, configuration).apply(block)
 }

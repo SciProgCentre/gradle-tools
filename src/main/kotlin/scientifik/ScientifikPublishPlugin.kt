@@ -15,14 +15,14 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 
         project.plugins.apply("maven-publish")
 
-        project.run {
+        project.afterEvaluate {
             val githubProject = findProperty("githubProject") as? String
             val vcs = findProperty("vcs") as? String
                 ?: githubProject?.let { "https://github.com/mipt-npm/$it" }
 
             if (vcs == null) {
                 project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
-                return@apply
+                return@afterEvaluate
             }
 
             project.configure<PublishingExtension> {
@@ -75,6 +75,24 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                     }
                 }
 
+                val spaceRepo: String? by project
+                val spaceUser: String? by project
+                val spaceToken: String? by project
+
+                if (spaceRepo != null && spaceUser != null && spaceToken != null) {
+                    project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
+                    repositories {
+                        maven {
+                            name = "space"
+                            url = uri(spaceRepo!!)
+                            credentials {
+                                username = spaceUser
+                                password = spaceToken
+                            }
+
+                        }
+                    }
+                }
 
                 val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
                 val bintrayUser = project.findProperty("bintrayUser") as? String

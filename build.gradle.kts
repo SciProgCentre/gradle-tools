@@ -4,10 +4,11 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
+    id("org.jetbrains.changelog") version "0.3.2"
 }
 
 group = "scientifik"
-version = "0.5.0"
+version = "0.5.1"
 
 repositories {
     gradlePluginPortal()
@@ -55,12 +56,6 @@ gradlePlugin {
             description = "Pre-configured JS project"
             implementationClass = "scientifik.ScientifikJSPlugin"
         }
-
-//        create("scientifik-atomic") {
-//            id = "scientifik.atomic"
-//            description = "Add kotlin atomic plugin to any flafor"
-//            implementationClass = "scientifik.ScientifikAtomicPlugin"
-//        }
     }
 }
 

@@ -21,7 +21,7 @@ enum class DependencySourceSet(val setName: String, val suffix: String) {
 internal fun Project.useDependency(
     vararg pairs: Pair<String, String>,
     dependencySourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-    dependencyConfiguration: DependencyConfiguration = DependencyConfiguration.API
+    dependencyConfiguration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
 ) {
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         extensions.findByType<KotlinMultiplatformExtension>()?.apply {
@@ -86,12 +86,12 @@ fun Project.useCoroutines(
     dependencyConfiguration = configuration
 )
 
-//fun Project.atomic(version: String = Scientifik.atomicfuVersion) {
-//    plugins.apply("kotlinx-atomicfu")
-//    useDependency(
-//        "commonMain" to "org.jetbrains.kotlinx:atomicfu-common:$version",
-//        "jvmMain" to "org.jetbrains.kotlinx:atomicfu:$version",
-//        "jsMain" to "org.jetbrains.kotlinx:atomicfu-js:$version",
-//        "nativeMain" to "org.jetbrains.kotlinx:atomicfu-native:$version"
-//    )
-//}
+fun Project.useAtomic(version: String = Scientifik.atomicVersion) {
+    plugins.apply("kotlinx-atomicfu")
+    useDependency(
+        "commonMain" to "org.jetbrains.kotlinx:atomicfu-common:$version",
+        "jvmMain" to "org.jetbrains.kotlinx:atomicfu:$version",
+        "jsMain" to "org.jetbrains.kotlinx:atomicfu-js:$version",
+        "nativeMain" to "org.jetbrains.kotlinx:atomicfu-native:$version"
+    )
+}

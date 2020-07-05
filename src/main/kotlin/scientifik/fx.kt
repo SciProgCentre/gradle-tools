@@ -30,7 +30,7 @@ val defaultPlatform: FXPlatform = when {
     else -> error("Platform not recognized")
 }
 
-fun KotlinDependencyHandler.addFXDependencies(
+private fun KotlinDependencyHandler.addFXDependencies(
     vararg modules: FXModule,
     configuration: DependencyConfiguration,
     version: String = "14",

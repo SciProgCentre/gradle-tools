@@ -10,59 +10,56 @@ import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 
 open class ScientifikJSPlugin : Plugin<Project> {
-    override fun apply(project: Project) {
+    override fun apply(project: Project): Unit = project.run {
+        plugins.apply("org.jetbrains.kotlin.js")
 
-        with(project) {
-            plugins.apply("org.jetbrains.kotlin.js")
+        repositories.applyRepos()
 
-            repositories.applyRepos()
-
-            configure<KotlinJsProjectExtension> {
-                target {
-                    browser {
-                        webpackTask {
-                            outputFileName = "main.bundle.js"
-                        }
-                        distribution {
-                            directory = project.jsDistDirectory
-                        }
+        configure<KotlinJsProjectExtension> {
+            target {
+                browser {
+                    webpackTask {
+                        outputFileName = "main.bundle.js"
                     }
-                }
-                sourceSets["main"].apply {
-                    languageSettings.applySettings()
-
-                    dependencies {
-                        api(kotlin("stdlib-js"))
-                    }
-                }
-
-                sourceSets["test"].apply {
-                    languageSettings.applySettings()
-                    dependencies {
-                        implementation(kotlin("test-js"))
+                    distribution {
+                        directory = project.jsDistDirectory
                     }
                 }
             }
+            sourceSets["main"].apply {
+                languageSettings.applySettings()
 
-            tasks.apply {
-
-                val processResources by getting(Copy::class)
-                processResources.copyJSResources(configurations["runtimeClasspath"])
-
-                val browserDistribution by getting {
-                    doLast {
-                        val indexFile = project.jsDistDirectory.resolve("index.html")
-                        if (indexFile.exists()) {
-                            println("Run JS distribution at: ${indexFile.canonicalPath}")
-                        }
-                    }
-                    group = "distribution"
+                dependencies {
+                    api(kotlin("stdlib-js"))
                 }
+            }
 
-//                findByName("assemble")?.dependsOn(installJsDist)
-
+            sourceSets["test"].apply {
+                languageSettings.applySettings()
+                dependencies {
+                    implementation(kotlin("test-js"))
+                }
             }
         }
 
+        tasks.apply {
+
+            val processResources by getting(Copy::class)
+            processResources.copyJSResources(configurations["runtimeClasspath"])
+
+            val browserDistribution by getting {
+                doLast {
+                    val indexFile = project.jsDistDirectory.resolve("index.html")
+                    if (indexFile.exists()) {
+                        println("Run JS distribution at: ${indexFile.canonicalPath}")
+                    }
+                }
+                group = "distribution"
+            }
+
+//                findByName("assemble")?.dependsOn(installJsDist)
+
+        }
     }
+
 }
