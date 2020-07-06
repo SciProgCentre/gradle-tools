@@ -115,8 +115,15 @@ open class ScientifikMPPlugin : Plugin<Project> {
             }
 
             tasks.apply {
+                withType<Test>() {
+                    useJUnitPlatform()
+                }
+
                 val jsProcessResources by getting(Copy::class)
                 jsProcessResources.copyJSResources(configurations["jsRuntimeClasspath"])
+
+                val jvmProcessResources by getting(Copy::class)
+                jvmProcessResources.copyJVMResources(configurations["jvmRuntimeClasspath"])
 
                 val jsBrowserDistribution by getting {
                     doLast {
@@ -126,10 +133,6 @@ open class ScientifikMPPlugin : Plugin<Project> {
                         }
                     }
                     group = "distribution"
-                }
-
-                withType<Test>() {
-                    useJUnitPlatform()
                 }
             }
 
