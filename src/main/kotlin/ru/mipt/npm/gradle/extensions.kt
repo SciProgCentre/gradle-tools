@@ -1,6 +1,5 @@
-package scientifik
+package ru.mipt.npm.gradle
 
-import Scientifik
 import kotlinx.atomicfu.plugin.gradle.sourceSets
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
@@ -33,7 +32,7 @@ internal fun Project.useDependency(
                             when (dependencyConfiguration) {
                                 DependencyConfiguration.API -> api(dep)
                                 DependencyConfiguration.IMPLEMENTATION -> implementation(dep)
-                                DependencyConfiguration.COMPILE_ONLY-> compileOnly(dep)
+                                DependencyConfiguration.COMPILE_ONLY -> compileOnly(dep)
                             }
                         }
                     }
@@ -49,7 +48,7 @@ internal fun Project.useDependency(
                     val configurationName = when (dependencyConfiguration) {
                         DependencyConfiguration.API -> apiConfigurationName
                         DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                        DependencyConfiguration.COMPILE_ONLY-> compileOnlyConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
                     }
                     add(configurationName, dep.second)
                 }
@@ -64,7 +63,7 @@ internal fun Project.useDependency(
                     val configurationName = when (dependencyConfiguration) {
                         DependencyConfiguration.API -> apiConfigurationName
                         DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                        DependencyConfiguration.COMPILE_ONLY-> compileOnlyConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
                     }
                     add(configurationName, dep.second)
                 }
@@ -73,25 +72,46 @@ internal fun Project.useDependency(
     }
 }
 
-fun Project.useCoroutines(
-    version: String = Scientifik.coroutinesVersion,
-    sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-    configuration: DependencyConfiguration = DependencyConfiguration.API
-) = useDependency(
-    "common" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:$version",
-    "jvm" to "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version",
-    "js" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-js:$version",
-    "native" to "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:$version",
-    dependencySourceSet = sourceSet,
-    dependencyConfiguration = configuration
-)
-
-fun Project.useAtomic(version: String = Scientifik.atomicVersion) {
-    plugins.apply("kotlinx-atomicfu")
-    useDependency(
-        "commonMain" to "org.jetbrains.kotlinx:atomicfu-common:$version",
-        "jvmMain" to "org.jetbrains.kotlinx:atomicfu:$version",
-        "jsMain" to "org.jetbrains.kotlinx:atomicfu-js:$version",
-        "nativeMain" to "org.jetbrains.kotlinx:atomicfu-native:$version"
-    )
+internal fun Project.useCommonDependency(
+    dep: String,
+    dependencySourceSet: DependencySourceSet = DependencySourceSet.MAIN,
+    dependencyConfiguration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+): Unit = pluginManager.run{
+    withPlugin("org.jetbrains.kotlin.multiplatform"){
+        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+            sourceSets.findByName("common${dependencySourceSet.suffix}")?.apply {
+                dependencies {
+                    when (dependencyConfiguration) {
+                        DependencyConfiguration.API -> api(dep)
+                        DependencyConfiguration.IMPLEMENTATION -> implementation(dep)
+                        DependencyConfiguration.COMPILE_ONLY -> compileOnly(dep)
+                    }
+                }
+            }
+        }
+    }
+    withPlugin("org.jetbrains.kotlin.jvm") {
+        sourceSets.findByName(dependencySourceSet.setName)?.apply {
+            dependencies.apply {
+                val configurationName = when (dependencyConfiguration) {
+                    DependencyConfiguration.API -> apiConfigurationName
+                    DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                    DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                }
+                add(configurationName, dep)
+            }
+        }
+    }
+    withPlugin("org.jetbrains.kotlin.js") {
+        sourceSets.findByName(dependencySourceSet.setName)?.apply {
+            dependencies.apply {
+                val configurationName = when (dependencyConfiguration) {
+                    DependencyConfiguration.API -> apiConfigurationName
+                    DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                    DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                }
+                add(configurationName, dep)
+            }
+        }
+    }
 }

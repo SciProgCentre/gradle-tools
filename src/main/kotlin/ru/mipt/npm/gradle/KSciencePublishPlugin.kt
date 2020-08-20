@@ -1,4 +1,4 @@
-package scientifik
+package ru.mipt.npm.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -9,16 +9,17 @@ import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 
 
-open class ScientifikPublishPlugin : Plugin<Project> {
+open class KSciencePublishPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
 
         project.plugins.apply("maven-publish")
 
         project.afterEvaluate {
-            val githubProject = findProperty("githubProject") as? String
+            val githubOrg: String = project.findProperty("githubOrg") as? String ?: "mipt-npm"
+            val githubProject: String? by project
             val vcs = findProperty("vcs") as? String
-                ?: githubProject?.let { "https://github.com/mipt-npm/$it" }
+                ?: githubProject?.let { "https://github.com/$githubOrg/$it" }
 
             if (vcs == null) {
                 project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
@@ -95,8 +96,8 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                 }
 
                 val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
-                val bintrayUser = project.findProperty("bintrayUser") as? String
-                val bintrayKey = project.findProperty("bintrayApiKey") as? String
+                val bintrayUser: String? by project
+                val bintrayApiKey: String? by project
 
 
                 val bintrayRepo = if (project.version.toString().contains("dev")) {
@@ -107,7 +108,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
 
                 val projectName = project.name
 
-                if (bintrayRepo != null && bintrayUser != null && bintrayKey != null) {
+                if (bintrayRepo != null && bintrayUser != null && bintrayApiKey != null) {
                     project.logger.info("Adding bintray publishing to project [$projectName]")
 
                     repositories {
@@ -118,7 +119,7 @@ open class ScientifikPublishPlugin : Plugin<Project> {
                             )
                             credentials {
                                 username = bintrayUser
-                                password = bintrayKey
+                                password = bintrayApiKey
                             }
                         }
                     }

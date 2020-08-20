@@ -1,4 +1,4 @@
-package scientifik
+package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -23,9 +23,10 @@ internal fun RepositoryHandler.applyRepos(): Unit {
     jcenter()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://dl.bintray.com/mipt-npm/scientifik")
-    maven("https://dl.bintray.com/mipt-npm/dev")
     maven("https://kotlin.bintray.com/kotlin-js-wrappers/")
+    maven("https://dl.bintray.com/mipt-npm/scientifik")
+    maven("https://dl.bintray.com/mipt-npm/kscience")
+    maven("https://dl.bintray.com/mipt-npm/dev")
     maven("https://dl.bintray.com/mipt-npm/dataforge")
 }
 

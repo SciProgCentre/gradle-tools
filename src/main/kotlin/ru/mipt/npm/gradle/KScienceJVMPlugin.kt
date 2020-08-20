@@ -1,9 +1,7 @@
-package scientifik
+package ru.mipt.npm.gradle
 
-import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
@@ -15,36 +13,33 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-open class ScientifikJVMPlugin : Plugin<Project> {
+open class KScienceJVMPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.jvm")
+        val extension = extensions.add("kscience", KScienceExtension(this))
 
         repositories.applyRepos()
 
         extensions.findByType<JavaPluginExtension>()?.apply {
-            targetCompatibility = Scientifik.JVM_TARGET
+            targetCompatibility = KScienceVersions.JVM_TARGET
         }
 
         tasks.withType<KotlinCompile> {
             kotlinOptions {
-                jvmTarget = Scientifik.JVM_TARGET.toString()
+                useIR = true
+                jvmTarget = KScienceVersions.JVM_TARGET.toString()
             }
         }
 
         configure<KotlinJvmProjectExtension> {
-
+            explicitApiWarning()
             val sourceSet = sourceSets["main"].apply {
                 languageSettings.applySettings()
-                dependencies {
-                    api(kotlin("stdlib-jdk8"))
-                }
             }
 
             sourceSets["test"].apply {
                 languageSettings.applySettings()
                 dependencies {
-                    implementation(kotlin("test"))
-//                        implementation(kotlin("test-junit"))
                     implementation(kotlin("test-junit5"))
                     implementation("org.junit.jupiter:junit-jupiter:5.6.1")
                 }
@@ -69,23 +64,10 @@ open class ScientifikJVMPlugin : Plugin<Project> {
                 pluginManager.withPlugin("org.jetbrains.dokka") {
                     logger.info("Adding dokka functionality to project ${project.name}")
 
-                    val dokka by tasks.getting(DokkaTask::class) {
-                        outputFormat = "html"
-                        outputDirectory = "$buildDir/javadoc"
-                    }
-
-                    val kdocJar by tasks.registering(Jar::class) {
-                        group = JavaBasePlugin.DOCUMENTATION_GROUP
-                        dependsOn(dokka)
-                        archiveClassifier.set("javadoc")
-                        from("$buildDir/javadoc")
-                    }
-
-                    configure<PublishingExtension> {
-                        publications {
-                            getByName("jvm") {
-                                this as MavenPublication
-                                artifact(kdocJar.get())
+                    val dokkaHtml by tasks.getting(DokkaTask::class){
+                        dokkaSourceSets {
+                            configureEach {
+                                jdkVersion = 11
                             }
                         }
                     }

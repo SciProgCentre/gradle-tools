@@ -1,36 +1,34 @@
-package scientifik
+package ru.mipt.npm.gradle
 
-import Scientifik
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-open class ScientifikMPPlugin : Plugin<Project> {
+open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
 
         plugins.apply("org.jetbrains.kotlin.multiplatform")
+        val extension = extensions.add("kscience", KScienceExtension(this))
 
         repositories.applyRepos()
 
         configure<KotlinMultiplatformExtension> {
+            explicitApiWarning()
 
             jvm {
                 compilations.all {
                     kotlinOptions {
-                        jvmTarget = Scientifik.JVM_TARGET.toString()
+                        useIR = true
+                        jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     }
                 }
             }
 
-            val js = js {
+            js(IR) {
                 browser {
                     webpackTask {
                         outputFileName = "main.bundle.js"
@@ -42,35 +40,21 @@ open class ScientifikMPPlugin : Plugin<Project> {
             }
 
             sourceSets.invoke {
-                val commonMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib"))
-                    }
-                }
+                val commonMain by getting
                 val commonTest by getting {
                     dependencies {
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
                     }
                 }
-                val jvmMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib-jdk8"))
-                    }
-                }
+                val jvmMain by getting
                 val jvmTest by getting {
                     dependencies {
-                        implementation(kotlin("test"))
-//                            implementation(kotlin("test-junit"))
                         implementation(kotlin("test-junit5"))
                         implementation("org.junit.jupiter:junit-jupiter:5.6.1")
                     }
                 }
-                val jsMain by getting {
-                    dependencies {
-                        api(kotlin("stdlib-js"))
-                    }
-                }
+                val jsMain by getting
                 val jsTest by getting {
                     dependencies {
                         implementation(kotlin("test-js"))
@@ -86,29 +70,11 @@ open class ScientifikMPPlugin : Plugin<Project> {
 
             pluginManager.withPlugin("org.jetbrains.dokka") {
                 logger.info("Adding dokka functionality to project ${this@run.name}")
-                val dokka by tasks.getting(DokkaTask::class) {
-                    outputFormat = "html"
-                    outputDirectory = "$buildDir/javadoc"
-                    multiplatform {
 
-                    }
-                }
-
-                val kdocJar by tasks.registering(Jar::class) {
-                    group = JavaBasePlugin.DOCUMENTATION_GROUP
-                    dependsOn(dokka)
-                    archiveClassifier.set("javadoc")
-                    from("$buildDir/javadoc")
-                }
-
-                pluginManager.withPlugin("maven-publish") {
-                    configure<PublishingExtension> {
-
-                        targets.all {
-                            val publication = publications.findByName(name) as MavenPublication
-
-                            // Patch publications with fake javadoc
-                            publication.artifact(kdocJar.get())
+                val dokkaHtml by tasks.getting(DokkaTask::class) {
+                    dokkaSourceSets {
+                        configureEach {
+                            jdkVersion = 11
                         }
                     }
                 }
@@ -125,14 +91,13 @@ open class ScientifikMPPlugin : Plugin<Project> {
                 val jvmProcessResources by getting(Copy::class)
                 jvmProcessResources.copyJVMResources(configurations["jvmRuntimeClasspath"])
 
-                val jsBrowserDistribution by getting {
+                findByName("jsBrowserDistribution")?.apply {
                     doLast {
                         val indexFile = project.jsDistDirectory.resolve("index.html")
                         if (indexFile.exists()) {
                             println("Run JS distribution at: ${indexFile.canonicalPath}")
                         }
                     }
-                    group = "distribution"
                 }
             }
 

@@ -1,4 +1,4 @@
-package scientifik
+package ru.mipt.npm.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -9,14 +9,16 @@ import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 
-open class ScientifikJSPlugin : Plugin<Project> {
+open class KScienceJSPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.js")
+        val extension = extensions.add("kscience", KScienceExtension(this))
 
         repositories.applyRepos()
 
         configure<KotlinJsProjectExtension> {
-            target {
+            explicitApiWarning()
+            js(IR) {
                 browser {
                     webpackTask {
                         outputFileName = "main.bundle.js"
@@ -47,18 +49,14 @@ open class ScientifikJSPlugin : Plugin<Project> {
             val processResources by getting(Copy::class)
             processResources.copyJSResources(configurations["runtimeClasspath"])
 
-            val browserDistribution by getting {
+            findByName("jsBrowserDistribution")?.apply {
                 doLast {
                     val indexFile = project.jsDistDirectory.resolve("index.html")
                     if (indexFile.exists()) {
                         println("Run JS distribution at: ${indexFile.canonicalPath}")
                     }
                 }
-                group = "distribution"
             }
-
-//                findByName("assemble")?.dependsOn(installJsDist)
-
         }
     }
 

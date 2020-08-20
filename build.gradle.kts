@@ -7,8 +7,8 @@ plugins {
     id("org.jetbrains.changelog") version "0.3.2"
 }
 
-group = "scientifik"
-version = "0.5.2"
+group = "ru.mipt.npm"
+version = "0.6.0"
 
 repositories {
     gradlePluginPortal()
@@ -17,7 +17,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
-val kotlinVersion = "1.3.72"
+val kotlinVersion = "1.4.0"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -27,34 +27,47 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.3")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:0.10.1")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.4")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.0-rc")
+    implementation("org.jetbrains.dokka:dokka-core:1.4.0-rc")
 }
 
 gradlePlugin {
     plugins {
-        create("scientifik-publish") {
-            id = "scientifik.publish"
+        create("kscience-publish") {
+            id = "kscience.publish"
             description = "The publication plugin for bintray and github"
-            implementationClass = "scientifik.ScientifikPublishPlugin"
+            implementationClass = "ru.mipt.npm.gradle.KSciencePublishPlugin"
         }
 
-        create("scientifik-mpp") {
-            id = "scientifik.mpp"
+        create("kscience.mpp") {
+            id = "kscience.mpp"
             description = "Pre-configured multiplatform project"
-            implementationClass = "scientifik.ScientifikMPPlugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceMPPlugin"
         }
 
-        create("scientifik-jvm") {
-            id = "scientifik.jvm"
+        create("kscience.jvm") {
+            id = "kscience.jvm"
             description = "Pre-configured JVM project"
-            implementationClass = "scientifik.ScientifikJVMPlugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceJVMPlugin"
         }
 
-        create("scientifik-js") {
-            id = "scientifik.js"
+        create("kscience.js") {
+            id = "kscience.js"
             description = "Pre-configured JS project"
-            implementationClass = "scientifik.ScientifikJSPlugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceJSPlugin"
+        }
+
+        create("kscience.native") {
+            id = "kscience.native"
+            description = "Additional native targets to be use alongside mpp"
+            implementationClass = "ru.mipt.npm.gradle.KScienceNativePlugin"
+        }
+
+        create("kscience.node") {
+            id = "kscience.node"
+            description = "NodeJS target for kotlin-mpp and kotlin-js"
+            implementationClass = "ru.mipt.npm.gradle.KScienceNodePlugin"
         }
     }
 }
@@ -106,7 +119,7 @@ publishing {
         // this is a problem of this plugin
         pkg.apply {
             userOrg = "mipt-npm"
-            repo = if (project.version.toString().contains("dev")) "dev" else "scientifik"
+            repo = if (project.version.toString().contains("dev")) "dev" else "kscience"
             name = project.name
             issueTrackerUrl = "$vcs/issues"
             setLicenses("Apache-2.0")

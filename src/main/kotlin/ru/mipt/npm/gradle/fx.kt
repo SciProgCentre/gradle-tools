@@ -1,4 +1,4 @@
-package scientifik
+package ru.mipt.npm.gradle
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
