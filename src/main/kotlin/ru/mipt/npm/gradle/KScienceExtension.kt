@@ -32,8 +32,13 @@ class KScienceExtension(val project: Project) {
         block: SerializationTargets.() -> Unit = {}
     ): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.plugin.serialization")
+        val artifactName = if(version.startsWith("0")){
+            "kotlinx-serialization-runtime"
+        } else {
+            "kotlinx-serialization-core"
+        }
         useCommonDependency(
-            "org.jetbrains.kotlinx:kotlinx-serialization-core:$version",
+            "org.jetbrains.kotlinx:$artifactName:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )

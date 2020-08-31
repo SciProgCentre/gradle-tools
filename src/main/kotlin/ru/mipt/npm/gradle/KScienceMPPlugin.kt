@@ -22,7 +22,7 @@ open class KScienceMPPlugin : Plugin<Project> {
             jvm {
                 compilations.all {
                     kotlinOptions {
-                        useIR = true
+//                        useIR = true
                         jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     }
                 }
@@ -62,9 +62,11 @@ open class KScienceMPPlugin : Plugin<Project> {
                 }
             }
 
-            targets.all {
-                sourceSets.all {
-                    languageSettings.applySettings()
+            afterEvaluate {
+                targets.all {
+                    sourceSets.all {
+                        languageSettings.applySettings()
+                    }
                 }
             }
 
@@ -73,6 +75,18 @@ open class KScienceMPPlugin : Plugin<Project> {
 
                 val dokkaHtml by tasks.getting(DokkaTask::class) {
                     dokkaSourceSets {
+                        register("commonMain") {
+                            displayName = "common"
+                            platform = "common"
+                        }
+                        register("jvmMain") {
+                            displayName = "jvm"
+                            platform = "jvm"
+                        }
+                        register("jsMain") {
+                            displayName = "js"
+                            platform = "js"
+                        }
                         configureEach {
                             jdkVersion = 11
                         }

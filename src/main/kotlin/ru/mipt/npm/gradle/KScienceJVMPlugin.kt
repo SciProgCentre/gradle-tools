@@ -26,7 +26,7 @@ open class KScienceJVMPlugin : Plugin<Project> {
 
         tasks.withType<KotlinCompile> {
             kotlinOptions {
-                useIR = true
+//                useIR = true
                 jvmTarget = KScienceVersions.JVM_TARGET.toString()
             }
         }

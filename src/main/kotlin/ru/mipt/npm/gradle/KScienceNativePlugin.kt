@@ -3,9 +3,7 @@ package ru.mipt.npm.gradle
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.findPlugin
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KScienceNativePlugin : Plugin<Project> {
@@ -23,11 +21,11 @@ class KScienceNativePlugin : Plugin<Project> {
                 isMingwX64 -> mingwX64("native")
                 else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
             }
-//
-//                sourceSets  {
-//                    val nativeMain by getting
-//                    val nativeTest by getting
-//                }
+
+            sourceSets.invoke {
+                val nativeMain by getting
+                val nativeTest by getting
+            }
         }
     }
 }

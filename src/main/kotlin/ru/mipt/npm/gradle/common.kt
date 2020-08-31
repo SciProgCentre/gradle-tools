@@ -16,6 +16,7 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
     useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
     useExperimentalAnnotation("kotlin.time.ExperimentalTime")
+    useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
 }
 
 internal fun RepositoryHandler.applyRepos(): Unit {

@@ -4,7 +4,7 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     id("com.jfrog.bintray") version "1.8.5"
-    id("org.jetbrains.changelog") version "0.3.2"
+    id("org.jetbrains.changelog") version "0.4.0"
 }
 
 group = "ru.mipt.npm"
