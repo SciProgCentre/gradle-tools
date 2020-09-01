@@ -1,10 +1,10 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.extra
-import org.gradle.kotlin.dsl.findPlugin
-import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 
 class KScienceExtension(val project: Project) {
 
@@ -32,7 +32,7 @@ class KScienceExtension(val project: Project) {
         block: SerializationTargets.() -> Unit = {}
     ): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.plugin.serialization")
-        val artifactName = if(version.startsWith("0")){
+        val artifactName = if (version.startsWith("0")) {
             "kotlinx-serialization-runtime"
         } else {
             "kotlinx-serialization-core"
@@ -43,6 +43,25 @@ class KScienceExtension(val project: Project) {
             dependencyConfiguration = configuration
         )
         SerializationTargets(sourceSet, configuration).apply(block)
+    }
+
+    /**
+     * Mark this module as an application module. JVM application should be enabled separately
+     */
+    fun application() {
+        project.extensions.configure<KotlinProjectExtension> {
+            explicitApi = null
+        }
+        project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
+            js {
+                binaries.executable()
+            }
+        }
+        project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+            js{
+                binaries.executable()
+            }
+        }
     }
 
     /**
