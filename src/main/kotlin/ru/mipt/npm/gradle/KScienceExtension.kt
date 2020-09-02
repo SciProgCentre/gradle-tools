@@ -49,7 +49,7 @@ class KScienceExtension(val project: Project) {
      * Mark this module as an application module. JVM application should be enabled separately
      */
     fun application() {
-        project.extensions.configure<KotlinProjectExtension> {
+        project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
         }
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
