@@ -70,29 +70,29 @@ open class KScienceMPPlugin : Plugin<Project> {
                 }
             }
 
-            pluginManager.withPlugin("org.jetbrains.dokka") {
-                logger.info("Adding dokka functionality to project ${this@run.name}")
-
-                val dokkaHtml by tasks.getting(DokkaTask::class) {
-                    dokkaSourceSets {
-                        register("commonMain") {
-                            displayName = "common"
-                            platform = "common"
-                        }
-                        register("jvmMain") {
-                            displayName = "jvm"
-                            platform = "jvm"
-                        }
-                        register("jsMain") {
-                            displayName = "js"
-                            platform = "js"
-                        }
-                        configureEach {
-                            jdkVersion = 11
-                        }
-                    }
-                }
-            }
+//            pluginManager.withPlugin("org.jetbrains.dokka") {
+//                logger.info("Adding dokka functionality to project ${this@run.name}")
+//
+//                val dokkaHtml by tasks.getting(DokkaTask::class) {
+//                    dokkaSourceSets {
+//                        register("commonMain") {
+//                            displayName = "common"
+//                            platform = "common"
+//                        }
+//                        register("jvmMain") {
+//                            displayName = "jvm"
+//                            platform = "jvm"
+//                        }
+//                        register("jsMain") {
+//                            displayName = "js"
+//                            platform = "js"
+//                        }
+//                        configureEach {
+//                            jdkVersion = 11
+//                        }
+//                    }
+//                }
+//            }
 
             tasks.apply {
                 withType<Test>() {

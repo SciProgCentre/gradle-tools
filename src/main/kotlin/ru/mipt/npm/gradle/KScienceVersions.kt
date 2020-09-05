@@ -13,7 +13,7 @@ object KScienceVersions {
     val JVM_TARGET = JavaVersion.VERSION_11
 
     object Serialization{
-        const val xmlVersion = "0.20.0.10"//to be fixed
+        const val xmlVersion = "0.80.0-RC"//to be fixed
         const val yamlVersion = "0.16.1"
         const val bsonVersion = "0.2.1"
     }

@@ -61,17 +61,17 @@ open class KScienceJVMPlugin : Plugin<Project> {
                     }
                 }
 
-                pluginManager.withPlugin("org.jetbrains.dokka") {
-                    logger.info("Adding dokka functionality to project ${project.name}")
+//                pluginManager.withPlugin("org.jetbrains.dokka") {
+//                    logger.info("Adding dokka functionality to project ${project.name}")
 
-                    val dokkaHtml by tasks.getting(DokkaTask::class){
-                        dokkaSourceSets {
-                            configureEach {
-                                jdkVersion = 11
-                            }
-                        }
-                    }
-                }
+//                    val dokkaHtml by tasks.getting(DokkaTask::class){
+//                        dokkaSourceSets {
+//                            configureEach {
+//                                jdkVersion.set(11)
+//                            }
+//                        }
+//                    }
+//                }
             }
         }
 

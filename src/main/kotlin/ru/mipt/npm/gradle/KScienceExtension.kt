@@ -45,6 +45,23 @@ class KScienceExtension(val project: Project) {
         SerializationTargets(sourceSet, configuration).apply(block)
     }
 
+    fun useAtomic(
+        version: String = KScienceVersions.atomicVersion,
+        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
+        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+    ): Unit = project.run {
+        plugins.apply("kotlinx-atomicfu")
+        useCommonDependency(
+            "org.jetbrains.kotlinx:atomicfu-common:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
+        )
+    }
+
+    fun useDokka(): Unit = project.run {
+        plugins.apply("org.jetbrains.dokka")
+    }
+
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
@@ -52,13 +69,16 @@ class KScienceExtension(val project: Project) {
         project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
         }
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm"){
+            project.plugins.apply("org.gradle.application")
+        }
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
             js {
                 binaries.executable()
             }
         }
         project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            js{
+            js {
                 binaries.executable()
             }
         }
@@ -67,7 +87,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Activate publishing and configure it
      */
-    fun publishing(block: Publishing.() -> Unit) = Publishing().apply(block)
+    fun publish(block: Publishing.() -> Unit = {}) = Publishing().apply(block)
 
     inner class Publishing {
         init {
