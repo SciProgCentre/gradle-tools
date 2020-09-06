@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate to kotlin 1.4.0
 - Separate Native (current platform) and nodeJs plugins
 
+### Changed
+- Serialization default configuration changed to implementation
+
+
 ## [0.5.2]
 
 ### Added

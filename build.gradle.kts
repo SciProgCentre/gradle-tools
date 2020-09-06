@@ -1,5 +1,3 @@
-import java.util.*
-
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
@@ -8,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.0-dev-3"
+version = "0.6.0-dev-4"
 
 repositories {
     gradlePluginPortal()
@@ -138,34 +136,5 @@ publishing {
     }
 
 }
-//    bintray {
-//        user = project.findProperty("bintrayUser") as? String ?: System.getenv("BINTRAY_USER")
-//        key = project.findProperty("bintrayApiKey") as? String? ?: System.getenv("BINTRAY_API_KEY")
-//        publish = true
-//        override = true // for multi-platform Kotlin/Native publishing
-//
-//        // We have to use delegateClosureOf because bintray supports only dynamic groovy syntax
-//        // this is a problem of this plugin
-//        pkg.apply {
-//            userOrg = "mipt-npm"
-//            repo = if (project.version.toString().contains("dev")) "dev" else "kscience"
-//            name = project.name
-//            issueTrackerUrl = "$vcs/issues"
-//            setLicenses("Apache-2.0")
-//            vcsUrl = vcs
-//            version.apply {
-//                name = project.version.toString()
-//                vcsTag = project.version.toString()
-//                released = Date().toString()
-//            }
-//        }
-//
-//        //workaround bintray bug
-//        project.afterEvaluate {
-//            setPublications(*project.extensions.findByType<PublishingExtension>()!!.publications.names.toTypedArray())
-//        }
-//
-//    }
-//}
 
 
