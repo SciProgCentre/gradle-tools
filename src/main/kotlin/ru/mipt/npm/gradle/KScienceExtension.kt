@@ -28,7 +28,7 @@ class KScienceExtension(val project: Project) {
     fun useSerialization(
         version: String = KScienceVersions.serializationVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION,
+        configuration: DependencyConfiguration = DependencyConfiguration.API,
         block: SerializationTargets.() -> Unit = {}
     ): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.plugin.serialization")

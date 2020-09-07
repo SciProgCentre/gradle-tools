@@ -10,13 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Migrate to kotlin 1.4.0
 - Separate Native (current platform) and nodeJs plugins
+- Add `application()` toggle in plugin configuration to produce binaries on JS and applicaion plugin on jvm.
+- Add `publish` to expose publishing configuration
 
 ### Changed
-- Serialization default configuration changed to implementation
-
 
 ## [0.5.2]
 
 ### Added
-
 - Copy resources for jvm modules and jvm source sets in mpp

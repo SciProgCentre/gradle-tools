@@ -115,7 +115,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
                         maven {
                             name = "bintray"
                             url = uri(
-                                "https://api.bintray.com/maven/$bintrayOrg/$bintrayRepo/$projectName/;publish=0;override=1"
+                                "https://api.bintray.com/maven/$bintrayOrg/$bintrayRepo/$projectName/;publish=1;override=1"
                             )
                             credentials {
                                 username = bintrayUser

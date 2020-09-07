@@ -27,7 +27,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.0")
-    implementation("org.jetbrains.dokka:dokka-core:1.4.0")
+    implementation("org.jetbrains.dokka:dokka-base:1.4.0")
 }
 
 gradlePlugin {
