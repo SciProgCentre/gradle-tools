@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.20-dev-3898-14"
+val kotlinVersion = "1.4.0"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
