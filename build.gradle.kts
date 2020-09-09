@@ -6,16 +6,17 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.0-dev-4"
+version = "0.6.0-dev-5"
 
 repositories {
     gradlePluginPortal()
     jcenter()
     maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.0"
+val kotlinVersion = "1.4.20-dev-3898-14"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8

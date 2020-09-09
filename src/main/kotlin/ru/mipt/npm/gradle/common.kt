@@ -23,6 +23,7 @@ internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
     jcenter()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
+    maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://kotlin.bintray.com/kotlinx")
     maven("https://kotlin.bintray.com/kotlin-js-wrappers/")
     maven("https://dl.bintray.com/mipt-npm/kscience")

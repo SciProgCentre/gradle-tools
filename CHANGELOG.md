@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `publish` to expose publishing configuration
 
 ### Changed
+-Publishing in bintray now is automatic
 
 ## [0.5.2]
 
