@@ -21,13 +21,18 @@ class KScienceNativePlugin : Plugin<Project> {
             val nativeTarget = when {
                 hostOs == "Mac OS X" -> macosX64("native")
                 hostOs == "Linux" -> linuxX64("native")
-                isMingwX64 -> mingwX64("native")
+                isMingwX64 -> {
+                    mingwX64("native")
+                    linuxX64()
+                }
                 else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
             }
 
             sourceSets.invoke {
                 val nativeMain by getting
+                findByName("linuxX64Main")?.dependsOn(nativeMain)
                 val nativeTest by getting
+                findByName("linuxX64Test")?.dependsOn(nativeTest)
             }
         }
     }
