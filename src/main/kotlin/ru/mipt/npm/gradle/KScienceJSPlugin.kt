@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 open class KScienceJSPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.js")
-        val extension = extensions.add("kscience", KScienceExtension(this))
+        extensions.add("kscience", KScienceExtension(this))
 
         repositories.applyRepos()
 

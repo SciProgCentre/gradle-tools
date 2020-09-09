@@ -11,11 +11,13 @@ import org.gradle.kotlin.dsl.withType
 
 open class KSciencePublishPlugin : Plugin<Project> {
 
-    override fun apply(project: Project) {
+    override fun apply(project: Project): Unit = project.run{
 
-        project.plugins.apply("maven-publish")
+        plugins.apply("maven-publish")
 
-        project.afterEvaluate {
+        registerKScienceExtension()
+
+        afterEvaluate {
             val githubOrg: String = project.findProperty("githubOrg") as? String ?: "mipt-npm"
             val githubProject: String? by project
             val vcs = findProperty("vcs") as? String

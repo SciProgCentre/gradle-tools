@@ -5,14 +5,13 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
 
         plugins.apply("org.jetbrains.kotlin.multiplatform")
-        val extension = extensions.add("kscience", KScienceExtension(this))
+        extensions.add("kscience", KScienceExtension(this))
 
         repositories.applyRepos()
 

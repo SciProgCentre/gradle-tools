@@ -9,14 +9,13 @@ import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 open class KScienceJVMPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.jvm")
-        val extension = extensions.add("kscience", KScienceExtension(this))
+        registerKScienceExtension()
 
         repositories.applyRepos()
 

@@ -5,6 +5,7 @@ import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 class KScienceExtension(val project: Project) {
 
@@ -69,7 +70,7 @@ class KScienceExtension(val project: Project) {
         project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
         }
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm"){
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             project.plugins.apply("org.gradle.application")
         }
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
@@ -81,7 +82,11 @@ class KScienceExtension(val project: Project) {
             js {
                 binaries.executable()
             }
+            (targets.findByName("native") as? KotlinNativeTarget)?.apply {
+                binaries.executable()
+            }
         }
+
     }
 
     /**
@@ -105,5 +110,11 @@ class KScienceExtension(val project: Project) {
         var bintrayUser: String? by project.extra
         var bintrayApiKey: String? by project.extra
         var bintrayRepo: String? by project.extra
+    }
+}
+
+internal fun Project.registerKScienceExtension() {
+    if (extensions.findByType<KScienceExtension>() == null) {
+        extensions.add("kscience", KScienceExtension(this))
     }
 }

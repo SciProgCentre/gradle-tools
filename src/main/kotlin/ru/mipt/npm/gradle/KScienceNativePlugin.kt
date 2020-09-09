@@ -8,9 +8,12 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KScienceNativePlugin : Plugin<Project> {
     override fun apply(target: Project) = target.run {
+        //Apply multiplatform plugin is not applied, apply it
         if (plugins.findPlugin(KScienceMPPlugin::class) == null) {
+            logger.info("Multiplatform KScience plugin is not resolved. Adding it automatically")
             pluginManager.apply(KScienceMPPlugin::class)
         }
+
         configure<KotlinMultiplatformExtension> {
             val hostOs = System.getProperty("os.name")
             val isMingwX64 = hostOs.startsWith("Windows")
