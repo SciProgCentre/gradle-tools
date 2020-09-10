@@ -14,7 +14,7 @@ object KScienceVersions {
 
     object Serialization{
         const val xmlVersion = "0.80.0-RC"//to be fixed
-        const val yamlVersion = "0.16.1"
-        const val bsonVersion = "0.2.1"
+        const val yamlVersion = "0.21.0"
+        const val bsonVersion = "0.4.1-rc"
     }
 }

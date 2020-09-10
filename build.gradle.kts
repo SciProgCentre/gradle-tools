@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.0"
+val kotlinVersion = "1.4.10"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -33,6 +33,11 @@ dependencies {
 
 gradlePlugin {
     plugins {
+        create("kscience.base"){
+            id = "ru.mipt.npm.bas"
+            description = "The basic plugin that does not do anything but loading classpath, versions and extensions"
+            implementationClass = "ru.mipt.npm.gradle.KScienceBasePlugin"
+        }
         create("kscience.publish") {
             id = "ru.mipt.npm.publish"
             description = "The publication plugin for bintray and github"

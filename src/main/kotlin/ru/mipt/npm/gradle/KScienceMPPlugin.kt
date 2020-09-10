@@ -9,10 +9,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
-
         plugins.apply("org.jetbrains.kotlin.multiplatform")
-        extensions.add("kscience", KScienceExtension(this))
-
+        registerKScienceExtension()
         repositories.applyRepos()
 
         configure<KotlinMultiplatformExtension> {
