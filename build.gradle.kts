@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.0-dev-6"
+version = "0.6.0"
 
 repositories {
     gradlePluginPortal()
@@ -34,7 +34,7 @@ dependencies {
 gradlePlugin {
     plugins {
         create("kscience.base"){
-            id = "ru.mipt.npm.bas"
+            id = "ru.mipt.npm.base"
             description = "The basic plugin that does not do anything but loading classpath, versions and extensions"
             implementationClass = "ru.mipt.npm.gradle.KScienceBasePlugin"
         }
@@ -77,10 +77,6 @@ gradlePlugin {
 }
 
 publishing {
-    repositories {
-        maven("https://bintray.com/mipt-npm/kscience")
-    }
-
     val vcs = "https://github.com/mipt-npm/scientifik-gradle-tools"
 
     // Process each publication we have in this project
@@ -116,21 +112,14 @@ publishing {
 
     val bintrayUser: String? by project
     val bintrayApiKey: String? by project
-
-    val bintrayRepo = if (project.version.toString().contains("dev")) {
-        "dev"
-    } else {
-        findProperty("bintrayRepo") as? String
-    }
-
     val projectName = project.name
 
-    if (bintrayRepo != null && bintrayUser != null && bintrayApiKey != null) {
+    if (bintrayUser != null && bintrayApiKey != null) {
         repositories {
             maven {
                 name = "bintray"
                 url = uri(
-                    "https://api.bintray.com/maven/mipt-npm/$bintrayRepo/$projectName/;publish=1;override=1"
+                    "https://api.bintray.com/maven/mipt-npm/dev/$projectName/;publish=1;override=1"
                 )
                 credentials {
                     username = bintrayUser

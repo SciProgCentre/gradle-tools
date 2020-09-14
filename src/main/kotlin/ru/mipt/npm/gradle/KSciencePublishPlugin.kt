@@ -71,7 +71,6 @@ open class KSciencePublishPlugin : Plugin<Project> {
                                 username = githubUser
                                 password = githubToken
                             }
-
                         }
                     }
                 }
