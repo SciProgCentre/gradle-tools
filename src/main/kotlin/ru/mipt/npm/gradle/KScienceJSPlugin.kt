@@ -19,14 +19,8 @@ open class KScienceJSPlugin : Plugin<Project> {
         configure<KotlinJsProjectExtension> {
             explicitApiWarning()
             js(IR) {
-                browser {
-                    webpackTask {
-                        outputFileName = "main.bundle.js"
-                    }
-                    distribution {
-                        directory = project.jsDistDirectory
-                    }
-                }
+                browser()
+                nodejs()
             }
             sourceSets["main"].apply {
                 languageSettings.applySettings()

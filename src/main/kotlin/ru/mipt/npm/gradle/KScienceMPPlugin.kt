@@ -26,14 +26,8 @@ open class KScienceMPPlugin : Plugin<Project> {
             }
 
             js(IR) {
-                browser {
-                    webpackTask {
-                        outputFileName = "main.bundle.js"
-                    }
-                    distribution {
-                        directory = project.jsDistDirectory
-                    }
-                }
+                browser()
+                nodejs()
             }
 
             sourceSets.invoke {
@@ -92,7 +86,7 @@ open class KScienceMPPlugin : Plugin<Project> {
 //            }
 
             tasks.apply {
-                withType<Test>() {
+                withType<Test> {
                     useJUnitPlatform()
                 }
 

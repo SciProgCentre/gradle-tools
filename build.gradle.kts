@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.0"
+version = "0.6.1"
 
 repositories {
     gradlePluginPortal()
@@ -29,13 +29,14 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.4")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.0")
     implementation("org.jetbrains.dokka:dokka-base:1.4.0")
+    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.5.0")
 }
 
 gradlePlugin {
     plugins {
-        create("kscience.base"){
-            id = "ru.mipt.npm.base"
-            description = "The basic plugin that does not do anything but loading classpath, versions and extensions"
+        create("kscience.project"){
+            id = "ru.mipt.npm.project"
+            description = "The root plugin for multimodule project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceBasePlugin"
         }
         create("kscience.publish") {
@@ -66,12 +67,6 @@ gradlePlugin {
             id = "ru.mipt.npm.native"
             description = "Additional native targets to be use alongside mpp"
             implementationClass = "ru.mipt.npm.gradle.KScienceNativePlugin"
-        }
-
-        create("kscience.node") {
-            id = "ru.mipt.npm.node"
-            description = "NodeJS target for kotlin-mpp and kotlin-js"
-            implementationClass = "ru.mipt.npm.gradle.KScienceNodePlugin"
         }
     }
 }

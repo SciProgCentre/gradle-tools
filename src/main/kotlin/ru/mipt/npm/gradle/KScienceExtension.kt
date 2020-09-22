@@ -1,7 +1,7 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
@@ -87,29 +87,6 @@ class KScienceExtension(val project: Project) {
             }
         }
 
-    }
-
-    /**
-     * Activate publishing and configure it
-     */
-    fun publish(block: Publishing.() -> Unit = {}) = Publishing().apply(block)
-
-    inner class Publishing {
-        init {
-            if (project.plugins.findPlugin(KSciencePublishPlugin::class) == null) {
-                project.plugins.apply(KSciencePublishPlugin::class)
-            }
-        }
-
-        var githubOrg: String? by project.extra
-        var githubProject: String? by project.extra
-        var spaceRepo: String? by project.extra
-        var spaceUser: String? by project.extra
-        var spaceToken: String? by project.extra
-        var bintrayOrg: String? by project.extra
-        var bintrayUser: String? by project.extra
-        var bintrayApiKey: String? by project.extra
-        var bintrayRepo: String? by project.extra
     }
 }
 
