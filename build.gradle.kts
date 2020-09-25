@@ -2,7 +2,7 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    id("org.jetbrains.changelog") version "0.4.0"
+    id("org.jetbrains.changelog") version "0.5.0"
 }
 
 group = "ru.mipt.npm"
@@ -37,7 +37,7 @@ gradlePlugin {
         create("kscience.project"){
             id = "ru.mipt.npm.project"
             description = "The root plugin for multimodule project infrastructure"
-            implementationClass = "ru.mipt.npm.gradle.KScienceBasePlugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
         }
         create("kscience.publish") {
             id = "ru.mipt.npm.publish"

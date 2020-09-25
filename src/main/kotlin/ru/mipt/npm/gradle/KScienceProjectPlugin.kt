@@ -8,8 +8,10 @@ import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.changelog.ChangelogPlugin
+import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.reflect.KFunction
 
 class KSciencePublishingExtension(val project: Project) {
     var githubOrg: String? by project.extra
@@ -23,16 +25,52 @@ class KSciencePublishingExtension(val project: Project) {
     var bintrayRepo: String? by project.extra
 }
 
+enum class Maturity {
+    PROTOTYPE,
+    EXPERIMENTAL,
+    DEVELOPMENT,
+    PRODUCTION
+}
+
 class KScienceReadmeExtension(val project: Project) {
-    val properties = HashMap<String, String>()
-    var readmeStubPath: String = "docs/README-STUB.md"
-    val features = ArrayList<Feature>()
+    var description: String = ""
+    var maturity: Maturity = Maturity.EXPERIMENTAL
+
+    var readmeTemplate: File = project.file("docs/README-TEMPLATE.md")//"docs/README-TEMPLATE.md"
 
     data class Feature(val id: String, val ref: String, val description: String, val name: String = id)
 
+    val features = ArrayList<Feature>()
 
     fun feature(id: String, ref: String, description: String, name: String = id) {
         features.add(Feature(id, ref, description, name))
+    }
+
+    val properties: MutableMap<String, Any?> = mutableMapOf(
+        "name" to project.name,
+        "group" to project.group,
+        "version" to project.version,
+        "features" to featuresString()
+    )
+
+    private val actualizedProperties get() = properties.mapValues {(_,value)->
+        if(value is KFunction<*>){
+            value.call()
+        } else {
+            value
+        }
+    }
+
+    fun property(key: String, value: Any?) {
+        properties[key] = value
+    }
+
+    fun propertyByTemplate(key: String, template: String){
+        properties[key] = SimpleTemplateEngine().createTemplate(template).make(actualizedProperties).toString()
+    }
+
+    fun propertyByTemplate(key: String, template: File){
+        properties[key] = SimpleTemplateEngine().createTemplate(template).make(actualizedProperties).toString()
     }
 
     /**
@@ -48,18 +86,8 @@ class KScienceReadmeExtension(val project: Project) {
      * Generate a readme string from the stub
      */
     fun readmeString(): String? {
-        val readmeStubFile = project.file(readmeStubPath)
-        return if (readmeStubFile.exists()) {
-            buildString {
-
-                val readmeProperties: Map<String, Any?> = (properties + mapOf(
-                    "name" to project.name,
-                    "group" to project.group,
-                    "version" to project.version,
-                    "features" to featuresString()
-                )).withDefault { null }
-                SimpleTemplateEngine().createTemplate(readmeStubFile).make(properties).toString()
-            }
+        return if (readmeTemplate.exists()) {
+            SimpleTemplateEngine().createTemplate(readmeTemplate).make(actualizedProperties).toString()
         } else {
             null
         }
@@ -74,19 +102,19 @@ open class KScienceProjectPlugin : Plugin<Project> {
         apply<ChangelogPlugin>()
         val rootReadmeExtension = KScienceReadmeExtension(this)
         extensions.add("ksciencePublish", KSciencePublishingExtension(this))
-        extensions.add("kscienceReadme", rootReadmeExtension)
+        extensions.add("readme", rootReadmeExtension)
 
         //Add readme generators to individual subprojects
         subprojects {
             val readmeExtension = KScienceReadmeExtension(this)
-            extensions.add("kscienceReadme", readmeExtension)
+            extensions.add("readme", readmeExtension)
             tasks.create("generateReadme") {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
                 doLast {
                     val readmeString = readmeExtension.readmeString()
                     if (readmeString != null) {
-                        val readmeFile = file("README.md")
+                        val readmeFile = this@subprojects.file("README.md")
                         readmeFile.writeText(readmeString)
                     }
                 }
@@ -103,27 +131,30 @@ open class KScienceProjectPlugin : Plugin<Project> {
                     it.name to it.extensions.findByType<KScienceReadmeExtension>()
                 }
 
-
-                val rootReadmeStub = project.file(rootReadmeExtension.readmeStubPath)
-                if (rootReadmeStub.exists()) {
+                if (rootReadmeExtension.readmeTemplate.exists()) {
 
                     val modulesString = buildString {
-                        projects.entries.filter { !it.value?.features.isNullOrEmpty() }.forEach { (name, ext) ->
+                        projects.entries.forEach { (name, ext) ->
                             appendln("### [$name]($name)")
-                            appendln(ext!!.featuresString(pathPrefix = "$name/"))
+                            if (ext != null) {
+                                appendln(ext.description)
+                                appendln("**Maturity**: ${ext.maturity}")
+                                appendln("#### Features:")
+                                appendln(ext.featuresString(pathPrefix = "$name/"))
+                            }
                         }
                     }
 
-                    val rootReadmeProperties: Map<String, Any> = mapOf(
+                    val rootReadmeProperties: Map<String, Any?> = mapOf(
                         "name" to project.name,
                         "group" to project.group,
                         "version" to project.version,
-                        "modulesString" to modulesString
+                        "modules" to modulesString
                     )
 
                     val readmeFile = project.file("README.md")
                     readmeFile.writeText(
-                        SimpleTemplateEngine().createTemplate(rootReadmeStub).make(rootReadmeProperties).toString()
+                        SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate).make(rootReadmeProperties).toString()
                     )
                 }
 
