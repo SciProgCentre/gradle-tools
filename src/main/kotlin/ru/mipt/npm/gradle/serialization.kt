@@ -8,6 +8,17 @@ class SerializationTargets(
     val sourceSet: DependencySourceSet,
     val configuration: DependencyConfiguration
 ) {
+
+    fun Project.json(
+        version: String = KScienceVersions.serializationVersion
+    ) {
+        useCommonDependency(
+            "org.jetbrains.kotlinx:kotlinx-serialization-json:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
+        )
+    }
+
     fun Project.cbor(
         version: String = KScienceVersions.serializationVersion
     ) {
