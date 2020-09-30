@@ -30,6 +30,7 @@ dependencies {
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.10")
     implementation("org.jetbrains.dokka:dokka-base:1.4.10")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.5.0")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
 }
 
 gradlePlugin {
@@ -67,6 +68,12 @@ gradlePlugin {
             id = "ru.mipt.npm.native"
             description = "Additional native targets to be use alongside mpp"
             implementationClass = "ru.mipt.npm.gradle.KScienceNativePlugin"
+        }
+
+        create("kscience.node") {
+            id = "ru.mipt.npm.node"
+            description = "Additional nodejs target to be use alongside mpp"
+            implementationClass = "ru.mipt.npm.gradle.KScienceNodePlugin"
         }
     }
 }

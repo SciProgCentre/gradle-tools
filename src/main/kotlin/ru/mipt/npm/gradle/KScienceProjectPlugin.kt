@@ -1,6 +1,7 @@
 package ru.mipt.npm.gradle
 
 import groovy.text.SimpleTemplateEngine
+import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
@@ -101,6 +102,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
         apply<DokkaPlugin>()
+        apply<BinaryCompatibilityValidatorPlugin>()
+
         val rootReadmeExtension = KScienceReadmeExtension(this)
         extensions.add("ksciencePublish", KSciencePublishingExtension(this))
         extensions.add("readme", rootReadmeExtension)

@@ -18,10 +18,11 @@ open class KScienceJSPlugin : Plugin<Project> {
 
         configure<KotlinJsProjectExtension> {
             explicitApiWarning()
+
             js(IR) {
                 browser()
-                nodejs()
             }
+
             sourceSets["main"].apply {
                 languageSettings.applySettings()
 

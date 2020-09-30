@@ -27,7 +27,6 @@ open class KScienceMPPlugin : Plugin<Project> {
 
             js(IR) {
                 browser()
-                nodejs()
             }
 
             sourceSets.invoke {
