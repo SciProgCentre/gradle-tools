@@ -5,7 +5,6 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
@@ -78,9 +77,9 @@ open class KScienceJVMPlugin : Plugin<Project> {
             withType<Test>() {
                 useJUnitPlatform()
             }
-
-            val processResources by getting(Copy::class)
-            processResources.copyJVMResources(configurations["runtimeClasspath"])
+//
+//            val processResources by getting(Copy::class)
+//            processResources.copyJVMResources(configurations["runtimeClasspath"])
         }
     }
 

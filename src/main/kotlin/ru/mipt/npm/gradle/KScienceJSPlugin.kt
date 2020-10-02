@@ -40,17 +40,8 @@ open class KScienceJSPlugin : Plugin<Project> {
         }
 
         tasks.apply {
-
-            val processResources by getting(Copy::class)
-            processResources.copyJSResources(configurations["runtimeClasspath"])
-
-            findByName("jsBrowserDistribution")?.apply {
-                doLast {
-                    val indexFile = project.jsDistDirectory.resolve("index.html")
-                    if (indexFile.exists()) {
-                        println("Run JS distribution at: ${indexFile.canonicalPath}")
-                    }
-                }
+            val processResources by getting(Copy::class) {
+                fromDependencies("runtimeClasspath")
             }
         }
     }
