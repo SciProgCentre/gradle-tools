@@ -2,11 +2,11 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    id("org.jetbrains.changelog") version "0.5.0"
+    id("org.jetbrains.changelog") version "0.6.2"
 }
 
 group = "ru.mipt.npm"
-version = "0.6.3-dev-1.4.20-M1"
+version = "0.6.3-dev-1.4.20-M2"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.20-M1"
+val kotlinVersion = "1.4.20-M2"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
