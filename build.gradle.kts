@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.3-dev-1.4.20-M2"
+version = "0.6.4-dev-1.4.20-M2"
 
 repositories {
     gradlePluginPortal()

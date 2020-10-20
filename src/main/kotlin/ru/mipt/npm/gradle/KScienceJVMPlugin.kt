@@ -3,11 +3,11 @@ package ru.mipt.npm.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -20,6 +20,8 @@ open class KScienceJVMPlugin : Plugin<Project> {
 
         extensions.findByType<JavaPluginExtension>()?.apply {
             targetCompatibility = KScienceVersions.JVM_TARGET
+            withSourcesJar()
+            //withJavadocJar()
         }
 
         tasks.withType<KotlinCompile> {
@@ -41,35 +43,6 @@ open class KScienceJVMPlugin : Plugin<Project> {
                     implementation(kotlin("test-junit5"))
                     implementation("org.junit.jupiter:junit-jupiter:5.6.1")
                 }
-            }
-
-            val sourcesJar by tasks.registering(Jar::class) {
-                archiveClassifier.set("sources")
-                from(sourceSet.kotlin.srcDirs.first())
-            }
-
-            pluginManager.withPlugin("maven-publish") {
-
-                configure<PublishingExtension> {
-                    publications {
-                        register("jvm", MavenPublication::class) {
-                            from(components["java"])
-                            artifact(sourcesJar.get())
-                        }
-                    }
-                }
-
-//                pluginManager.withPlugin("org.jetbrains.dokka") {
-//                    logger.info("Adding dokka functionality to project ${project.name}")
-
-//                    val dokkaHtml by tasks.getting(DokkaTask::class){
-//                        dokkaSourceSets {
-//                            configureEach {
-//                                jdkVersion.set(11)
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
 
