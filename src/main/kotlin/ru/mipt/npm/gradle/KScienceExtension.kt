@@ -1,6 +1,7 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -70,14 +71,17 @@ class KScienceExtension(val project: Project) {
         project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
         }
+
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            project.plugins.apply("org.gradle.application")
+            project.plugins.apply(ApplicationPlugin::class.java)
         }
+
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
             js {
                 binaries.executable()
             }
         }
+
         project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
             js {
                 binaries.executable()
@@ -86,7 +90,6 @@ class KScienceExtension(val project: Project) {
                 binaries.executable()
             }
         }
-
     }
 }
 

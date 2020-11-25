@@ -1,9 +1,10 @@
 package ru.mipt.npm.gradle
 
-import kotlinx.atomicfu.plugin.gradle.sourceSets
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 enum class DependencyConfiguration {
@@ -23,7 +24,7 @@ internal fun Project.useDependency(
     dependencyConfiguration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
 ) {
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+        configure<KotlinMultiplatformExtension> {
             sourceSets {
                 pairs.forEach { (target, dep) ->
                     val name = target + dependencySourceSet.suffix
@@ -43,14 +44,16 @@ internal fun Project.useDependency(
 
     pairs.find { it.first == "jvm" }?.let { dep ->
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            sourceSets.findByName(dependencySourceSet.setName)?.apply {
-                dependencies.apply {
-                    val configurationName = when (dependencyConfiguration) {
-                        DependencyConfiguration.API -> apiConfigurationName
-                        DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+            configure<KotlinJvmProjectExtension> {
+                sourceSets.findByName(dependencySourceSet.setName)?.apply {
+                    dependencies.apply {
+                        val configurationName = when (dependencyConfiguration) {
+                            DependencyConfiguration.API -> apiConfigurationName
+                            DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                            DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                        }
+                        add(configurationName, dep.second)
                     }
-                    add(configurationName, dep.second)
                 }
             }
         }
@@ -58,14 +61,16 @@ internal fun Project.useDependency(
 
     pairs.find { it.first == "js" }?.let { dep ->
         pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            sourceSets.findByName(dependencySourceSet.setName)?.apply {
-                dependencies.apply {
-                    val configurationName = when (dependencyConfiguration) {
-                        DependencyConfiguration.API -> apiConfigurationName
-                        DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+            configure<KotlinJsProjectExtension> {
+                sourceSets.findByName(dependencySourceSet.setName)?.apply {
+                    dependencies.apply {
+                        val configurationName = when (dependencyConfiguration) {
+                            DependencyConfiguration.API -> apiConfigurationName
+                            DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                            DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                        }
+                        add(configurationName, dep.second)
                     }
-                    add(configurationName, dep.second)
                 }
             }
         }
@@ -76,9 +81,9 @@ internal fun Project.useCommonDependency(
     dep: String,
     dependencySourceSet: DependencySourceSet = DependencySourceSet.MAIN,
     dependencyConfiguration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
-): Unit = pluginManager.run{
-    withPlugin("org.jetbrains.kotlin.multiplatform"){
-        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+): Unit = pluginManager.run {
+    withPlugin("org.jetbrains.kotlin.multiplatform") {
+        configure<KotlinMultiplatformExtension> {
             sourceSets.findByName("common${dependencySourceSet.suffix}")?.apply {
                 dependencies {
                     when (dependencyConfiguration) {
@@ -90,27 +95,33 @@ internal fun Project.useCommonDependency(
             }
         }
     }
+
+
     withPlugin("org.jetbrains.kotlin.jvm") {
-        sourceSets.findByName(dependencySourceSet.setName)?.apply {
-            dependencies.apply {
-                val configurationName = when (dependencyConfiguration) {
-                    DependencyConfiguration.API -> apiConfigurationName
-                    DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                    DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+        configure<KotlinJvmProjectExtension> {
+            sourceSets.findByName(dependencySourceSet.setName)?.apply {
+                dependencies.apply {
+                    val configurationName = when (dependencyConfiguration) {
+                        DependencyConfiguration.API -> apiConfigurationName
+                        DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                    }
+                    add(configurationName, dep)
                 }
-                add(configurationName, dep)
             }
         }
     }
     withPlugin("org.jetbrains.kotlin.js") {
-        sourceSets.findByName(dependencySourceSet.setName)?.apply {
-            dependencies.apply {
-                val configurationName = when (dependencyConfiguration) {
-                    DependencyConfiguration.API -> apiConfigurationName
-                    DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                    DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+        configure<KotlinJsProjectExtension> {
+            sourceSets.findByName(dependencySourceSet.setName)?.apply {
+                dependencies.apply {
+                    val configurationName = when (dependencyConfiguration) {
+                        DependencyConfiguration.API -> apiConfigurationName
+                        DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
+                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
+                    }
+                    add(configurationName, dep)
                 }
-                add(configurationName, dep)
             }
         }
     }
