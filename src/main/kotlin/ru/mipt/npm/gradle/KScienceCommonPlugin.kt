@@ -112,7 +112,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
         afterEvaluate {
             extensions.findByType<JavaPluginExtension>()?.apply {
                 targetCompatibility = KScienceVersions.JVM_TARGET
-                withSourcesJar()
+                //withSourcesJar()
                 //withJavadocJar()
             }
 
