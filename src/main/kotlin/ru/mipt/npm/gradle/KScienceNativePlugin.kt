@@ -5,14 +5,13 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 class KScienceNativePlugin : Plugin<Project> {
     override fun apply(target: Project) = target.run {
         //Apply multiplatform plugin is not applied, apply it
-        if (plugins.findPlugin(KotlinMultiplatformPlugin::class) == null) {
+        if (plugins.findPlugin("org.jetbrains.kotlin.multiplatform") == null) {
             logger.info("Kotlin multiplatform plugin is not resolved. Adding it automatically")
-            pluginManager.apply(KotlinMultiplatformPlugin::class)
+            pluginManager.apply("org.jetbrains.kotlin.multiplatform")
         }
         if (plugins.findPlugin(KScienceCommonPlugin::class) == null) {
             logger.info("KScience plugin is not resolved. Adding it automatically")

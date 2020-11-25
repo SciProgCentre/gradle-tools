@@ -19,6 +19,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
 
         //Configuration for K-JVM plugin
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            //logger.info("Applying KScience configuration for JVM project")
             configure<KotlinJvmProjectExtension> {
                 explicitApiWarning()
 
@@ -37,6 +38,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
         }
 
         pluginManager.withPlugin("org.jetbrains.kotlin.js") {
+            //logger.info("Applying KScience configuration for JS project")
             configure<KotlinJsProjectExtension> {
                 explicitApiWarning()
 
@@ -117,7 +119,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
             tasks.apply {
                 withType<KotlinJvmCompile> {
                     kotlinOptions {
-//                useIR = true
+    //                useIR = true
                         jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     }
                 }
