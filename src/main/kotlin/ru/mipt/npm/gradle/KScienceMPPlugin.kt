@@ -2,99 +2,16 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Copy
-import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.findPlugin
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
-        plugins.apply("org.jetbrains.kotlin.multiplatform")
-        registerKScienceExtension()
-        repositories.applyRepos()
-
-        configure<KotlinMultiplatformExtension> {
-            explicitApiWarning()
-
-            jvm {
-                compilations.all {
-                    kotlinOptions {
-//                        useIR = true
-                        jvmTarget = KScienceVersions.JVM_TARGET.toString()
-                    }
-                }
-            }
-
-            js(IR) {
-                browser()
-            }
-
-            sourceSets.invoke {
-                val commonMain by getting
-                val commonTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-common"))
-                        implementation(kotlin("test-annotations-common"))
-                    }
-                }
-                val jvmMain by getting
-                val jvmTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-junit5"))
-                        implementation("org.junit.jupiter:junit-jupiter:5.6.1")
-                    }
-                }
-                val jsMain by getting
-                val jsTest by getting {
-                    dependencies {
-                        implementation(kotlin("test-js"))
-                    }
-                }
-            }
-
-            afterEvaluate {
-                targets.all {
-                    sourceSets.all {
-                        languageSettings.applySettings()
-                    }
-                }
-            }
-
-//            pluginManager.withPlugin("org.jetbrains.dokka") {
-//                logger.info("Adding dokka functionality to project ${this@run.name}")
-//
-//                val dokkaHtml by tasks.getting(DokkaTask::class) {
-//                    dokkaSourceSets {
-//                        register("commonMain") {
-//                            displayName = "common"
-//                            platform = "common"
-//                        }
-//                        register("jvmMain") {
-//                            displayName = "jvm"
-//                            platform = "jvm"
-//                        }
-//                        register("jsMain") {
-//                            displayName = "js"
-//                            platform = "js"
-//                        }
-//                        configureEach {
-//                            jdkVersion = 11
-//                        }
-//                    }
-//                }
-//            }
-
-            tasks.apply {
-                withType<Test> {
-                    useJUnitPlatform()
-                }
-
-                val jsProcessResources by getting(Copy::class) {
-                    fromDependencies("jsRuntimeClasspath")
-                }
-
-            }
-
+        if (plugins.findPlugin(KotlinMultiplatformPlugin::class) == null) {
+            logger.info("Kotlin multiplatform plugin is not resolved. Adding it automatically")
+            pluginManager.apply(KotlinMultiplatformPlugin::class)
         }
-    }
+        plugins.apply(KScienceCommonPlugin::class)
+     }
 }

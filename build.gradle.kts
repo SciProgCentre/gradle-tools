@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.6.4-dev-1.4.20-M2"
+version = "0.7.0"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.20-M2"
+val kotlinVersion = "1.4.20"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -27,14 +27,19 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.4")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.10")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.10.2")
     implementation("org.jetbrains.dokka:dokka-base:1.4.10")
-    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.5.0")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.3")
+    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.6.2")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.4")
 }
 
 gradlePlugin {
     plugins {
+        create("kscience.common"){
+            id = "ru.mipt.npm.kscience"
+            description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceCommonPlugin"
+        }
         create("kscience.project"){
             id = "ru.mipt.npm.project"
             description = "The root plugin for multimodule project infrastructure"

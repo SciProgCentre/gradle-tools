@@ -1,6 +1,8 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.maven
+import org.gradle.kotlin.dsl.repositories
 
 class SerializationTargets(
     val sourceSet: DependencySourceSet,
@@ -40,6 +42,9 @@ class SerializationTargets(
     fun Project.xml(
         version: String = KScienceVersions.Serialization.xmlVersion
     ) {
+        repositories {
+            maven("https://dl.bintray.com/pdvrieze/maven")
+        }
         useCommonDependency(
             "net.devrieze:xmlutil-serialization:$version",
             dependencySourceSet = sourceSet,
@@ -47,11 +52,22 @@ class SerializationTargets(
         )
     }
 
+    @Deprecated("Use multiplatform yamlKt instead")
     fun Project.yaml(
         version: String = KScienceVersions.Serialization.yamlVersion
     ) {
         useDependency(
             "jvm" to "com.charleskorn.kaml:kaml:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
+        )
+    }
+
+    fun Project.yamlKt(
+        version: String = KScienceVersions.Serialization.yamlVersion
+    ) {
+        useCommonDependency(
+            "net.mamoe.yamlkt:yamlkt:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )

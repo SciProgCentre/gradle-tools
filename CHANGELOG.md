@@ -10,14 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changelog plugin automatically applied to `project`.
 - Feature matrix and Readme generation task for a `project` plugin.
 - Add `binary-compatibility-validator` to the `project` plugin.
+- Separate `yamlKt` serialization target
+- Separate `ain` plugin
 
 ### Changed
 - Remove node plugin. Node binaries should be turned on manually.
 - Use default webpack distribution path.
 - `ru.mipt.npm.base` -> `ru.mipt.npm.project`.
 - Move publishing out of general extension and apply it to project plugin instead.
+- Platform plugins are now simple references to common plugin
 
 ### Deprecated
+- Support of `kaml` and `snake-yaml` in favor of `yamlKt`
 
 ### Removed
 - Node plugin.
