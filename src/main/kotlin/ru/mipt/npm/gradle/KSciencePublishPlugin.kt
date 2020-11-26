@@ -28,7 +28,6 @@ open class KSciencePublishPlugin : Plugin<Project> {
             project.configure<PublishingExtension> {
                 // Process each publication we have in this project
                 publications.withType<MavenPublication>().forEach { publication ->
-                    @Suppress("UnstableApiUsage")
                     publication.pom {
                         name.set(project.name)
                         description.set(project.description)

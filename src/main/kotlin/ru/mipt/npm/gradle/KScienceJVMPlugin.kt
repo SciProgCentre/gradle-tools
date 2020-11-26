@@ -13,5 +13,4 @@ open class KScienceJVMPlugin : Plugin<Project> {
         }
         plugins.apply(KScienceCommonPlugin::class)
     }
-
 }

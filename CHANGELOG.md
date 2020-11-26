@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Feature matrix and Readme generation task for a `project` plugin.
 - Add `binary-compatibility-validator` to the `project` plugin.
 - Separate `yamlKt` serialization target
-- Separate `ain` plugin
+- Moved all logic to a common plugin, leaving only proxies for platform plugins
 
 ### Changed
 - Remove node plugin. Node binaries should be turned on manually.
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support of `kaml` and `snake-yaml` in favor of `yamlKt`
 
 ### Removed
-- Node plugin.
+
 
 ### Fixed
 
