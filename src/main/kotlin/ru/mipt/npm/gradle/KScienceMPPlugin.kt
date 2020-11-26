@@ -95,15 +95,6 @@ open class KScienceMPPlugin : Plugin<Project> {
 
                 val jvmProcessResources by getting(Copy::class)
                 jvmProcessResources.copyJVMResources(configurations["jvmRuntimeClasspath"])
-
-                findByName("jsBrowserDistribution")?.apply {
-                    doLast {
-                        val indexFile = project.jsDistDirectory.resolve("index.html")
-                        if (indexFile.exists()) {
-                            println("Run JS distribution at: ${indexFile.canonicalPath}")
-                        }
-                    }
-                }
             }
 
         }

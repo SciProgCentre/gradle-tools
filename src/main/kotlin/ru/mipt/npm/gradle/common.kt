@@ -1,13 +1,11 @@
 package ru.mipt.npm.gradle
 
-import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.maven
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
-import java.io.File
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
     progressiveMode = true
@@ -87,17 +85,3 @@ internal fun Copy.copyJVMResources(configuration: Configuration): Unit = project
         }
     }
 }
-
-
-val Project.jsDistDirectory: File
-    get() {
-        val distributionName = listOf(
-            name,
-            "js",
-            version.toString()
-        ).joinToString("-")
-
-        return buildDir.resolve(
-            "distributions/$distributionName"
-        )
-    }
