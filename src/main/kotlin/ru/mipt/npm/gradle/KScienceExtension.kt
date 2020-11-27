@@ -91,10 +91,6 @@ class KScienceExtension(val project: Project) {
         )
     }
 
-    fun useDokka(): Unit = project.run {
-        plugins.apply("org.jetbrains.dokka")
-    }
-
     fun useFx(
         vararg modules: FXModule,
         configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,

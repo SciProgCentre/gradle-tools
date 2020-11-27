@@ -33,7 +33,7 @@ internal fun Project.configurePublishing() {
             }
 
             publications {
-                create("kotlinJs", MavenPublication::class) {
+                create("js", MavenPublication::class) {
                     from(components["kotlin"])
                     artifact(sourcesJar)
                 }
@@ -49,7 +49,7 @@ internal fun Project.configurePublishing() {
             }
 
             publications {
-                create("kotlinJvm", MavenPublication::class) {
+                create("jvm", MavenPublication::class) {
                     from(components["kotlin"])
                     artifact(sourcesJar)
                 }

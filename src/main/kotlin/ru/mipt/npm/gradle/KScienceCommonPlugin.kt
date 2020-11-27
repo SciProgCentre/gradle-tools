@@ -20,6 +20,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
         registerKScienceExtension()
         repositories.applyRepos()
 
+        // apply dokka for all projects
+        if (!plugins.hasPlugin("org.jetbrains.dokka")) {
+            plugins.apply("org.jetbrains.dokka")
+        }
+
         //Configuration for K-JVM plugin
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             //logger.info("Applying KScience configuration for JVM project")
@@ -122,7 +127,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
             tasks.apply {
                 withType<KotlinJvmCompile> {
                     kotlinOptions {
-    //                useIR = true
+                        //                useIR = true
                         jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     }
                 }

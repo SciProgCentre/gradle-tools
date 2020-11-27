@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.7.0]
+
+### Added
 - Changelog plugin automatically applied to `project`.
 - Feature matrix and Readme generation task for a `project` plugin.
 - Add `binary-compatibility-validator` to the `project` plugin.
@@ -27,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Publish plugin
 
 ### Removed
-
+- `useDokka` method. Documentation jar should be added manually if needed.
 
 
 ### Fixed
