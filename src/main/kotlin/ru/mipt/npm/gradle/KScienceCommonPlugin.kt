@@ -65,6 +65,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
             }
+
+            (tasks.findByName("processResources") as? Copy)?.apply {
+                fromDependencies("runtimeClasspath")
+            }
+
         }
 
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
@@ -114,14 +119,16 @@ open class KScienceCommonPlugin : Plugin<Project> {
                         }
                     }
                 }
+
+                (tasks.findByName("jsProcessResources") as? Copy)?.apply {
+                    fromDependencies("jsRuntimeClasspath")
+                }
             }
         }
 
         afterEvaluate {
             extensions.findByType<JavaPluginExtension>()?.apply {
                 targetCompatibility = KScienceVersions.JVM_TARGET
-                //withSourcesJar()
-                //withJavadocJar()
             }
 
             tasks.apply {
@@ -133,14 +140,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
                 withType<Test> {
                     useJUnitPlatform()
-                }
-
-                (findByName("processResources") as? Copy)?.apply {
-                    fromDependencies("runtimeClasspath")
-                }
-
-                (findByName("jsProcessResources") as? Copy)?.apply {
-                    fromDependencies("jsRuntimeClasspath")
                 }
             }
         }
