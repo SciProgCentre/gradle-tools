@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package ru.mipt.npm.gradle.internal
 
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler

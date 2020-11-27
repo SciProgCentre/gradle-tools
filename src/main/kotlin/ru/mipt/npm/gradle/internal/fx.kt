@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package ru.mipt.npm.gradle.internal
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
@@ -6,22 +6,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-
-enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
-    BASE("javafx-base"),
-    GRAPHICS("javafx-graphics", BASE),
-    CONTROLS("javafx-controls", GRAPHICS, BASE),
-    FXML("javafx-fxml", BASE),
-    MEDIA("javafx-media", GRAPHICS, BASE),
-    SWING("javafx-swing", GRAPHICS, BASE),
-    WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
-}
-
-enum class FXPlatform(val id: String) {
-    WINDOWS("win"),
-    LINUX("linux"),
-    MAC("mac")
-}
+import ru.mipt.npm.gradle.KScienceExtension.*
 
 val defaultPlatform: FXPlatform = when {
     Os.isFamily(Os.FAMILY_WINDOWS) -> FXPlatform.WINDOWS
@@ -31,7 +16,7 @@ val defaultPlatform: FXPlatform = when {
 }
 
 private fun KotlinDependencyHandler.addFXDependencies(
-    vararg modules: FXModule,
+    modules: List<FXModule>,
     configuration: DependencyConfiguration,
     version: String = "14",
     platform: FXPlatform = defaultPlatform
@@ -46,8 +31,8 @@ private fun KotlinDependencyHandler.addFXDependencies(
     }
 }
 
-fun Project.useFx(
-    vararg modules: FXModule,
+internal fun Project.useFx(
+    modules: List<FXModule>,
     configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
     version: String = "14",
     platform: FXPlatform = defaultPlatform
@@ -56,7 +41,7 @@ fun Project.useFx(
         extensions.findByType<KotlinMultiplatformExtension>()?.apply {
             sourceSets.findByName("jvmMain")?.apply {
                 dependencies {
-                    addFXDependencies(*modules, configuration = configuration, version = version, platform = platform)
+                    addFXDependencies(modules, configuration = configuration, version = version, platform = platform)
                 }
             }
         }
@@ -66,7 +51,7 @@ fun Project.useFx(
         extensions.findByType<KotlinJvmProjectExtension>()?.apply {
             sourceSets.findByName("main")?.apply {
                 dependencies {
-                    addFXDependencies(*modules, configuration = configuration, version = version, platform = platform)
+                    addFXDependencies(modules, configuration = configuration, version = version, platform = platform)
                 }
             }
         }

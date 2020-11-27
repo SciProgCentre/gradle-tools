@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.7.0-fix"
+version = "0.7.0"
 
 repositories {
     gradlePluginPortal()
@@ -40,11 +40,13 @@ gradlePlugin {
             description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
             implementationClass = "ru.mipt.npm.gradle.KScienceCommonPlugin"
         }
+
         create("kscience.project"){
             id = "ru.mipt.npm.project"
             description = "The root plugin for multimodule project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
         }
+
         create("kscience.publish") {
             id = "ru.mipt.npm.publish"
             description = "The publication plugin for bintray and github"

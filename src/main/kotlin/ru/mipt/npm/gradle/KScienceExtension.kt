@@ -7,8 +7,39 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import ru.mipt.npm.gradle.internal.configurePublishing
+import ru.mipt.npm.gradle.internal.defaultPlatform
+import ru.mipt.npm.gradle.internal.useCommonDependency
+import ru.mipt.npm.gradle.internal.useFx
 
 class KScienceExtension(val project: Project) {
+
+    enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
+        BASE("javafx-base"),
+        GRAPHICS("javafx-graphics", BASE),
+        CONTROLS("javafx-controls", GRAPHICS, BASE),
+        FXML("javafx-fxml", BASE),
+        MEDIA("javafx-media", GRAPHICS, BASE),
+        SWING("javafx-swing", GRAPHICS, BASE),
+        WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
+    }
+
+    enum class FXPlatform(val id: String) {
+        WINDOWS("win"),
+        LINUX("linux"),
+        MAC("mac")
+    }
+
+    enum class DependencyConfiguration {
+        API,
+        IMPLEMENTATION,
+        COMPILE_ONLY
+    }
+
+    enum class DependencySourceSet(val setName: String, val suffix: String) {
+        MAIN("main", "Main"),
+        TEST("test", "Test")
+    }
 
     fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,
@@ -64,6 +95,13 @@ class KScienceExtension(val project: Project) {
         plugins.apply("org.jetbrains.dokka")
     }
 
+    fun useFx(
+        vararg modules: FXModule,
+        configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
+        version: String = "14",
+        platform: FXPlatform = defaultPlatform
+    ) = project.useFx(modules.toList(), configuration, version, platform)
+
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
@@ -90,6 +128,10 @@ class KScienceExtension(val project: Project) {
                 it.binaries.executable()
             }
         }
+    }
+
+    fun publish() {
+        project.configurePublishing()
     }
 }
 

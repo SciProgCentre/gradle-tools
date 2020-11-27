@@ -19,11 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ru.mipt.npm.base` -> `ru.mipt.npm.project`.
 - Move publishing out of general extension and apply it to project plugin instead.
 - Platform plugins are now simple references to common plugin
+- FX configuration moved to extension
+- Moved internals to internals
 
 ### Deprecated
 - Support of `kaml` and `snake-yaml` in favor of `yamlKt`
+- Publish plugin
 
 ### Removed
+
 
 
 ### Fixed

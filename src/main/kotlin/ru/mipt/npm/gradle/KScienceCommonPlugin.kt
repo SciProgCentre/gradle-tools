@@ -10,6 +10,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import ru.mipt.npm.gradle.internal.applyRepos
+import ru.mipt.npm.gradle.internal.applySettings
+import ru.mipt.npm.gradle.internal.fromDependencies
 
 open class KScienceCommonPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
