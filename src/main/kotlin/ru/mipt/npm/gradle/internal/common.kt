@@ -36,24 +36,19 @@ internal fun Copy.fromDependencies(configurationName: String) = project.afterEva
     val projectDeps = configuration.allDependencies.filterIsInstance<ProjectDependency>().map {
         it.dependencyProject
     }
-    into(buildDir.resolve("processedResources/js"))
     projectDeps.forEach { dep ->
         dep.afterEvaluate {
             dep.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
                 dep.tasks.findByName("jsProcessResources")?.let { task ->
                     dependsOn(task)
                     from(task)
-                    //from(dep.buildDir.resolve("processedResources/js"))
                 }
-                //from(dep.buildDir.resolve("processedResources/js"))
             }
             dep.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
                 dep.tasks.findByName("processResources")?.let { task ->
                     dependsOn(task)
                     from(task)
-                    //from(dep.buildDir.resolve("processedResources/js"))
                 }
-                // from(dep.buildDir.resolve("processedResources/js"))
             }
         }
     }
