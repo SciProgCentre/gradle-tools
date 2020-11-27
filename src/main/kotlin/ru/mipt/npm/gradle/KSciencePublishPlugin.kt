@@ -14,6 +14,14 @@ open class KSciencePublishPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         plugins.apply("maven-publish")
 
+//        plugins.withId("org.jetbrains.kotlin.jvm"){
+//            extensions.findByType<JavaPluginExtension>()?.apply {
+//                withSourcesJar()
+//                //withJavadocJar()
+//            }
+//        }
+
+
         afterEvaluate {
             val githubOrg: String = project.findProperty("githubOrg") as? String ?: "mipt-npm"
             val githubProject: String? by project

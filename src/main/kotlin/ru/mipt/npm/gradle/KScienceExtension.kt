@@ -86,8 +86,8 @@ class KScienceExtension(val project: Project) {
             js {
                 binaries.executable()
             }
-            (targets.findByName("native") as? KotlinNativeTarget)?.apply {
-                binaries.executable()
+            targets.filterIsInstance<KotlinNativeTarget>().forEach {
+                it.binaries.executable()
             }
         }
     }
