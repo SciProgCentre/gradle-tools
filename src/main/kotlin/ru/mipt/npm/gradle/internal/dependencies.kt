@@ -6,8 +6,8 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import ru.mipt.npm.gradle.KScienceExtension.DependencyConfiguration
-import ru.mipt.npm.gradle.KScienceExtension.DependencySourceSet
+import ru.mipt.npm.gradle.DependencyConfiguration
+import ru.mipt.npm.gradle.DependencySourceSet
 
 internal fun Project.useDependency(
     vararg pairs: Pair<String, String>,

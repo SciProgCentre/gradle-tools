@@ -3,8 +3,6 @@ package ru.mipt.npm.gradle
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.repositories
-import ru.mipt.npm.gradle.KScienceExtension.DependencyConfiguration
-import ru.mipt.npm.gradle.KScienceExtension.DependencySourceSet
 import ru.mipt.npm.gradle.internal.useCommonDependency
 import ru.mipt.npm.gradle.internal.useDependency
 

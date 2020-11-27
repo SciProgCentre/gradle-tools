@@ -12,34 +12,35 @@ import ru.mipt.npm.gradle.internal.defaultPlatform
 import ru.mipt.npm.gradle.internal.useCommonDependency
 import ru.mipt.npm.gradle.internal.useFx
 
+enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
+    BASE("javafx-base"),
+    GRAPHICS("javafx-graphics", BASE),
+    CONTROLS("javafx-controls", GRAPHICS, BASE),
+    FXML("javafx-fxml", BASE),
+    MEDIA("javafx-media", GRAPHICS, BASE),
+    SWING("javafx-swing", GRAPHICS, BASE),
+    WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
+}
+
+enum class FXPlatform(val id: String) {
+    WINDOWS("win"),
+    LINUX("linux"),
+    MAC("mac")
+}
+
+enum class DependencyConfiguration {
+    API,
+    IMPLEMENTATION,
+    COMPILE_ONLY
+}
+
+enum class DependencySourceSet(val setName: String, val suffix: String) {
+    MAIN("main", "Main"),
+    TEST("test", "Test")
+}
+
+
 class KScienceExtension(val project: Project) {
-
-    enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
-        BASE("javafx-base"),
-        GRAPHICS("javafx-graphics", BASE),
-        CONTROLS("javafx-controls", GRAPHICS, BASE),
-        FXML("javafx-fxml", BASE),
-        MEDIA("javafx-media", GRAPHICS, BASE),
-        SWING("javafx-swing", GRAPHICS, BASE),
-        WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
-    }
-
-    enum class FXPlatform(val id: String) {
-        WINDOWS("win"),
-        LINUX("linux"),
-        MAC("mac")
-    }
-
-    enum class DependencyConfiguration {
-        API,
-        IMPLEMENTATION,
-        COMPILE_ONLY
-    }
-
-    enum class DependencySourceSet(val setName: String, val suffix: String) {
-        MAIN("main", "Main"),
-        TEST("test", "Test")
-    }
 
     fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,

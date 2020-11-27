@@ -6,7 +6,9 @@ import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import ru.mipt.npm.gradle.KScienceExtension.*
+import ru.mipt.npm.gradle.DependencyConfiguration
+import ru.mipt.npm.gradle.FXModule
+import ru.mipt.npm.gradle.FXPlatform
 
 val defaultPlatform: FXPlatform = when {
     Os.isFamily(Os.FAMILY_WINDOWS) -> FXPlatform.WINDOWS
@@ -36,7 +38,7 @@ internal fun Project.useFx(
     configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
     version: String = "14",
     platform: FXPlatform = defaultPlatform
-): Unit = afterEvaluate{
+): Unit = afterEvaluate {
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         extensions.findByType<KotlinMultiplatformExtension>()?.apply {
             sourceSets.findByName("jvmMain")?.apply {
