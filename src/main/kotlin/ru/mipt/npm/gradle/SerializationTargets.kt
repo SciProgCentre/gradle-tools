@@ -66,7 +66,7 @@ class SerializationTargets(
     }
 
     fun Project.yamlKt(
-        version: String = KScienceVersions.Serialization.yamlVersion
+        version: String = KScienceVersions.Serialization.yamlKtVersion
     ) {
         useCommonDependency(
             "net.mamoe.yamlkt:yamlkt:$version",
