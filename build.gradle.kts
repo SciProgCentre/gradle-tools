@@ -2,11 +2,11 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    id("org.jetbrains.changelog") version "0.4.0"
+    id("org.jetbrains.changelog") version "0.6.2"
 }
 
 group = "ru.mipt.npm"
-version = "0.6.0"
+version = "0.7.1"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.10"
+val kotlinVersion = "1.4.21"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -26,18 +26,27 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.14.4")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.0")
-    implementation("org.jetbrains.dokka:dokka-base:1.4.0")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.0")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.20")
+    implementation("org.jetbrains.dokka:dokka-base:1.4.20")
+    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.6.2")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.4")
 }
 
 gradlePlugin {
     plugins {
-        create("kscience.base"){
-            id = "ru.mipt.npm.base"
-            description = "The basic plugin that does not do anything but loading classpath, versions and extensions"
-            implementationClass = "ru.mipt.npm.gradle.KScienceBasePlugin"
+        create("kscience.common"){
+            id = "ru.mipt.npm.kscience"
+            description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
+            implementationClass = "ru.mipt.npm.gradle.KScienceCommonPlugin"
         }
+
+        create("kscience.project"){
+            id = "ru.mipt.npm.project"
+            description = "The root plugin for multimodule project infrastructure"
+            implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
+        }
+
         create("kscience.publish") {
             id = "ru.mipt.npm.publish"
             description = "The publication plugin for bintray and github"
@@ -70,7 +79,7 @@ gradlePlugin {
 
         create("kscience.node") {
             id = "ru.mipt.npm.node"
-            description = "NodeJS target for kotlin-mpp and kotlin-js"
+            description = "Additional nodejs target to be use alongside mpp"
             implementationClass = "ru.mipt.npm.gradle.KScienceNodePlugin"
         }
     }

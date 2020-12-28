@@ -9,30 +9,71 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 class KScienceNativePlugin : Plugin<Project> {
     override fun apply(target: Project) = target.run {
         //Apply multiplatform plugin is not applied, apply it
-        if (plugins.findPlugin(KScienceMPPlugin::class) == null) {
-            logger.info("Multiplatform KScience plugin is not resolved. Adding it automatically")
-            pluginManager.apply(KScienceMPPlugin::class)
+        if (plugins.findPlugin("org.jetbrains.kotlin.multiplatform") == null) {
+            logger.info("Kotlin multiplatform plugin is not resolved. Adding it automatically")
+            pluginManager.apply("org.jetbrains.kotlin.multiplatform")
+        }
+        if (plugins.findPlugin(KScienceCommonPlugin::class) == null) {
+            logger.info("KScience plugin is not resolved. Adding it automatically")
+            pluginManager.apply(KScienceCommonPlugin::class)
         }
 
         configure<KotlinMultiplatformExtension> {
-            val hostOs = System.getProperty("os.name")
-            val isMingwX64 = hostOs.startsWith("Windows")
+            val ideaActive = System.getProperty("idea.active") == "true"
 
-            val nativeTarget = when {
-                hostOs == "Mac OS X" -> macosX64("native")
-                hostOs == "Linux" -> linuxX64("native")
-                isMingwX64 -> {
-                    mingwX64("native")
-                    linuxX64()
+            if (ideaActive) {
+                //development mode
+                val hostOs = System.getProperty("os.name")
+
+                when {
+                    hostOs == "Mac OS X" -> macosX64("native")
+                    hostOs == "Linux" -> linuxX64("native")
+                    hostOs.startsWith("Windows") -> mingwX64("native")
+                    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
                 }
-                else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-            }
+            } else {
+                //deploy mode
+                linuxX64()
+                mingwX64()
+                macosX64()
 
-            sourceSets.invoke {
-                val nativeMain by getting
-                findByName("linuxX64Main")?.dependsOn(nativeMain)
-                val nativeTest by getting
-                findByName("linuxX64Test")?.dependsOn(nativeTest)
+                sourceSets{
+                    val commonMain by getting
+                    val nativeMain by creating{
+                        dependsOn(commonMain)
+                    }
+
+                    val commonTest by getting
+
+                    val nativeTest by creating{
+                        dependsOn(nativeMain)
+                        dependsOn(commonTest)
+                    }
+
+                    val linuxX64Main by getting{
+                        dependsOn(nativeMain)
+                    }
+
+                    val mingwX64Main by getting{
+                        dependsOn(nativeMain)
+                    }
+
+                    val macosX64Main by getting{
+                        dependsOn(nativeMain)
+                    }
+
+                    val linuxX64Test by getting{
+                        dependsOn(nativeTest)
+                    }
+
+                    val mingwX64Test by getting{
+                        dependsOn(nativeTest)
+                    }
+
+                    val macosX64Test by getting{
+                        dependsOn(nativeTest)
+                    }
+                }
             }
         }
     }
