@@ -2,11 +2,11 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    id("org.jetbrains.changelog") version "0.6.2"
+    id("org.jetbrains.changelog") version "1.0.0"
 }
 
 group = "ru.mipt.npm"
-version = "0.7.1"
+version = "0.7.3-1.4.30-RC"
 
 repositories {
     gradlePluginPortal()
@@ -16,7 +16,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.21"
+val kotlinVersion = "1.4.30-RC"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -29,7 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.20")
     implementation("org.jetbrains.dokka:dokka-base:1.4.20")
-    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:0.6.2")
+    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.0.0")
     implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.2.4")
 }
 
