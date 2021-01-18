@@ -8,7 +8,7 @@ import org.gradle.kotlin.dsl.maven
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
-    languageVersion = "1.5"
+    languageVersion = "1.4"
     progressiveMode = true
     enableLanguageFeature("InlineClasses")
     useExperimentalAnnotation("kotlin.Experimental")
