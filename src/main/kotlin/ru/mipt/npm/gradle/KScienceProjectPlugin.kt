@@ -13,6 +13,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 
 class KSciencePublishingExtension(val project: Project) {
+    var vcs: String? by project.extra
     var githubOrg: String? by project.extra
     var githubProject: String? by project.extra
     var spaceRepo: String? by project.extra
