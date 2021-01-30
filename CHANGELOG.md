@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `binary-compatibility-validator` to the `project` plugin.
 - Separate `yamlKt` serialization target
 - Moved all logic to a common plugin, leaving only proxies for platform plugins
+- Suppress API validation for modules with maturity below DEVELOPMENT
 
 ### Changed
 - Remove node plugin. Node binaries should be turned on manually.
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Platform plugins are now simple references to common plugin
 - FX configuration moved to extension
 - Moved internals to internals
+- Kotlin 1.4.30-RC
 
 ### Deprecated
 - Support of `kaml` and `snake-yaml` in favor of `yamlKt`
