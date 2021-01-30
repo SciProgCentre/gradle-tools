@@ -8,7 +8,6 @@ import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
-import java.io.File
 import kotlin.collections.component1
 import kotlin.collections.component2
 
@@ -25,76 +24,6 @@ class KSciencePublishingExtension(val project: Project) {
     var bintrayRepo: String? by project.extra
 }
 
-enum class Maturity {
-    PROTOTYPE,
-    EXPERIMENTAL,
-    DEVELOPMENT,
-    PRODUCTION
-}
-
-class KScienceReadmeExtension(val project: Project) {
-    var description: String = ""
-    var maturity: Maturity = Maturity.EXPERIMENTAL
-
-    var readmeTemplate: File = project.file("docs/README-TEMPLATE.md")
-
-    data class Feature(val id: String, val ref: String, val description: String, val name: String = id)
-
-    val features = ArrayList<Feature>()
-
-    fun feature(id: String, ref: String, description: String, name: String = id) {
-        features.add(Feature(id, ref, description, name))
-    }
-
-    val properties: MutableMap<String, () -> Any?> = mutableMapOf(
-        "name" to { project.name },
-        "group" to { project.group },
-        "version" to { project.version },
-        "features" to { featuresString() }
-    )
-
-    private fun getActualizedProperties() = properties.mapValues { (_, value) ->
-        value.invoke()
-    }
-
-    fun property(key: String, value: Any?) {
-        properties[key] = {value}
-    }
-
-    fun propertyByTemplate(key: String, template: String) {
-        val actual = getActualizedProperties()
-        properties[key] = {SimpleTemplateEngine().createTemplate(template).make(actual).toString()}
-    }
-
-    internal val additionalFiles = ArrayList<File>()
-
-    fun propertyByTemplate(key: String, template: File) {
-        val actual = getActualizedProperties()
-        properties[key] = {SimpleTemplateEngine().createTemplate(template).make(actual).toString()}
-        additionalFiles.add(template)
-    }
-
-    /**
-     * Generate a markdown string listing features
-     */
-    fun featuresString(itemPrefix: String = " - ", pathPrefix: String = "") = buildString {
-        features.forEach {
-            appendln("$itemPrefix[${it.id}]($pathPrefix${it.ref}) : ${it.description}")
-        }
-    }
-
-    /**
-     * Generate a readme string from the stub
-     */
-    fun readmeString(): String? {
-        return if (readmeTemplate.exists()) {
-            val actual = getActualizedProperties()
-            SimpleTemplateEngine().createTemplate(readmeTemplate).make(actual).toString()
-        } else {
-            null
-        }
-    }
-}
 
 /**
  * Apply extension and repositories
