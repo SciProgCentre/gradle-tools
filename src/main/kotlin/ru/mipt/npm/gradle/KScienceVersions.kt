@@ -16,9 +16,7 @@ object KScienceVersions {
 
     object Serialization{
         const val xmlVersion = "0.80.1"
-        @Deprecated("Use yamlKt instead")
-        const val yamlVersion = "0.21.0"
         const val bsonVersion = "0.4.4"
-        const val yamlKtVersion = "0.7.5"
+        const val yamlKtVersion = "0.7.6"
     }
 }
