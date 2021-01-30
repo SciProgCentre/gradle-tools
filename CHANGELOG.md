@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [0.7.0]
+## [0.7.4]
 
 ### Added
 - Changelog plugin automatically applied to `project`.
