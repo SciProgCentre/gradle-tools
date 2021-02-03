@@ -39,14 +39,13 @@ class KScienceNativePlugin : Plugin<Project> {
 
                 sourceSets{
                     val commonMain by getting
+                    val commonTest by getting
+
                     val nativeMain by creating{
                         dependsOn(commonMain)
                     }
 
-                    val commonTest by getting
-
                     val nativeTest by creating{
-                        //dependsOn(nativeMain)
                         dependsOn(commonTest)
                     }
 

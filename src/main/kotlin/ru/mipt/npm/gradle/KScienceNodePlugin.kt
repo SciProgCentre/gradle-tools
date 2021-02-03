@@ -26,18 +26,33 @@ class KScienceNodePlugin : Plugin<Project> {
             }
             sourceSets {
                 val commonMain by getting
-                val nodeMain by creating {
+                val commonTest by getting
+
+                val jsCommonMain by creating{
                     dependsOn(commonMain)
+                }
+
+                val jsCommonTest by creating{
+                    dependsOn(commonTest)
+                }
+
+                val jsMain by getting{
+                    dependsOn(jsCommonMain)
+                }
+
+                val jsTest by getting{
+                    dependsOn(jsCommonTest)
+                }
+
+                val nodeMain by creating {
+                    dependsOn(jsCommonMain)
                     dependencies{
                         api("org.jetbrains.kotlinx:kotlinx-nodejs:${KScienceVersions.kotlinxNodeVersion}")
                     }
                 }
 
-                val commonTest by getting
-
                 val nodeTest by creating {
-                    dependsOn(nodeMain)
-                    dependsOn(commonTest)
+                    dependsOn(jsCommonTest)
                 }
             }
         }

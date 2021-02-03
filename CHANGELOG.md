@@ -7,12 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Ktor version to versions
 
 ### Changed
+- Kotlin to 1.4.30 stable
+- Added intermediate jsCommon main/test sourcesSet for node plugin
 
 ### Deprecated
 
 ### Removed
+- kaml
 
 ### Fixed
 
