@@ -18,10 +18,10 @@ internal fun Project.configurePublishing() {
     val vcs = findProperty("vcs") as? String
         ?: githubProject?.let { "https://github.com/$githubOrg/$it" }
 
-    if (vcs == null) {
-        project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
-        return
-    }
+//    if (vcs == null) {
+//        project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
+//        return
+//    }
 
     project.configure<PublishingExtension> {
         plugins.withId("org.jetbrains.kotlin.js") {
@@ -62,7 +62,7 @@ internal fun Project.configurePublishing() {
             publication.pom {
                 name.set(project.name)
                 description.set(project.description)
-                url.set(vcs)
+                vcs?.let{url.set(vcs)}
 
                 licenses {
                     license {
@@ -80,9 +80,11 @@ internal fun Project.configurePublishing() {
                     }
 
                 }
-                scm {
-                    url.set(vcs)
-                    tag.set(project.version.toString())
+                vcs?.let {
+                    scm {
+                        url.set(vcs)
+                        tag.set(project.version.toString())
+                    }
                 }
             }
         }

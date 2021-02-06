@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import ru.mipt.npm.gradle.internal.applyRepos
 import ru.mipt.npm.gradle.internal.applySettings
-import ru.mipt.npm.gradle.internal.fromDependencies
+import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 open class KScienceCommonPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
@@ -67,7 +67,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
             }
 
             (tasks.findByName("processResources") as? Copy)?.apply {
-                fromDependencies("runtimeClasspath")
+                fromJsDependencies("runtimeClasspath")
             }
 
         }
@@ -79,7 +79,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-//                        useIR = true
+                            useIR = true
                             jvmTarget = KScienceVersions.JVM_TARGET.toString()
                         }
                     }
@@ -121,7 +121,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 (tasks.findByName("jsProcessResources") as? Copy)?.apply {
-                    fromDependencies("jsRuntimeClasspath")
+                    fromJsDependencies("jsRuntimeClasspath")
                 }
             }
         }
@@ -134,7 +134,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
             tasks.apply {
                 withType<KotlinJvmCompile> {
                     kotlinOptions {
-                        //                useIR = true
+                        useIR = true
                         jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     }
                 }

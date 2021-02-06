@@ -54,17 +54,6 @@ class SerializationTargets(
         )
     }
 
-    @Deprecated("Use multiplatform yamlKt instead")
-    fun Project.yaml(
-        version: String = KScienceVersions.Serialization.yamlVersion
-    ) {
-        useDependency(
-            "jvm" to "com.charleskorn.kaml:kaml:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
-
     fun Project.yamlKt(
         version: String = KScienceVersions.Serialization.yamlKtVersion
     ) {

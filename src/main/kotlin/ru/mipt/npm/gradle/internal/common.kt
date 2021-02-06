@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.maven
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
+    languageVersion = "1.4"
     progressiveMode = true
     enableLanguageFeature("InlineClasses")
     useExperimentalAnnotation("kotlin.Experimental")
@@ -20,7 +21,6 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
 
 internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
-    jcenter()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://kotlin.bintray.com/kotlinx")
@@ -28,9 +28,10 @@ internal fun RepositoryHandler.applyRepos(): Unit {
     maven("https://dl.bintray.com/mipt-npm/kscience")
     maven("https://dl.bintray.com/mipt-npm/dev")
     maven("https://dl.bintray.com/mipt-npm/dataforge")
+    maven("https://repo.kotlin.link")
 }
 
-internal fun Copy.fromDependencies(configurationName: String) = project.afterEvaluate {
+internal fun Copy.fromJsDependencies(configurationName: String) = project.afterEvaluate {
     val configuration = configurations[configurationName]
         ?: error("Configuration with name $configurationName could not be resolved.")
     val projectDeps = configuration.allDependencies.filterIsInstance<ProjectDependency>().map {
