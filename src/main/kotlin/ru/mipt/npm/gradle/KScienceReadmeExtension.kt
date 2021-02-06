@@ -15,7 +15,7 @@ enum class Maturity {
 
 
 class KScienceReadmeExtension(val project: Project) {
-    var description: String = ""
+    var description: String = project.description ?: ""
     var maturity: Maturity = Maturity.EXPERIMENTAL
         set(value) {
             field = value

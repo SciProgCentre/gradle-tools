@@ -21,7 +21,6 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
 
 internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
-    jcenter()
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
     maven("https://kotlin.bintray.com/kotlinx")
@@ -29,6 +28,7 @@ internal fun RepositoryHandler.applyRepos(): Unit {
     maven("https://dl.bintray.com/mipt-npm/kscience")
     maven("https://dl.bintray.com/mipt-npm/dev")
     maven("https://dl.bintray.com/mipt-npm/dataforge")
+    maven("https://repo.kotlin.link")
 }
 
 internal fun Copy.fromJsDependencies(configurationName: String) = project.afterEvaluate {
