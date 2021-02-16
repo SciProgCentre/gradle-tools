@@ -2,8 +2,10 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
+    signing
     id("de.marcphilipp.nexus-publish") version "0.4.0"
     id("org.jetbrains.changelog") version "1.0.0"
+    id("org.jetbrains.dokka") version "1.4.20"
 }
 
 group = "ru.mipt.npm"
@@ -38,13 +40,13 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        create("kscience.common"){
+        create("kscience.common") {
             id = "ru.mipt.npm.kscience"
             description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
             implementationClass = "ru.mipt.npm.gradle.KScienceCommonPlugin"
         }
 
-        create("kscience.project"){
+        create("kscience.project") {
             id = "ru.mipt.npm.project"
             description = "The root plugin for multimodule project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
@@ -89,35 +91,51 @@ gradlePlugin {
 }
 
 publishing {
-    val vcs = "https://github.com/mipt-npm/scientifik-gradle-tools"
+    val vcs = "https://github.com/mipt-npm/gradle-tools"
+
+    val sourcesJar: Jar by tasks.creating(Jar::class) {
+        archiveClassifier.set("sources")
+        from(sourceSets.named("main").get().allSource)
+    }
+
+    val javadocsJar: Jar by tasks.creating(Jar::class) {
+        group = "documentation"
+        archiveClassifier.set("javadoc")
+        from(tasks.dokkaHtml)
+    }
 
     // Process each publication we have in this project
     publications.filterIsInstance<MavenPublication>().forEach { publication ->
 
-        publication.pom {
-            name.set(project.name)
-            description.set(project.description)
-            url.set(vcs)
+        publication.apply {
+            artifact(sourcesJar)
+            artifact(javadocsJar)
 
-            licenses {
-                license {
-                    name.set("The Apache Software License, Version 2.0")
-                    url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                    distribution.set("repo")
-                }
-            }
-            developers {
-                developer {
-                    id.set("MIPT-NPM")
-                    name.set("MIPT nuclear physics methods laboratory")
-                    organization.set("MIPT")
-                    organizationUrl.set("http://npm.mipt.ru")
-                }
-
-            }
-            scm {
+            pom {
+                name.set(project.name)
+                description.set(project.description)
                 url.set(vcs)
-                tag.set(project.version.toString())
+
+                licenses {
+                    license {
+                        name.set("The Apache Software License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("MIPT-NPM")
+                        name.set("MIPT nuclear physics methods laboratory")
+                        organization.set("MIPT")
+                        organizationUrl.set("http://npm.mipt.ru")
+                    }
+
+                }
+                scm {
+                    url.set(vcs)
+                    tag.set(project.version.toString())
+                }
             }
         }
     }
@@ -128,7 +146,7 @@ publishing {
     if (sonatypeUser != null && sonatypePassword != null) {
         nexusPublishing {
             repositories {
-                sonatype{
+                sonatype {
                     username.set(sonatypeUser)
                     password.set(sonatypePassword)
                 }
@@ -136,6 +154,10 @@ publishing {
         }
     }
 
+    signing {
+        useGpgCmd()
+        sign(publications)
+    }
 }
 
 
