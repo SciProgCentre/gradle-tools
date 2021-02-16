@@ -13,15 +13,25 @@ import kotlin.collections.component2
 
 class KSciencePublishingExtension(val project: Project) {
     var vcs: String? by project.extra
+
+    // github publishing
     var githubOrg: String? by project.extra
     var githubProject: String? by project.extra
+
+    // Space publishing
     var spaceRepo: String? by project.extra
     var spaceUser: String? by project.extra
     var spaceToken: String? by project.extra
+
+    // Bintray publishing
     var bintrayOrg: String? by project.extra
     var bintrayUser: String? by project.extra
     var bintrayApiKey: String? by project.extra
     var bintrayRepo: String? by project.extra
+
+    // Sonatype publising
+    var sonatypeUser: String? by project.extra
+    var sonatypePassword: String? by project.extra
 }
 
 
@@ -139,11 +149,16 @@ open class KScienceProjectPlugin : Plugin<Project> {
         val patchChangelog by tasks.getting
 
         val release by tasks.creating{
-            group = RELEASE_GROUP
-            description = "Publish development or production release based on version suffix"
-            dependsOn(generateReadme, patchChangelog)
-            tasks.findByName("publishAllPublicationsToBintrayRepository")?.let {
-                dependsOn(it)
+            afterEvaluate {
+                group = RELEASE_GROUP
+                description = "Publish development or production release based on version suffix"
+                dependsOn(generateReadme)
+                tasks.findByName("publishAllPublicationsToBintrayRepository")?.let {
+                    dependsOn(it)
+                }
+                tasks.findByName("publishAllPublicationsToSpaceRepository")?.let {
+                    dependsOn(it)
+                }
             }
         }
     }
