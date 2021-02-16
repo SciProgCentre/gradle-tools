@@ -2,11 +2,14 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
+    id("de.marcphilipp.nexus-publish") version "0.4.0"
     id("org.jetbrains.changelog") version "1.0.0"
 }
 
 group = "ru.mipt.npm"
-version = "0.7.6"
+version = "0.7.7"
+
+description = "Build tools for DataForge and kscience projects"
 
 repositories {
     gradlePluginPortal()
@@ -119,24 +122,18 @@ publishing {
         }
     }
 
-    val bintrayUser: String? by project
-    val bintrayApiKey: String? by project
-    val projectName = project.name
+    val sonatypeUser: String? by project
+    val sonatypePassword: String? by project
 
-    if (bintrayUser != null && bintrayApiKey != null) {
-        repositories {
-            maven {
-                name = "bintray"
-                url = uri(
-                    "https://api.bintray.com/maven/mipt-npm/dev/$projectName/;publish=1;override=1"
-                )
-                credentials {
-                    username = bintrayUser
-                    password = bintrayApiKey
+    if (sonatypeUser != null && sonatypePassword != null) {
+        nexusPublishing {
+            repositories {
+                sonatype{
+                    username.set(sonatypeUser)
+                    password.set(sonatypePassword)
                 }
             }
         }
-
     }
 
 }

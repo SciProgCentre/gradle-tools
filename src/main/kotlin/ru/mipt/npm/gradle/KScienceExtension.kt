@@ -2,12 +2,12 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import ru.mipt.npm.gradle.internal.configurePublishing
 import ru.mipt.npm.gradle.internal.defaultPlatform
 import ru.mipt.npm.gradle.internal.useCommonDependency
 import ru.mipt.npm.gradle.internal.useFx
@@ -128,7 +128,7 @@ class KScienceExtension(val project: Project) {
     }
 
     fun publish() {
-        project.configurePublishing()
+        project.plugins.apply(KSciencePublishPlugin::class)
     }
 }
 
