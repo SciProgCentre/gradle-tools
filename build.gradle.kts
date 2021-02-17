@@ -140,23 +140,64 @@ publishing {
         }
     }
 
-    val sonatypeUser: String? by project
-    val sonatypePassword: String? by project
+    val spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/mipt-npm/maven"
+    val spaceUser: String? by project
+    val spaceToken: String? by project
 
-    if (sonatypeUser != null && sonatypePassword != null) {
-        nexusPublishing {
-            repositories {
-                sonatype {
-                    username.set(sonatypeUser)
-                    password.set(sonatypePassword)
+    if (spaceUser != null && spaceToken != null) {
+        project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
+        repositories {
+            maven {
+                name = "space"
+                url = uri(spaceRepo)
+                credentials {
+                    username = spaceUser
+                    password = spaceToken
                 }
+
             }
         }
     }
 
-    signing {
-        useGpgCmd()
-        sign(publications)
+    val sonatypeUser: String? by project
+    val sonatypePassword: String? by project
+
+//    if (sonatypeUser != null && sonatypePassword != null) {
+//        nexusPublishing {
+//            repositories {
+//                sonatype {
+//                    username.set(sonatypeUser)
+//                    password.set(sonatypePassword)
+//                }
+//            }
+//        }
+//    }
+
+    if (sonatypeUser != null && sonatypePassword != null) {
+        val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
+            "https://oss.sonatype.org/content/repositories/snapshots"
+        } else {
+            "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+        }
+
+        if (plugins.findPlugin("signing") == null) {
+            plugins.apply("signing")
+        }
+
+        repositories {
+            maven {
+                name = "sonatype"
+                url = uri(sonatypeRepo)
+                credentials {
+                    username = sonatypeUser
+                    password = sonatypePassword
+                }
+            }
+        }
+        signing {
+            useGpgCmd()
+            sign(publications)
+        }
     }
 }
 
