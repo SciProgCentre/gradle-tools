@@ -16,9 +16,11 @@ description = "Build tools for DataForge and kscience projects"
 repositories {
     gradlePluginPortal()
     jcenter()
+    maven("https://repo.kotlin.link")
     maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
+
 }
 
 val kotlinVersion = "1.4.30"
@@ -33,7 +35,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.1")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.20")
-    implementation("org.jetbrains.dokka:dokka-base:1.4.20")
+//    implementation("org.jetbrains.dokka:dokka-base:1.4.20")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.0.0")
     implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
 }
@@ -195,7 +197,7 @@ publishing {
             }
         }
         signing {
-            useGpgCmd()
+            //useGpgCmd()
             sign(publications)
         }
     }

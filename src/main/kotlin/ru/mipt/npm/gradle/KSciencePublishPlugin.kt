@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 open class KSciencePublishPlugin : Plugin<Project> {
 
     override fun apply(project: Project): Unit = project.plugins.withId("ru.mipt.npm.kscience") {
-        project.run {
+        project.afterEvaluate {
             if (plugins.findPlugin("maven-publish") == null) {
                 plugins.apply("maven-publish")
             }
@@ -28,6 +28,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
 //        project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
 //        return
 //    }
+
 
             project.configure<PublishingExtension> {
                 plugins.withId("org.jetbrains.kotlin.js") {
@@ -62,9 +63,15 @@ open class KSciencePublishPlugin : Plugin<Project> {
                     }
                 }
 
+                val dokkaJar: Jar by tasks.creating(Jar::class) {
+                    group = "documentation"
+                    archiveClassifier.set("javadoc")
+                    from(tasks.findByName("dokkaHtml"))
+                }
 
                 // Process each publication we have in this project
                 publications.withType<MavenPublication>().forEach { publication ->
+                    publication.artifact(dokkaJar)
                     publication.pom {
                         name.set(project.name)
                         description.set(project.description)
@@ -177,7 +184,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
                     }
 
                     extensions.findByType<SigningExtension>()?.apply {
-                        useGpgCmd()
+                        //useGpgCmd()
                         sign(publications)
                     }
 
