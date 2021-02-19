@@ -153,6 +153,9 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 group = RELEASE_GROUP
                 description = "Publish development or production release based on version suffix"
                 dependsOn(generateReadme)
+                tasks.findByName("publishAllPublicationsToSonatypeRepository")?.let {
+                    dependsOn(it)
+                }
                 tasks.findByName("publishAllPublicationsToBintrayRepository")?.let {
                     dependsOn(it)
                 }

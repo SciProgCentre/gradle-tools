@@ -11,6 +11,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 
+/**
+ * From https://github.com/Kotlin/kotlinx.serialization/blob/master/buildSrc/src/main/kotlin/Publishing.kt
+ */
+private fun Project.getSensitiveProperty(name: String): String? {
+    return project.findProperty(name) as? String ?: System.getenv(name)
+}
+
 open class KSciencePublishPlugin : Plugin<Project> {
 
     override fun apply(project: Project): Unit = project.plugins.withId("ru.mipt.npm.kscience") {
@@ -74,7 +81,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
                     publication.artifact(dokkaJar)
                     publication.pom {
                         name.set(project.name)
-                        description.set(project.description)
+                        description.set(project.description ?: project.name)
                         vcs?.let { url.set(vcs) }
 
                         licenses {
@@ -169,10 +176,15 @@ open class KSciencePublishPlugin : Plugin<Project> {
                     }
                 }
 
+                val sonatypePublish: Boolean? by project
                 val sonatypeUser: String? by project
                 val sonatypePassword: String? by project
 
-                if (sonatypeUser != null && sonatypePassword != null) {
+                val keyId: String? by project
+                val signingKey: String? = getSensitiveProperty("signingKey")
+                val signingKeyPassphrase: String? by project
+
+                if (sonatypePublish == true && sonatypeUser != null && sonatypePassword != null) {
                     val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
                         "https://oss.sonatype.org/content/repositories/snapshots"
                     } else {
@@ -183,8 +195,12 @@ open class KSciencePublishPlugin : Plugin<Project> {
                         plugins.apply("signing")
                     }
 
-                    extensions.findByType<SigningExtension>()?.apply {
-                        //useGpgCmd()
+                    extensions.configure<SigningExtension>("signing") {
+                        if (!signingKey.isNullOrBlank()) {
+                            //if key is provided, use it
+                            @Suppress("UnstableApiUsage")
+                            useInMemoryPgpKeys(keyId, signingKey, signingKeyPassphrase)
+                        } // else use file signing
                         sign(publications)
                     }
 
@@ -199,7 +215,6 @@ open class KSciencePublishPlugin : Plugin<Project> {
                         }
                     }
                 }
-
             }
         }
     }

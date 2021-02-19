@@ -3,13 +3,12 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     signing
-    id("de.marcphilipp.nexus-publish") version "0.4.0"
     id("org.jetbrains.changelog") version "1.0.0"
     id("org.jetbrains.dokka") version "1.4.20"
 }
 
 group = "ru.mipt.npm"
-version = "0.7.7"
+version = "0.7.8"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -35,7 +34,6 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.1")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.20")
-//    implementation("org.jetbrains.dokka:dokka-base:1.4.20")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.0.0")
     implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
 }
@@ -163,17 +161,6 @@ publishing {
 
     val sonatypeUser: String? by project
     val sonatypePassword: String? by project
-
-//    if (sonatypeUser != null && sonatypePassword != null) {
-//        nexusPublishing {
-//            repositories {
-//                sonatype {
-//                    username.set(sonatypeUser)
-//                    password.set(sonatypePassword)
-//                }
-//            }
-//        }
-//    }
 
     if (sonatypeUser != null && sonatypePassword != null) {
         val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
