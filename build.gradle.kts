@@ -55,7 +55,7 @@ project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply{
         create("publishing") {
             id = "ru.mipt.npm.gradle.publish"
             description = "The publication plugin for bintray and github"
-            implementationClass = "ru.mipt.npm.gradle.KSciencePublishingPlugin"
+            implementationClass = "ru.mipt.npm.gradle.KSciencePublishPlugin"
         }
 
         create("mpp") {

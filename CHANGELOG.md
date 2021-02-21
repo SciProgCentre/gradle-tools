@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Ktor version to versions
 - Add sonatype publishing
+- Per-platform release publishing
 
 ### Changed
 - Kotlin to 1.4.30 stable.
