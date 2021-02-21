@@ -56,11 +56,11 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
-                if(readmeExtension.readmeTemplate.exists()) {
+                if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
                 readmeExtension.additionalFiles.forEach {
-                    if(it.exists()){
+                    if (it.exists()) {
                         inputs.file(it)
                     }
                 }
@@ -75,7 +75,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                     }
                 }
             }
-            tasks.withType<DokkaTask>{
+            tasks.withType<DokkaTask> {
                 dependsOn(generateReadme)
             }
         }
@@ -90,11 +90,11 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
-            if(rootReadmeExtension.readmeTemplate.exists()) {
+            if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)
             }
             rootReadmeExtension.additionalFiles.forEach {
-                if(it.exists()){
+                if (it.exists()) {
                     inputs.file(it)
                 }
             }
@@ -117,7 +117,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                                 appendln("> ${ext.description}")
                                 appendln(">\n> **Maturity**: ${ext.maturity}")
                                 val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$name/")
-                                if(featureString.isNotBlank()) {
+                                if (featureString.isNotBlank()) {
                                     appendln(">\n> **Features:**")
                                     appendln(featureString)
                                 }
@@ -142,27 +142,38 @@ open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        tasks.withType<DokkaTask>{
+        tasks.withType<DokkaTask> {
             dependsOn(generateReadme)
         }
 
         val patchChangelog by tasks.getting
 
-        val release by tasks.creating{
-            afterEvaluate {
+        afterEvaluate {
+            val release by tasks.creating {
                 group = RELEASE_GROUP
                 description = "Publish development or production release based on version suffix"
                 dependsOn(generateReadme)
-                tasks.findByName("publishAllPublicationsToBintrayRepository")?.let {
+
+                val publicationPlatform = project.findProperty("ci.publication.platform") as? String
+                val publicationName = if(publicationPlatform == null){
+                    "AllPublications"
+                } else {
+                    publicationPlatform.capitalize() + "Publication"
+                }
+                tasks.findByName("publish${publicationName}ToSonatypeRepository")?.let {
                     dependsOn(it)
                 }
-                tasks.findByName("publishAllPublicationsToSpaceRepository")?.let {
+                tasks.findByName("publish${publicationName}ToBintrayRepository")?.let {
+                    dependsOn(it)
+                }
+                tasks.findByName("publish${publicationName}ToSpaceRepository")?.let {
                     dependsOn(it)
                 }
             }
         }
     }
-    companion object{
+
+    companion object {
         const val RELEASE_GROUP = "release"
     }
 }
