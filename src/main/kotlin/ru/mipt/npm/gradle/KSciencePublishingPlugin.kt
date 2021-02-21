@@ -11,16 +11,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 
-/**
- * From https://github.com/Kotlin/kotlinx.serialization/blob/master/buildSrc/src/main/kotlin/Publishing.kt
- */
-private fun Project.getSensitiveProperty(name: String): String? {
-    return project.findProperty(name) as? String ?: System.getenv(name)
-}
+open class KSciencePublishingPlugin : Plugin<Project> {
 
-open class KSciencePublishPlugin : Plugin<Project> {
-
-    override fun apply(project: Project): Unit = project.plugins.withId("ru.mipt.npm.kscience") {
+    override fun apply(project: Project): Unit = project.plugins.withId("ru.mipt.npm.common") {
         project.afterEvaluate {
             if (plugins.findPlugin("maven-publish") == null) {
                 plugins.apply("maven-publish")
@@ -30,12 +23,6 @@ open class KSciencePublishPlugin : Plugin<Project> {
             val githubProject: String? by project
             val vcs = findProperty("vcs") as? String
                 ?: githubProject?.let { "https://github.com/$githubOrg/$it" }
-
-//    if (vcs == null) {
-//        project.logger.warn("[${project.name}] Missing deployment configuration. Skipping publish.")
-//        return
-//    }
-
 
             project.configure<PublishingExtension> {
                 plugins.withId("org.jetbrains.kotlin.js") {
@@ -149,7 +136,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
                 val bintrayOrg = project.findProperty("bintrayOrg") as? String ?: "mipt-npm"
                 val bintrayUser: String? by project
                 val bintrayApiKey: String? by project
-
+                val bintrayPublish: Boolean? by project
 
                 val bintrayRepo = if (project.version.toString().contains("dev")) {
                     "dev"
@@ -159,7 +146,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
 
                 val projectName = project.name
 
-                if (bintrayRepo != null && bintrayUser != null && bintrayApiKey != null) {
+                if (bintrayPublish == true && bintrayRepo != null && bintrayUser != null && bintrayApiKey != null) {
                     project.logger.info("Adding bintray publishing to project [$projectName]")
 
                     repositories {
@@ -181,7 +168,7 @@ open class KSciencePublishPlugin : Plugin<Project> {
                 val sonatypePassword: String? by project
 
                 val keyId: String? by project
-                val signingKey: String? = getSensitiveProperty("signingKey")
+                val signingKey: String? = project.findProperty("signingKey") as? String ?: System.getenv("signingKey")
                 val signingKeyPassphrase: String? by project
 
                 if (sonatypePublish == true && sonatypeUser != null && sonatypePassword != null) {

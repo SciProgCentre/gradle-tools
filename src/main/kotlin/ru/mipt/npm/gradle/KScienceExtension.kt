@@ -128,7 +128,7 @@ class KScienceExtension(val project: Project) {
     }
 
     fun publish() {
-        project.plugins.apply(KSciencePublishPlugin::class)
+        project.plugins.apply(KSciencePublishingPlugin::class)
     }
 }
 
