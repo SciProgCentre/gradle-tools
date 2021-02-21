@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+## [0.8.0]
+### Added
 - Ktor version to versions
 - Add sonatype publishing
 - Per-platform release publishing
@@ -16,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added intermediate jsCommon main/test sourcesSet for node plugin.
 - Plugin names changed to `ru.mipt.npm` package.
 - Common plugin id changed to `common`
-- Plugins group changed to `ru.mipt.npm` with `gradle prefix
+- Plugins group changed to `ru.mipt.npm` with `gradle` prefix
 
 ### Deprecated
 
