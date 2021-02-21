@@ -20,7 +20,7 @@ Includes JVM-IR and JS-IR-Browser targets.
 `= kotlin("jvm") + ru.mipt.npm.gradle.common`
 
 ## ru.mipt.npm.gradle.js
-`= kotlin("js + ru.mipt.npm.gradle.common`
+`= kotlin("js") + ru.mipt.npm.gradle.common`
 
 ## ru.mipt.npm.gradle.native
 add default native targets to `ru.mipt.npm.gradle.mpp`
