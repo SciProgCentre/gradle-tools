@@ -11,6 +11,7 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import kotlin.collections.component1
 import kotlin.collections.component2
 
+@Suppress("unused")
 class KSciencePublishingExtension(val project: Project) {
     var vcs: String? by project.extra
 
@@ -126,12 +127,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
                         appendln("<hr/>")
                     }
 
-                    val rootReadmeProperties: Map<String, Any?> = mapOf(
-                        "name" to project.name,
-                        "group" to project.group,
-                        "version" to project.version,
-                        "modules" to modulesString
-                    )
+                    val rootReadmeProperties: Map<String, Any?> =
+                        rootReadmeExtension.properties + ("modules" to modulesString)
 
                     readmeFile.writeText(
                         SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate)
@@ -155,7 +152,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 dependsOn(generateReadme)
 
                 val publicationPlatform = project.findProperty("ci.publication.platform") as? String
-                val publicationName = if(publicationPlatform == null){
+                val publicationName = if (publicationPlatform == null) {
                     "AllPublications"
                 } else {
                     publicationPlatform.capitalize() + "Publication"
