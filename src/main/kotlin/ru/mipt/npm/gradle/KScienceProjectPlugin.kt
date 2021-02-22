@@ -128,7 +128,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                     }
 
                     val rootReadmeProperties: Map<String, Any?> =
-                        rootReadmeExtension.properties + ("modules" to modulesString)
+                        rootReadmeExtension.actualizedProperties + ("modules" to modulesString)
 
                     readmeFile.writeText(
                         SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate)
