@@ -20,11 +20,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
         registerKScienceExtension()
         repositories.applyRepos()
 
-        // apply dokka for all projects
-        if (!plugins.hasPlugin("org.jetbrains.dokka")) {
-            plugins.apply("org.jetbrains.dokka")
-        }
-
         //Configuration for K-JVM plugin
         pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             //logger.info("Applying KScience configuration for JVM project")
@@ -41,6 +36,22 @@ open class KScienceCommonPlugin : Plugin<Project> {
                         implementation(kotlin("test-junit5"))
                         implementation("org.junit.jupiter:junit-jupiter:5.6.1")
                     }
+                }
+            }
+            tasks.withType<KotlinJvmCompile> {
+                kotlinOptions {
+                    useIR = true
+                    jvmTarget = KScienceVersions.JVM_TARGET.toString()
+                }
+            }
+
+            extensions.findByType<JavaPluginExtension>()?.apply {
+                targetCompatibility = KScienceVersions.JVM_TARGET
+            }
+
+            tasks.apply {
+                withType<Test> {
+                    useJUnitPlatform()
                 }
             }
         }
@@ -123,25 +134,23 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 (tasks.findByName("jsProcessResources") as? Copy)?.apply {
                     fromJsDependencies("jsRuntimeClasspath")
                 }
-            }
-        }
 
-        afterEvaluate {
-            extensions.findByType<JavaPluginExtension>()?.apply {
-                targetCompatibility = KScienceVersions.JVM_TARGET
-            }
+                extensions.findByType<JavaPluginExtension>()?.apply {
+                    targetCompatibility = KScienceVersions.JVM_TARGET
+                }
 
-            tasks.apply {
-                withType<KotlinJvmCompile> {
-                    kotlinOptions {
-                        useIR = true
-                        jvmTarget = KScienceVersions.JVM_TARGET.toString()
+                tasks.apply {
+                    withType<Test> {
+                        useJUnitPlatform()
                     }
                 }
-                withType<Test> {
-                    useJUnitPlatform()
-                }
             }
         }
+
+        // apply dokka for all projects
+        if (!plugins.hasPlugin("org.jetbrains.dokka")) {
+            plugins.apply("org.jetbrains.dokka")
+        }
+
     }
 }
