@@ -15,48 +15,46 @@ private fun Project.isSnapshot() = version.toString().contains("dev") || version
 
 open class KSciencePublishingPlugin : Plugin<Project> {
 
-    override fun apply(project: Project): Unit {
-        project.run {
-            if (plugins.findPlugin("maven-publish") == null) {
-                plugins.apply("maven-publish")
-            }
-            configure<PublishingExtension> {
-                plugins.withId("org.jetbrains.kotlin.js") {
-                    val kotlin = extensions.findByType<KotlinJsProjectExtension>()!!
+    override fun apply(project: Project): Unit = project.run {
+        if (plugins.findPlugin("maven-publish") == null) {
+            plugins.apply("maven-publish")
+        }
 
-                    val sourcesJar: Jar by project.tasks.creating(Jar::class) {
-                        archiveClassifier.set("sources")
-                        from(kotlin.sourceSets["main"].kotlin)
-                    }
+        configure<PublishingExtension> {
+            plugins.withId("ru.mipt.npm.gradle.js") {
+                val kotlin = extensions.findByType<KotlinJsProjectExtension>()!!
 
-                    publications {
-                        create("js", MavenPublication::class) {
-                            from(components["kotlin"])
-                            artifact(sourcesJar)
-                        }
-                    }
+                val sourcesJar: Jar by project.tasks.creating(Jar::class) {
+                    archiveClassifier.set("sources")
+                    from(kotlin.sourceSets["main"].kotlin)
                 }
 
-                plugins.withId("org.jetbrains.kotlin.jvm") {
-                    val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
-
-                    val sourcesJar: Jar by project.tasks.creating(Jar::class) {
-                        archiveClassifier.set("sources")
-                        from(kotlin.sourceSets["main"].kotlin)
+                publications {
+                    create("js", MavenPublication::class) {
+                        from(components["kotlin"])
+                        artifact(sourcesJar)
                     }
+                }
+            }
 
-                    publications {
-                        create("jvm", MavenPublication::class) {
-                            from(components["kotlin"])
-                            artifact(sourcesJar)
-                        }
+            plugins.withId("ru.mipt.npm.gradle.jvm") {
+                val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
+
+                val sourcesJar: Jar by project.tasks.creating(Jar::class) {
+                    archiveClassifier.set("sources")
+                    from(kotlin.sourceSets["main"].kotlin)
+                }
+
+                publications {
+                    create("jvm", MavenPublication::class) {
+                        from(components["kotlin"])
+                        artifact(sourcesJar)
                     }
                 }
             }
         }
 
         project.afterEvaluate {
-
             val githubOrg: String = project.findProperty("githubOrg") as? String ?: "mipt-npm"
             val githubProject: String? by project
             val vcs = findProperty("vcs") as? String
@@ -174,7 +172,8 @@ open class KSciencePublishingPlugin : Plugin<Project> {
                 val sonatypePassword: String? by project
 
                 val keyId: String? by project
-                val signingKey: String? = project.findProperty("signingKey") as? String ?: System.getenv("signingKey")
+                val signingKey: String? =
+                    project.findProperty("signingKey") as? String ?: System.getenv("signingKey")
                 val signingKeyPassphrase: String? by project
 
                 if (sonatypePublish == "true" && sonatypeUser != null && sonatypePassword != null) {
@@ -212,3 +211,5 @@ open class KSciencePublishingPlugin : Plugin<Project> {
         }
     }
 }
+
+
