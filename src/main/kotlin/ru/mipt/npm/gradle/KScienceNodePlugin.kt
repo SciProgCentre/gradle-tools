@@ -1,9 +1,17 @@
 package ru.mipt.npm.gradle
 
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.findPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+
+private fun KotlinMultiplatformExtension.sourceSets(configure: Action<NamedDomainObjectContainer<KotlinSourceSet>>): Unit =
+    (this as org.gradle.api.plugins.ExtensionAware).extensions.configure("sourceSets", configure)
 
 /**
  * Create a separate target for node
@@ -24,38 +32,30 @@ class KScienceNodePlugin : Plugin<Project> {
             js(name = "node", compiler = IR) {
                 nodejs()
             }
-            sourceSets {
-                val commonMain by getting
-                val commonTest by getting
 
-                val jsCommonMain by creating{
+            sourceSets {
+                val commonMain = findByName("commonMain")!!
+                val commonTest = findByName("commonTest")!!
+
+                val jsCommonMain = create("jsCommonMain").apply {
                     dependsOn(commonMain)
                 }
 
-                val jsCommonTest by creating{
+                val jsCommonTest = create("jsCommonTest").apply {
                     dependsOn(commonTest)
                 }
 
-                val jsMain by getting{
-                    dependsOn(jsCommonMain)
-                }
+                findByName("jsMain")?.dependsOn(jsCommonMain)
+                findByName("jsTest")?.dependsOn(jsCommonTest)
 
-                val jsTest by getting{
-                    dependsOn(jsCommonTest)
-                }
-
-                val nodeMain by creating {
+                findByName("nodeMain")?.apply {
                     dependsOn(jsCommonMain)
-                    dependencies{
+                    dependencies {
                         api("org.jetbrains.kotlinx:kotlinx-nodejs:${KScienceVersions.kotlinxNodeVersion}")
                     }
                 }
-
-                val nodeTest by creating {
-                    dependsOn(jsCommonTest)
-                }
+                findByName("nodeTest")?.dependsOn(jsCommonMain)
             }
         }
-
     }
 }
