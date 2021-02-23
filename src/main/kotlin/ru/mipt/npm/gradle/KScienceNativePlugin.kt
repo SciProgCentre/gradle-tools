@@ -18,10 +18,21 @@ class KScienceNativePlugin : Plugin<Project> {
         }
 
         configure<KotlinMultiplatformExtension> {
-            //deploy mode
-            linuxX64()
-            mingwX64()
-            macosX64()
+            val hostOs = System.getProperty("os.name")
+
+            val isLinux = hostOs == "Linux"
+            val isMinGw = hostOs.startsWith("Windows")
+            val isMacOs = hostOs == "Mac OS X"
+
+            if (isLinux || isMinGw) {
+                linuxX64()
+            }
+            if (isMinGw) {
+                mingwX64()
+            }
+            if (isMacOs) {
+                macosX64()
+            }
 
             sourceSets {
                 val commonMain by getting
@@ -35,28 +46,33 @@ class KScienceNativePlugin : Plugin<Project> {
                     dependsOn(commonTest)
                 }
 
-                val linuxX64Main by getting {
-                    dependsOn(nativeMain)
+                if (isLinux) {
+                    val linuxX64Main by getting {
+                        dependsOn(nativeMain)
+                    }
+                    val linuxX64Test by getting {
+                        dependsOn(nativeTest)
+                    }
                 }
 
-                val mingwX64Main by getting {
-                    dependsOn(nativeMain)
+                if (isMinGw) {
+                    val mingwX64Main by getting {
+                        dependsOn(nativeMain)
+                    }
+
+                    val mingwX64Test by getting {
+                        dependsOn(nativeTest)
+                    }
                 }
 
-                val macosX64Main by getting {
-                    dependsOn(nativeMain)
-                }
+                if (isMacOs) {
+                    val macosX64Main by getting {
+                        dependsOn(nativeMain)
+                    }
 
-                val linuxX64Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val mingwX64Test by getting {
-                    dependsOn(nativeTest)
-                }
-
-                val macosX64Test by getting {
-                    dependsOn(nativeTest)
+                    val macosX64Test by getting {
+                        dependsOn(nativeTest)
+                    }
                 }
             }
         }
