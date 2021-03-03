@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import ru.mipt.npm.gradle.internal.applyRepos
+import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 open class KScienceCommonPlugin : Plugin<Project> {
