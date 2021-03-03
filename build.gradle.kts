@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.8.3"
+version = "0.8.4"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -22,7 +22,7 @@ repositories {
 
 }
 
-val kotlinVersion = "1.4.30"
+val kotlinVersion = "1.4.31"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8

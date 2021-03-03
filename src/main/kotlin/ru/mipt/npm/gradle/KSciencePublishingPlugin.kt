@@ -60,6 +60,8 @@ open class KSciencePublishingPlugin : Plugin<Project> {
 
         //configure publications after everything is set in the root project
         project.rootProject.afterEvaluate {
+            //root project release task
+            val release by tasks.getting
             project.run {
                 val githubOrg: String = project.findProperty("githubOrg") as? String ?: "mipt-npm"
                 val githubProject: String? by project
@@ -182,12 +184,8 @@ open class KSciencePublishingPlugin : Plugin<Project> {
                         project.findProperty("signingKey") as? String ?: System.getenv("signingKey")
                     val signingKeyPassphrase: String? by project
 
-                    if (sonatypePublish == "true" && sonatypeUser != null && sonatypePassword != null) {
-                        val sonatypeRepo: String = if (isSnapshot()) {
-                            "https://oss.sonatype.org/content/repositories/snapshots"
-                        } else {
-                            "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-                        }
+                    if (sonatypePublish == "true" && sonatypeUser != null && sonatypePassword != null && !isSnapshot()) {
+                        val sonatypeRepo: String = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 
                         if (plugins.findPlugin("signing") == null) {
                             plugins.apply("signing")
@@ -213,6 +211,22 @@ open class KSciencePublishingPlugin : Plugin<Project> {
                             }
                         }
                     }
+                }
+
+
+                val publicationPlatform = project.findProperty("publication.platform") as? String
+                val publicationName = if (publicationPlatform == null) {
+                    "AllPublications"
+                } else {
+                    publicationPlatform.capitalize() + "Publication"
+                }
+
+                tasks.findByName("publish${publicationName}ToSonatypeRepository")?.let {
+                    release.dependsOn(it)
+                }
+
+                tasks.findByName("publish${publicationName}ToSpaceRepository")?.let {
+                    release.dependsOn(it)
                 }
             }
         }

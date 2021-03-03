@@ -8,8 +8,6 @@ import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 @Suppress("unused")
 class KSciencePublishingExtension(val project: Project) {
@@ -104,20 +102,24 @@ open class KScienceProjectPlugin : Plugin<Project> {
             outputs.file(readmeFile)
 
             doLast {
-                val projects = subprojects.associate {
-                    it.name to it.extensions.findByType<KScienceReadmeExtension>()
-                }
+//                val projects = subprojects.associate {
+//                    val normalizedPath = it.path.replaceFirst(":","").replace(":","/")
+//                    it.path.replace(":","/") to it.extensions.findByType<KScienceReadmeExtension>()
+//                }
 
                 if (rootReadmeExtension.readmeTemplate.exists()) {
 
                     val modulesString = buildString {
-                        projects.entries.forEach { (name, ext) ->
+                        subprojects.forEach { subproject->
+                            val name = subproject.name
+                            val path = subproject.path.replaceFirst(":","").replace(":","/")
+                            val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
                             appendln("<hr/>")
-                            appendln("\n* ### [$name]($name)")
+                            appendln("\n* ### [$name]($path)")
                             if (ext != null) {
                                 appendln("> ${ext.description}")
                                 appendln(">\n> **Maturity**: ${ext.maturity}")
-                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$name/")
+                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
                                 if (featureString.isNotBlank()) {
                                     appendln(">\n> **Features:**")
                                     appendln(featureString)
@@ -145,28 +147,10 @@ open class KScienceProjectPlugin : Plugin<Project> {
 
         val patchChangelog by tasks.getting
 
-        afterEvaluate {
-            val release by tasks.creating {
-                group = RELEASE_GROUP
-                description = "Publish development or production release based on version suffix"
-                dependsOn(generateReadme)
-
-                val publicationPlatform = project.findProperty("ci.publication.platform") as? String
-                val publicationName = if (publicationPlatform == null) {
-                    "AllPublications"
-                } else {
-                    publicationPlatform.capitalize() + "Publication"
-                }
-                tasks.findByName("publish${publicationName}ToSonatypeRepository")?.let {
-                    dependsOn(it)
-                }
-                tasks.findByName("publish${publicationName}ToBintrayRepository")?.let {
-                    dependsOn(it)
-                }
-                tasks.findByName("publish${publicationName}ToSpaceRepository")?.let {
-                    dependsOn(it)
-                }
-            }
+        val release by tasks.creating {
+            group = RELEASE_GROUP
+            description = "Publish development or production release based on version suffix"
+            dependsOn(generateReadme)
         }
     }
 
