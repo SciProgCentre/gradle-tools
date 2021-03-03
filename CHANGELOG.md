@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Adaptive support for host OS in native
+
 ### Changed
 
 ### Deprecated
@@ -15,7 +15,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+### Security
+
+## [0.8.4]
+### Added
+- Adaptive support for host OS in native
+### Changed
+- Kotlin 1.4.31
+- Coroutines 1.4.3
+
+### Deprecated
+
+### Removed
+
+### Fixed
 - Plugin loading order for publishing
+- Release task
+- Readme generation for multi-module project
 
 ### Security
 
