@@ -11,7 +11,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import ru.mipt.npm.gradle.internal.applyRepos
-import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 open class KScienceCommonPlugin : Plugin<Project> {
@@ -62,7 +61,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 explicitApiWarning()
 
                 js(IR) {
-                    browser()
+                    browser{
+                        commonWebpackConfig {
+                            cssSupport.enabled = true
+                        }
+                    }
                 }
 
                 sourceSets["main"].apply {
@@ -97,7 +100,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 js(IR) {
-                    browser()
+                    browser{
+                        commonWebpackConfig {
+                            cssSupport.enabled = true
+                        }
+                    }
                 }
 
                 sourceSets.invoke {

@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.8.4]
 ### Added
 - Adaptive support for host OS in native
+- CSS support for JS targets
+
 ### Changed
 - Kotlin 1.4.31
 - Coroutines 1.4.3
