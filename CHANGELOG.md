@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Publishing repositories are explicit and defined in the top level project
 
 ### Deprecated
+- Publishing plugin
 
 ### Removed
+- Bintray publishing
 
 ### Fixed
 
