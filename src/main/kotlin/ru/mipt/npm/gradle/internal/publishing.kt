@@ -110,6 +110,8 @@ internal fun Project.addGithubPublishing(
     githubOrg: String,
     githubProject: String
 ) {
+    if (requestPropertyOrNull("publishing.github") == "false") return
+
     val githubUser: String = requestProperty("publishing.github.user")
     val githubToken: String = requestProperty("publishing.github.token")
 
@@ -135,6 +137,8 @@ internal fun Project.addGithubPublishing(
 }
 
 internal fun Project.addSpacePublishing(spaceRepo: String) {
+    if (requestPropertyOrNull("publishing.space") == "false") return
+
     val spaceUser: String = requestProperty("publishing.space.user")
     val spaceToken: String = requestProperty("publishing.space.token")
 
@@ -161,10 +165,11 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
 }
 
 internal fun Project.addSonatypePublishing() {
+    if (requestPropertyOrNull("publishing.sonatype") == "false") return
+
     val sonatypeUser: String = requestProperty("publishing.sonatype.user")
     val sonatypePassword: String = requestProperty("publishing.sonatype.password")
     val signingId: String? = requestPropertyOrNull("publishing.signing.id")
-
 
     allprojects {
         plugins.withId("maven-publish") {
