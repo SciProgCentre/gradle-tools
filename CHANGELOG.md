@@ -17,7 +17,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
-## [0.8.0]
+
+## [0.9.0]
+### Added
+- Skip sonatype publishing for dev versions
+
+### Changed
+- Publishing repositories are explicit and defined in the top level project
+- Paths to publishing properties now use dot notation like `publishing.github.user`
+
+### Deprecated
+- Publishing plugin
+
+### Removed
+- Bintray publishing
+
+### Fixed
+
+### Security
+
+## [0.8.4]
+### Added
+- Adaptive support for host OS in native
+- CSS support for JS targets
+
+### Changed
+- Kotlin 1.4.31
+- Coroutines 1.4.3
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- Plugin loading order for publishing
+- Release task
+- Readme generation for multi-module project
+
+### Security
+
+## [0.8.1]
 ### Added
 - Ktor version to versions
 - Add sonatype publishing
@@ -36,6 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - kaml
 
 ### Fixed
+- Fix publishing load order for sonatype
+- Fix root project readme
 
 ### Security
 

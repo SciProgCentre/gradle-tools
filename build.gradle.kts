@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.8.0"
+version = "0.9.0"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -22,7 +22,7 @@ repositories {
 
 }
 
-val kotlinVersion = "1.4.30"
+val kotlinVersion = "1.4.31"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -38,7 +38,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
 }
 
-project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply{
+project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply {
     plugins {
         create("common") {
             id = "ru.mipt.npm.gradle.common"
@@ -141,8 +141,8 @@ afterEvaluate {
         }
 
         val spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/mipt-npm/maven"
-        val spaceUser: String? by project
-        val spaceToken: String? by project
+        val spaceUser: String? = project.findProperty("publishing.space.user") as? String
+        val spaceToken: String? = project.findProperty("publishing.space.token") as? String
 
         if (spaceUser != null && spaceToken != null) {
             project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
@@ -159,8 +159,8 @@ afterEvaluate {
             }
         }
 
-        val sonatypeUser: String? by project
-        val sonatypePassword: String? by project
+        val sonatypeUser: String? = project.findProperty("publishing.sonatype.user") as? String
+        val sonatypePassword: String? = project.findProperty("publishing.sonatype.password") as? String
 
         if (sonatypeUser != null && sonatypePassword != null) {
             val sonatypeRepo: String = if (project.version.toString().contains("dev")) {

@@ -8,30 +8,52 @@ import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
-import kotlin.collections.component1
-import kotlin.collections.component2
+import ru.mipt.npm.gradle.internal.addGithubPublishing
+import ru.mipt.npm.gradle.internal.addSonatypePublishing
+import ru.mipt.npm.gradle.internal.addSpacePublishing
+import ru.mipt.npm.gradle.internal.setupPublication
 
+@Suppress("unused")
 class KSciencePublishingExtension(val project: Project) {
-    var vcs: String? by project.extra
+    private var initializedFlag = false
 
-    // github publishing
-    var githubOrg: String? by project.extra
-    var githubProject: String? by project.extra
+    fun setup(vcsUrl: String){
+        project.setupPublication(vcsUrl)
+        initializedFlag = true
+    }
 
-    // Space publishing
-    var spaceRepo: String? by project.extra
-    var spaceUser: String? by project.extra
-    var spaceToken: String? by project.extra
+    /**
+     * github publishing
+     */
+    fun github(githubProject: String, githubOrg: String = "mipt-npm") {
+        //automatically initialize vcs using github
+        if(!initializedFlag){
+            setup("https://github.com/$githubOrg/$githubProject")
+        }
+        project.addGithubPublishing(githubOrg, githubProject)
+    }
 
-    // Bintray publishing
-    var bintrayOrg: String? by project.extra
-    var bintrayUser: String? by project.extra
-    var bintrayApiKey: String? by project.extra
-    var bintrayRepo: String? by project.extra
+    /**
+     *  Space publishing
+     */
+    fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven") {
+        require(initializedFlag){"The publishing is not set up use 'setup' method to do so"}
+        project.addSpacePublishing(spaceRepo)
+    }
 
-    // Sonatype publising
-    var sonatypeUser: String? by project.extra
-    var sonatypePassword: String? by project.extra
+//    // Bintray publishing
+//    var bintrayOrg: String? by project.extra
+//    var bintrayUser: String? by project.extra
+//    var bintrayApiKey: String? by project.extra
+//    var bintrayRepo: String? by project.extra
+
+    /**
+     *  Sonatype publising
+     */
+    fun sonatype(){
+        require(initializedFlag){"The publishing is not set up use 'setup' method to do so"}
+        project.addSonatypePublishing()
+    }
 }
 
 
@@ -103,20 +125,24 @@ open class KScienceProjectPlugin : Plugin<Project> {
             outputs.file(readmeFile)
 
             doLast {
-                val projects = subprojects.associate {
-                    it.name to it.extensions.findByType<KScienceReadmeExtension>()
-                }
+//                val projects = subprojects.associate {
+//                    val normalizedPath = it.path.replaceFirst(":","").replace(":","/")
+//                    it.path.replace(":","/") to it.extensions.findByType<KScienceReadmeExtension>()
+//                }
 
                 if (rootReadmeExtension.readmeTemplate.exists()) {
 
                     val modulesString = buildString {
-                        projects.entries.forEach { (name, ext) ->
+                        subprojects.forEach { subproject ->
+                            val name = subproject.name
+                            val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                            val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
                             appendln("<hr/>")
-                            appendln("\n* ### [$name]($name)")
+                            appendln("\n* ### [$name]($path)")
                             if (ext != null) {
                                 appendln("> ${ext.description}")
                                 appendln(">\n> **Maturity**: ${ext.maturity}")
-                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$name/")
+                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
                                 if (featureString.isNotBlank()) {
                                     appendln(">\n> **Features:**")
                                     appendln(featureString)
@@ -126,12 +152,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
                         appendln("<hr/>")
                     }
 
-                    val rootReadmeProperties: Map<String, Any?> = mapOf(
-                        "name" to project.name,
-                        "group" to project.group,
-                        "version" to project.version,
-                        "modules" to modulesString
-                    )
+                    val rootReadmeProperties: Map<String, Any?> =
+                        rootReadmeExtension.actualizedProperties + ("modules" to modulesString)
 
                     readmeFile.writeText(
                         SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate)
@@ -148,28 +170,10 @@ open class KScienceProjectPlugin : Plugin<Project> {
 
         val patchChangelog by tasks.getting
 
-        afterEvaluate {
-            val release by tasks.creating {
-                group = RELEASE_GROUP
-                description = "Publish development or production release based on version suffix"
-                dependsOn(generateReadme)
-
-                val publicationPlatform = project.findProperty("ci.publication.platform") as? String
-                val publicationName = if(publicationPlatform == null){
-                    "AllPublications"
-                } else {
-                    publicationPlatform.capitalize() + "Publication"
-                }
-                tasks.findByName("publish${publicationName}ToSonatypeRepository")?.let {
-                    dependsOn(it)
-                }
-                tasks.findByName("publish${publicationName}ToBintrayRepository")?.let {
-                    dependsOn(it)
-                }
-                tasks.findByName("publish${publicationName}ToSpaceRepository")?.let {
-                    dependsOn(it)
-                }
-            }
+        val release by tasks.creating {
+            group = RELEASE_GROUP
+            description = "Publish development or production release based on version suffix"
+            dependsOn(generateReadme)
         }
     }
 

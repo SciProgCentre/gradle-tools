@@ -46,30 +46,31 @@ class KScienceReadmeExtension(val project: Project) {
         features.add(Feature(id, description(), ref, name))
     }
 
-    val properties: MutableMap<String, () -> Any?> = mutableMapOf(
+    private val properties: MutableMap<String, () -> Any?> = mutableMapOf(
         "name" to { project.name },
         "group" to { project.group },
         "version" to { project.version },
         "features" to { featuresString() }
     )
 
-    private fun getActualizedProperties() = properties.mapValues { (_, value) ->
-        value.invoke()
-    }
+    val actualizedProperties
+        get() = properties.mapValues { (_, value) ->
+            value.invoke()
+        }
 
     fun property(key: String, value: Any?) {
         properties[key] = { value }
     }
 
     fun propertyByTemplate(key: String, template: String) {
-        val actual = getActualizedProperties()
+        val actual = actualizedProperties
         properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
     }
 
     internal val additionalFiles = ArrayList<File>()
 
     fun propertyByTemplate(key: String, template: File) {
-        val actual = getActualizedProperties()
+        val actual = actualizedProperties
         properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
         additionalFiles.add(template)
     }
@@ -88,7 +89,7 @@ class KScienceReadmeExtension(val project: Project) {
      */
     fun readmeString(): String? {
         return if (readmeTemplate.exists()) {
-            val actual = getActualizedProperties()
+            val actual = actualizedProperties
             SimpleTemplateEngine().createTemplate(readmeTemplate).make(actual).toString()
         } else {
             null
