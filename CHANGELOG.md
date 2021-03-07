@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.9.0]
+### Added
+- Skip sonatype publishing for dev versions
+
+### Changed
 - Publishing repositories are explicit and defined in the top level project
 - Paths to publishing properties now use dot notation like `publishing.github.user`
 
