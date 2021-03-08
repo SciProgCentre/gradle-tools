@@ -17,9 +17,11 @@ import ru.mipt.npm.gradle.internal.setupPublication
 class KSciencePublishingExtension(val project: Project) {
     private var initializedFlag = false
 
-    fun setup(vcsUrl: String){
-        project.setupPublication(vcsUrl)
-        initializedFlag = true
+    fun configurePublications(vcsUrl: String){
+        if(!initializedFlag) {
+            project.setupPublication(vcsUrl)
+            initializedFlag = true
+        }
     }
 
     /**
@@ -28,7 +30,7 @@ class KSciencePublishingExtension(val project: Project) {
     fun github(githubProject: String, githubOrg: String = "mipt-npm") {
         //automatically initialize vcs using github
         if(!initializedFlag){
-            setup("https://github.com/$githubOrg/$githubProject")
+            configurePublications("https://github.com/$githubOrg/$githubProject")
         }
         project.addGithubPublishing(githubOrg, githubProject)
     }
@@ -37,7 +39,7 @@ class KSciencePublishingExtension(val project: Project) {
      *  Space publishing
      */
     fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven") {
-        require(initializedFlag){"The publishing is not set up use 'setup' method to do so"}
+        require(initializedFlag){"The publishing is not set up use 'configurePublications' method to do so"}
         project.addSpacePublishing(spaceRepo)
     }
 
@@ -48,10 +50,10 @@ class KSciencePublishingExtension(val project: Project) {
 //    var bintrayRepo: String? by project.extra
 
     /**
-     *  Sonatype publising
+     *  Sonatype publishing
      */
     fun sonatype(){
-        require(initializedFlag){"The publishing is not set up use 'setup' method to do so"}
+        require(initializedFlag){"The publishing is not set up use 'configurePublications' method to do so"}
         project.addSonatypePublishing()
     }
 }

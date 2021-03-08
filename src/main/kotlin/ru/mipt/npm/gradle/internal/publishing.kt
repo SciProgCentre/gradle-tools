@@ -59,35 +59,37 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
             }
 
             // Process each publication we have in this project
-            publications.withType<MavenPublication>().forEach { publication ->
-                publication.artifact(dokkaJar)
-                publication.pom {
-                    name.set(project.name)
-                    description.set(project.description ?: project.name)
-                    url.set(vcs)
-
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("MIPT-NPM")
-                            name.set("MIPT nuclear physics methods laboratory")
-                            organization.set("MIPT")
-                            organizationUrl.set("http://npm.mipt.ru")
-                        }
-
-                    }
-                    scm {
+            afterEvaluate {
+                publications.withType<MavenPublication>().forEach { publication ->
+                    publication.artifact(dokkaJar)
+                    publication.pom {
+                        name.set(project.name)
+                        description.set(project.description ?: project.name)
                         url.set(vcs)
-                        tag.set(project.version.toString())
-                        //developerConnection = "scm:git:[fetch=]/*ВАША ССЫЛКА НА .git файл*/[push=]/*Повторить предыдущую ссылку*/"
-                    }
 
+                        licenses {
+                            license {
+                                name.set("The Apache Software License, Version 2.0")
+                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("MIPT-NPM")
+                                name.set("MIPT nuclear physics methods laboratory")
+                                organization.set("MIPT")
+                                organizationUrl.set("http://npm.mipt.ru")
+                            }
+
+                        }
+                        scm {
+                            url.set(vcs)
+                            tag.set(project.version.toString())
+                            //developerConnection = "scm:git:[fetch=]/*ВАША ССЫЛКА НА .git файл*/[push=]/*Повторить предыдущую ссылку*/"
+                        }
+
+                    }
                 }
             }
         }
