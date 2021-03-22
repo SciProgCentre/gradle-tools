@@ -4,7 +4,7 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.changelog") version "1.1.2"
-    id("org.jetbrains.dokka") version "1.4.20"
+    id("org.jetbrains.dokka") version "1.4.30"
 }
 
 group = "ru.mipt.npm"
@@ -19,7 +19,6 @@ repositories {
     maven("https://kotlin.bintray.com/kotlinx")
     maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
-
 }
 
 val kotlinVersion = "1.4.31"
@@ -32,10 +31,10 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.1")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.20")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.2")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.30")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.1.2")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.4.0")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
 }
 
 project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply {
