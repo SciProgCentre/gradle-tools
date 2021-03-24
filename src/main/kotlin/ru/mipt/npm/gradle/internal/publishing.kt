@@ -59,35 +59,37 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
             }
 
             // Process each publication we have in this project
-            publications.withType<MavenPublication>().forEach { publication ->
-                publication.artifact(dokkaJar)
-                publication.pom {
-                    name.set(project.name)
-                    description.set(project.description ?: project.name)
-                    url.set(vcs)
-
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-                    developers {
-                        developer {
-                            id.set("MIPT-NPM")
-                            name.set("MIPT nuclear physics methods laboratory")
-                            organization.set("MIPT")
-                            organizationUrl.set("http://npm.mipt.ru")
-                        }
-
-                    }
-                    scm {
+            afterEvaluate {
+                publications.withType<MavenPublication>().forEach { publication ->
+                    publication.artifact(dokkaJar)
+                    publication.pom {
+                        name.set(project.name)
+                        description.set(project.description ?: project.name)
                         url.set(vcs)
-                        tag.set(project.version.toString())
-                        //developerConnection = "scm:git:[fetch=]/*ВАША ССЫЛКА НА .git файл*/[push=]/*Повторить предыдущую ссылку*/"
-                    }
 
+                        licenses {
+                            license {
+                                name.set("The Apache Software License, Version 2.0")
+                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                                distribution.set("repo")
+                            }
+                        }
+                        developers {
+                            developer {
+                                id.set("MIPT-NPM")
+                                name.set("MIPT nuclear physics methods laboratory")
+                                organization.set("MIPT")
+                                organizationUrl.set("http://npm.mipt.ru")
+                            }
+
+                        }
+                        scm {
+                            url.set(vcs)
+                            tag.set(project.version.toString())
+                            //developerConnection = "scm:git:[fetch=]/*ВАША ССЫЛКА НА .git файл*/[push=]/*Повторить предыдущую ссылку*/"
+                        }
+
+                    }
                 }
             }
         }
@@ -98,7 +100,7 @@ internal fun Project.isSnapshot() = version.toString().contains("dev") || versio
 
 internal val Project.publicationTarget: String
     get() {
-        val publicationPlatform = project.findProperty("publication.platform") as? String
+        val publicationPlatform = project.findProperty("publishing.platform") as? String
         return if (publicationPlatform == null) {
             "AllPublications"
         } else {
@@ -110,8 +112,12 @@ internal fun Project.addGithubPublishing(
     githubOrg: String,
     githubProject: String
 ) {
+    if (requestPropertyOrNull("publishing.enabled") != "true") {
+        logger.info("Skipping github publishing because publishing is disabled")
+        return
+    }
     if (requestPropertyOrNull("publishing.github") == "false") {
-        logger.info("Skipping github publishing based on flag value")
+        logger.info("Skipping github publishing  because `publishing.github == false`")
         return
     }
 
@@ -140,8 +146,12 @@ internal fun Project.addGithubPublishing(
 }
 
 internal fun Project.addSpacePublishing(spaceRepo: String) {
+    if (requestPropertyOrNull("publishing.enabled") != "true") {
+        logger.info("Skipping github publishing because publishing is disabled")
+        return
+    }
     if (requestPropertyOrNull("publishing.space") == "false") {
-        logger.info("Skipping space publishing based on flag value")
+        logger.info("Skipping space publishing because `publishing.space == false`")
         return
     }
 
@@ -171,12 +181,16 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
 }
 
 internal fun Project.addSonatypePublishing() {
-    if(isSnapshot()){
+    if(requestPropertyOrNull("publishing.enabled")!="true"){
+        logger.info("Skipping github publishing because publishing is disabled")
+        return
+    }
+    if (isSnapshot()) {
         logger.info("Sonatype publishing skipped for dev version")
         return
     }
     if (requestPropertyOrNull("publishing.sonatype") == "false") {
-        logger.info("Skipping sonatype publishing based on flag value")
+        logger.info("Skipping sonatype publishing because `publishing.sonatype == false`")
         return
     }
 
