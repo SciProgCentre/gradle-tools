@@ -22,10 +22,7 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
 internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
     maven("https://repo.kotlin.link")
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-    maven("https://dl.bintray.com/kotlin/kotlin-dev")
-    maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://kotlin.bintray.com/kotlin-js-wrappers/")
+    maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
 }
 
 internal fun Copy.fromJsDependencies(configurationName: String) = project.afterEvaluate {

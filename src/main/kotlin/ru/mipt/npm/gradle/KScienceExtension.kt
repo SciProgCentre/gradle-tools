@@ -42,6 +42,9 @@ enum class DependencySourceSet(val setName: String, val suffix: String) {
 
 class KScienceExtension(val project: Project) {
 
+    /**
+     * Use coroutines-core with default version or [version]
+     */
     fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -52,13 +55,25 @@ class KScienceExtension(val project: Project) {
         dependencyConfiguration = configuration
     )
 
-    fun useAtomic(version: String = KScienceVersions.atomicVersion): Unit = project.run {
+    /**
+     * Use kotlinx-atmicfu plugin and library
+     */
+    fun useAtomic(
+        version: String = KScienceVersions.atomicVersion,
+        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
+        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+    ): Unit = project.run {
         plugins.apply("kotlinx-atomicfu")
         useCommonDependency(
-            "org.jetbrains.kotlinx:atomicfu:$version"
+            "org.jetbrains.kotlinx:atomicfu:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
         )
     }
 
+    /**
+     * Use core serialization library and configure targets
+     */
     fun useSerialization(
         version: String = KScienceVersions.serializationVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -79,25 +94,19 @@ class KScienceExtension(val project: Project) {
         SerializationTargets(sourceSet, configuration).apply(block)
     }
 
-    fun useAtomic(
-        version: String = KScienceVersions.atomicVersion,
-        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
-    ): Unit = project.run {
-        plugins.apply("kotlinx-atomicfu")
-        useCommonDependency(
-            "org.jetbrains.kotlinx:atomicfu-common:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
-
     fun useFx(
         vararg modules: FXModule,
         configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
-        version: String = "14",
+        version: String = "11",
         platform: FXPlatform = defaultPlatform
     ) = project.useFx(modules.toList(), configuration, version, platform)
+
+    /**
+     * Use kotlinx-datetime library with default version or [version]
+     */
+    fun useDateTime(version: String = KScienceVersions.dateTimeVersion){
+        project.useCommonDependency("org.jetbrains.kotlinx:kotlinx-datetime:$version")
+    }
 
     /**
      * Mark this module as an application module. JVM application should be enabled separately

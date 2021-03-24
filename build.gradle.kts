@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.9.2"
+version = "0.9.3"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -17,11 +17,10 @@ repositories {
     jcenter()
     maven("https://repo.kotlin.link")
     maven("https://kotlin.bintray.com/kotlinx")
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.31"
+val kotlinVersion = "1.4.32"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -49,12 +48,6 @@ project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply {
             id = "ru.mipt.npm.gradle.project"
             description = "The root plugin for multimodule project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
-        }
-
-        create("publishing") {
-            id = "ru.mipt.npm.gradle.publish"
-            description = "The publication plugin for bintray and github"
-            implementationClass = "ru.mipt.npm.gradle.KSciencePublishingPlugin"
         }
 
         create("mpp") {
