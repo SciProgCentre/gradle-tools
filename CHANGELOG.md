@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `publication.platform` changed to `publishing.platform`
 - Dokka version to `1.4.30`
 - `useDateTime` in extension
+- Kotlin 1.5
 
 ### Deprecated
 

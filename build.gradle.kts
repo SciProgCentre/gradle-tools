@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.9.3"
+version = "0.9.4"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -20,7 +20,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/kotlin-dev")
 }
 
-val kotlinVersion = "1.4.32"
+val kotlinVersion = "1.5.0-M2"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8

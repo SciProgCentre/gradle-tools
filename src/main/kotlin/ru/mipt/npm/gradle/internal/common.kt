@@ -8,9 +8,9 @@ import org.gradle.kotlin.dsl.maven
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
-    languageVersion = "1.4"
+    languageVersion = "1.5"
+    apiVersion = "1.5"
     progressiveMode = true
-    enableLanguageFeature("InlineClasses")
     useExperimentalAnnotation("kotlin.Experimental")
     useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
     useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
@@ -22,6 +22,7 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
 internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
     maven("https://repo.kotlin.link")
+    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
 }
 

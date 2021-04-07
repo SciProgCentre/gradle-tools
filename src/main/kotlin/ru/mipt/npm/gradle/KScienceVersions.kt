@@ -6,13 +6,13 @@ import org.gradle.api.JavaVersion
  * Build constants
  */
 object KScienceVersions {
-    const val kotlinVersion = "1.4.32"
+    const val kotlinVersion = "1.5.0-M2"
     const val kotlinxNodeVersion = "0.0.7"
     const val coroutinesVersion = "1.4.3"
     const val serializationVersion = "1.1.0"
     const val atomicVersion = "0.15.1"
-    const val ktorVersion = "1.5.2"
-    const val htmlVersion = "0.7.2"
+    const val ktorVersion = "1.5.3"
+    const val htmlVersion = "0.7.3"
     const val dateTimeVersion = "0.1.1"
 
     val JVM_TARGET = JavaVersion.VERSION_11
