@@ -26,28 +26,26 @@ internal fun RepositoryHandler.applyRepos(): Unit {
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
 }
 
-internal fun Copy.fromJsDependencies(configurationName: String) = project.afterEvaluate {
+internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
     val configuration = configurations[configurationName]
         ?: error("Configuration with name $configurationName could not be resolved.")
     val projectDeps = configuration.allDependencies.filterIsInstance<ProjectDependency>().map {
         it.dependencyProject
     }
     projectDeps.forEach { dep ->
-        dep.afterEvaluate {
-            dep.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-                dep.tasks.findByName("jsProcessResources")?.let { task ->
-                    dependsOn(task)
-                    from(task)
-                }
-            }
-            dep.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-                dep.tasks.findByName("processResources")?.let { task ->
-                    dependsOn(task)
-                    from(task)
-                }
+        dep.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            dep.tasks.findByName("jsProcessResources")?.let { task ->
+                dependsOn(task)
+                from(task)
             }
         }
-    }
+        dep.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
+            dep.tasks.findByName("processResources")?.let { task ->
+                dependsOn(task)
+                from(task)
+            }
+        }
+     }
 }
 
 
