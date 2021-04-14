@@ -6,7 +6,7 @@ import org.gradle.api.JavaVersion
  * Build constants
  */
 object KScienceVersions {
-    const val kotlinVersion = "1.5.0-M2"
+    const val kotlinVersion = "1.5.0-RC"
     const val kotlinxNodeVersion = "0.0.7"
     const val coroutinesVersion = "1.4.3"
     const val serializationVersion = "1.1.0"

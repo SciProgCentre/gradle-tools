@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Disable API validation for snapshots
+- `-Xjvm-default=all` on JVM
 
 ### Changed
 - `publication.platform` changed to `publishing.platform`

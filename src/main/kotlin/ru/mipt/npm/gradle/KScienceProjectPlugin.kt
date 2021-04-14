@@ -137,19 +137,19 @@ open class KScienceProjectPlugin : Plugin<Project> {
                             val name = subproject.name
                             val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                             val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
-                            appendln("<hr/>")
-                            appendln("\n* ### [$name]($path)")
+                            appendLine("<hr/>")
+                            appendLine("\n* ### [$name]($path)")
                             if (ext != null) {
-                                appendln("> ${ext.description}")
-                                appendln(">\n> **Maturity**: ${ext.maturity}")
+                                appendLine("> ${ext.description}")
+                                appendLine(">\n> **Maturity**: ${ext.maturity}")
                                 val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
                                 if (featureString.isNotBlank()) {
-                                    appendln(">\n> **Features:**")
-                                    appendln(featureString)
+                                    appendLine(">\n> **Features:**")
+                                    appendLine(featureString)
                                 }
                             }
                         }
-                        appendln("<hr/>")
+                        appendLine("<hr/>")
                     }
 
                     val rootReadmeProperties: Map<String, Any?> =
@@ -168,7 +168,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
             dependsOn(generateReadme)
         }
 
-        val patchChangelog by tasks.getting
+        //val patchChangelog by tasks.getting
 
         val release by tasks.creating {
             group = RELEASE_GROUP

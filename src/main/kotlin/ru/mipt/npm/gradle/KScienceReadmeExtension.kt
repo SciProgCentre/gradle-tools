@@ -80,7 +80,7 @@ class KScienceReadmeExtension(val project: Project) {
      */
     fun featuresString(itemPrefix: String = " - ", pathPrefix: String = "") = buildString {
         features.forEach {
-            appendln("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
+            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }
     }
 
