@@ -4,13 +4,17 @@ plugins {
     `maven-publish`
     signing
     id("org.jetbrains.changelog") version "1.1.2"
-    id("org.jetbrains.dokka") version "1.4.30"
+    id("org.jetbrains.dokka") version "1.4.32"
 }
 
 group = "ru.mipt.npm"
-version = "0.9.5-dev-2"
+version = "0.9.5"
 
 description = "Build tools for DataForge and kscience projects"
+
+changelog{
+    version = project.version.toString()
+}
 
 repositories {
     mavenCentral()
@@ -18,7 +22,7 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
-val kotlinVersion = "1.5.0-RC"
+val kotlinVersion = "1.5.0"
 
 java {
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -28,8 +32,8 @@ java {
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.15.2")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.30")
+    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.16.1")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.1.2")
     implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
 }

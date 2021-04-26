@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.9.5]
+### Added
 - Disable API validation for snapshots
 - `-Xjvm-default=all` on JVM
 
@@ -19,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+- Publish plugin. Use MavenPublish instead
 
 ### Fixed
 - Removed unnecessary `afterEvaluate` for compatibility with gradle 7.0
