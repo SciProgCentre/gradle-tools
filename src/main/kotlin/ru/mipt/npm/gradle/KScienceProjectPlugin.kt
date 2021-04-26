@@ -1,6 +1,7 @@
 package ru.mipt.npm.gradle
 
 import groovy.text.SimpleTemplateEngine
+import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -8,17 +9,14 @@ import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
-import ru.mipt.npm.gradle.internal.addGithubPublishing
-import ru.mipt.npm.gradle.internal.addSonatypePublishing
-import ru.mipt.npm.gradle.internal.addSpacePublishing
-import ru.mipt.npm.gradle.internal.setupPublication
+import ru.mipt.npm.gradle.internal.*
 
 @Suppress("unused")
 class KSciencePublishingExtension(val project: Project) {
     private var initializedFlag = false
 
-    fun configurePublications(vcsUrl: String){
-        if(!initializedFlag) {
+    fun configurePublications(vcsUrl: String) {
+        if (!initializedFlag) {
             project.setupPublication(vcsUrl)
             initializedFlag = true
         }
@@ -29,7 +27,7 @@ class KSciencePublishingExtension(val project: Project) {
      */
     fun github(githubProject: String, githubOrg: String = "mipt-npm") {
         //automatically initialize vcs using github
-        if(!initializedFlag){
+        if (!initializedFlag) {
             configurePublications("https://github.com/$githubOrg/$githubProject")
         }
         project.addGithubPublishing(githubOrg, githubProject)
@@ -39,7 +37,7 @@ class KSciencePublishingExtension(val project: Project) {
      *  Space publishing
      */
     fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven") {
-        require(initializedFlag){"The publishing is not set up use 'configurePublications' method to do so"}
+        require(initializedFlag) { "The publishing is not set up use 'configurePublications' method to do so" }
         project.addSpacePublishing(spaceRepo)
     }
 
@@ -52,8 +50,8 @@ class KSciencePublishingExtension(val project: Project) {
     /**
      *  Sonatype publishing
      */
-    fun sonatype(){
-        require(initializedFlag){"The publishing is not set up use 'configurePublications' method to do so"}
+    fun sonatype() {
+        require(initializedFlag) { "The publishing is not set up use 'configurePublications' method to do so" }
         project.addSonatypePublishing()
     }
 }
@@ -139,19 +137,19 @@ open class KScienceProjectPlugin : Plugin<Project> {
                             val name = subproject.name
                             val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                             val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
-                            appendln("<hr/>")
-                            appendln("\n* ### [$name]($path)")
+                            appendLine("<hr/>")
+                            appendLine("\n* ### [$name]($path)")
                             if (ext != null) {
-                                appendln("> ${ext.description}")
-                                appendln(">\n> **Maturity**: ${ext.maturity}")
+                                appendLine("> ${ext.description}")
+                                appendLine(">\n> **Maturity**: ${ext.maturity}")
                                 val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
                                 if (featureString.isNotBlank()) {
-                                    appendln(">\n> **Features:**")
-                                    appendln(featureString)
+                                    appendLine(">\n> **Features:**")
+                                    appendLine(featureString)
                                 }
                             }
                         }
-                        appendln("<hr/>")
+                        appendLine("<hr/>")
                     }
 
                     val rootReadmeProperties: Map<String, Any?> =
@@ -170,12 +168,20 @@ open class KScienceProjectPlugin : Plugin<Project> {
             dependsOn(generateReadme)
         }
 
-        val patchChangelog by tasks.getting
+        //val patchChangelog by tasks.getting
 
         val release by tasks.creating {
             group = RELEASE_GROUP
             description = "Publish development or production release based on version suffix"
             dependsOn(generateReadme)
+        }
+
+        // Disable API validation for snapshots
+        if (isSnapshot()) {
+            extensions.findByType<ApiValidationExtension>()?.apply {
+                validationDisabled = true
+                logger.warn("API validation is disabled for snapshot or dev version")
+            }
         }
     }
 

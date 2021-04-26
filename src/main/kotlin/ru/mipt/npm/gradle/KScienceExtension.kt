@@ -2,6 +2,7 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
@@ -101,6 +102,16 @@ class KScienceExtension(val project: Project) {
         platform: FXPlatform = defaultPlatform
     ) = project.useFx(modules.toList(), configuration, version, platform)
 
+    fun useHtml(
+        version: String = KScienceVersions.atomicVersion,
+        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
+        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+    ): Unit = project.useCommonDependency(
+        "org.jetbrains.kotlinx:kotlinx-html:$version",
+        dependencySourceSet = sourceSet,
+        dependencyConfiguration = configuration
+    )
+
     /**
      * Use kotlinx-datetime library with default version or [version]
      */
@@ -137,7 +148,7 @@ class KScienceExtension(val project: Project) {
     }
 
     fun publish() {
-        project.plugins.apply(KSciencePublishingPlugin::class)
+        project.plugins.apply(MavenPublishPlugin::class)
     }
 }
 

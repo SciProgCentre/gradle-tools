@@ -9,15 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- `publication.platform` changed to `publishing.platform`
-- Dokka version to `1.4.30`
-- `useDateTime` in extension
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+
+### Security
+
+## [0.9.5]
+### Added
+- Disable API validation for snapshots
+- `-Xjvm-default=all` on JVM
+
+### Changed
+- `publication.platform` changed to `publishing.platform`
+- Dokka version to `1.4.30`
+- `useDateTime` in extension
+- Kotlin 1.5
+
+### Deprecated
+
+### Removed
+- Publish plugin. Use MavenPublish instead
+
+### Fixed
+- Removed unnecessary `afterEvaluate` for compatibility with gradle 7.0
 
 ### Security
 

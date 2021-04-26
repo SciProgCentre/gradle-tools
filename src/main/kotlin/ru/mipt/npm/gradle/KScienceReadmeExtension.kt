@@ -38,6 +38,7 @@ class KScienceReadmeExtension(val project: Project) {
 
     val features = ArrayList<Feature>()
 
+    @Deprecated("Use lambda builder instead")
     fun feature(id: String, description: String, ref: String? = null, name: String = id) {
         features.add(Feature(id, description, ref, name))
     }
@@ -80,7 +81,7 @@ class KScienceReadmeExtension(val project: Project) {
      */
     fun featuresString(itemPrefix: String = " - ", pathPrefix: String = "") = buildString {
         features.forEach {
-            appendln("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
+            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }
     }
 
