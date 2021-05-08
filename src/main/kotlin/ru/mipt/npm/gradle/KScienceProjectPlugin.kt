@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
+import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
 import ru.mipt.npm.gradle.internal.*
@@ -63,6 +64,13 @@ class KSciencePublishingExtension(val project: Project) {
 open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
+
+        if(!isSnapshot()) {
+            configure<ChangelogPluginExtension> {
+                version = project.version.toString()
+            }
+        }
+
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 

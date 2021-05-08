@@ -103,7 +103,7 @@ class KScienceExtension(val project: Project) {
     ) = project.useFx(modules.toList(), configuration, version, platform)
 
     fun useHtml(
-        version: String = KScienceVersions.atomicVersion,
+        version: String = KScienceVersions.htmlVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
     ): Unit = project.useCommonDependency(
