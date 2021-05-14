@@ -20,7 +20,7 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
     plugins.withId("maven-publish") {
         configure<PublishingExtension> {
 
-            plugins.withId("ru.mipt.npm.gradle.js") {
+            plugins.withId("org.jetbrains.kotlin.js") {
                 val kotlin = extensions.findByType<KotlinJsProjectExtension>()!!
 
                 val sourcesJar: Jar by tasks.creating(Jar::class) {
@@ -36,7 +36,7 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
                 }
             }
 
-            plugins.withId("ru.mipt.npm.gradle.jvm") {
+            plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
                 val sourcesJar: Jar by tasks.creating(Jar::class) {

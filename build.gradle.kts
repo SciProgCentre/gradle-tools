@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.9.6"
+version = "0.9.7"
 
 description = "Build tools for DataForge and kscience projects"
 
