@@ -83,6 +83,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
 
+
+
         if (!isSnapshot()) {
             configure<ChangelogPluginExtension> {
                 version = project.version.toString()
@@ -91,6 +93,12 @@ open class KScienceProjectPlugin : Plugin<Project> {
 
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
+
+        if (isSnapshot()) {
+            configure<ApiValidationExtension> {
+                validationDisabled = true
+            }
+        }
 
         val rootReadmeExtension = KScienceReadmeExtension(this)
         extensions.add("ksciencePublish", KSciencePublishingExtension(this))
