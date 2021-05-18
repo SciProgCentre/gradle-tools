@@ -110,7 +110,7 @@ internal val Project.publicationTarget: String
 
 internal fun Project.addGithubPublishing(
     githubOrg: String,
-    githubProject: String
+    githubProject: String,
 ) {
     if (requestPropertyOrNull("publishing.enabled") != "true") {
         logger.info("Skipping github publishing because publishing is disabled")
@@ -139,8 +139,6 @@ internal fun Project.addGithubPublishing(
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToGithubRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }
@@ -174,8 +172,6 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToSpaceRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }
@@ -229,8 +225,6 @@ internal fun Project.addSonatypePublishing() {
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToSonatypeRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }

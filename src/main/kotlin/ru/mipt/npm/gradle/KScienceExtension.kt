@@ -147,6 +147,7 @@ class KScienceExtension(val project: Project) {
         }
     }
 
+    @Deprecated("Replace by applying maven-publish plugin")
     fun publish() {
         project.plugins.apply(MavenPublishPlugin::class)
     }

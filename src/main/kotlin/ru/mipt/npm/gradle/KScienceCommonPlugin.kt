@@ -40,7 +40,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
             }
             tasks.withType<KotlinJvmCompile> {
                 kotlinOptions {
-                    useIR = true
                     jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
                 }
@@ -95,7 +94,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-                            useIR = true
                             jvmTarget = KScienceVersions.JVM_TARGET.toString()
                             freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
                         }

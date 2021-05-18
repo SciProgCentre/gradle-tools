@@ -22,7 +22,6 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
 internal fun RepositoryHandler.applyRepos(): Unit {
     mavenCentral()
     maven("https://repo.kotlin.link")
-    maven("https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven")
     maven("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers")
 }
 

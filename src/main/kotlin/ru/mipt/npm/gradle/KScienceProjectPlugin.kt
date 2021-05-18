@@ -16,7 +16,7 @@ import ru.mipt.npm.gradle.internal.*
 class KSciencePublishingExtension(val project: Project) {
     private var initializedFlag = false
 
-    fun configurePublications(vcsUrl: String) {
+    fun vcs(vcsUrl: String) {
         if (!initializedFlag) {
             project.setupPublication(vcsUrl)
             initializedFlag = true
@@ -25,21 +25,35 @@ class KSciencePublishingExtension(val project: Project) {
 
     /**
      * github publishing
+     * @param publish include github packages in release publishing. By default - false
      */
-    fun github(githubProject: String, githubOrg: String = "mipt-npm") {
+    fun github(githubProject: String, githubOrg: String = "mipt-npm", publish: Boolean = false) {
         //automatically initialize vcs using github
         if (!initializedFlag) {
-            configurePublications("https://github.com/$githubOrg/$githubProject")
+            vcs("https://github.com/$githubOrg/$githubProject")
         }
         project.addGithubPublishing(githubOrg, githubProject)
+
+        if (publish) {
+            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToGithubRepository")
+            releaseTask?.dependsOn(publicationTask)
+        }
+    }
+
+    private val releaseTask by lazy {
+        project.tasks.findByName("release")
     }
 
     /**
      *  Space publishing
      */
-    fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven") {
-        require(initializedFlag) { "The publishing is not set up use 'configurePublications' method to do so" }
+    fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", publish: Boolean = false) {
+        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
+        if (publish) {
+            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToSpaceRepository")
+            releaseTask?.dependsOn(publicationTask)
+        }
     }
 
 //    // Bintray publishing
@@ -51,9 +65,13 @@ class KSciencePublishingExtension(val project: Project) {
     /**
      *  Sonatype publishing
      */
-    fun sonatype() {
-        require(initializedFlag) { "The publishing is not set up use 'configurePublications' method to do so" }
+    fun sonatype(publish: Boolean = true) {
+        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
+        if (publish) {
+            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToSonatypeRepository")
+            releaseTask?.dependsOn(publicationTask)
+        }
     }
 }
 
@@ -65,7 +83,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
 
-        if(!isSnapshot()) {
+        if (!isSnapshot()) {
             configure<ChangelogPluginExtension> {
                 version = project.version.toString()
             }

@@ -11,7 +11,7 @@ object KScienceVersions {
     const val coroutinesVersion = "1.5.0"
     const val serializationVersion = "1.2.1"
     const val atomicVersion = "0.16.1"
-    const val ktorVersion = "1.5.3"
+    const val ktorVersion = "1.5.4"
     const val htmlVersion = "0.7.3"
     const val dateTimeVersion = "0.2.0"
 
