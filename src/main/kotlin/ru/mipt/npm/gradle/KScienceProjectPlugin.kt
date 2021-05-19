@@ -35,8 +35,9 @@ class KSciencePublishingExtension(val project: Project) {
         project.addGithubPublishing(githubOrg, githubProject)
 
         if (publish) {
-            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToGithubRepository")
-            releaseTask?.dependsOn(publicationTask)
+            project.tasks.findByName("publish${project.publicationTarget}ToGithubRepository")?.let {publicationTask->
+                releaseTask?.dependsOn(publicationTask)
+            }
         }
     }
 
@@ -51,8 +52,9 @@ class KSciencePublishingExtension(val project: Project) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
         if (publish) {
-            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToSpaceRepository")
-            releaseTask?.dependsOn(publicationTask)
+            project.tasks.findByName("publish${project.publicationTarget}ToSpaceRepository")?.let { publicationTask ->
+                releaseTask?.dependsOn(publicationTask)
+            }
         }
     }
 
@@ -69,8 +71,10 @@ class KSciencePublishingExtension(val project: Project) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
         if (publish) {
-            val publicationTask = project.tasks.getByName("publish${project.publicationTarget}ToSonatypeRepository")
-            releaseTask?.dependsOn(publicationTask)
+            project.tasks.findByName("publish${project.publicationTarget}ToSonatypeRepository")
+                ?.let { publicationTask ->
+                    releaseTask?.dependsOn(publicationTask)
+                }
         }
     }
 }
