@@ -87,20 +87,18 @@ open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
 
-
-
-        if (!isSnapshot()) {
-            configure<ChangelogPluginExtension> {
-                version = project.version.toString()
-            }
-        }
-
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 
-        if (isSnapshot()) {
-            configure<ApiValidationExtension> {
-                validationDisabled = true
+        afterEvaluate {
+            if (isSnapshot()) {
+                configure<ApiValidationExtension> {
+                    validationDisabled = true
+                }
+            } else {
+                configure<ChangelogPluginExtension> {
+                    version = project.version.toString()
+                }
             }
         }
 
