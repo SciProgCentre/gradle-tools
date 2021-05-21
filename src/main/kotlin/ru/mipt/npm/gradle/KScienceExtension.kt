@@ -49,7 +49,7 @@ class KScienceExtension(val project: Project) {
     fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.API
+        configuration: DependencyConfiguration = DependencyConfiguration.API,
     ): Unit = project.useCommonDependency(
         "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version",
         dependencySourceSet = sourceSet,
@@ -62,7 +62,7 @@ class KScienceExtension(val project: Project) {
     fun useAtomic(
         version: String = KScienceVersions.atomicVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION,
     ): Unit = project.run {
         plugins.apply("kotlinx-atomicfu")
         useCommonDependency(
@@ -79,7 +79,7 @@ class KScienceExtension(val project: Project) {
         version: String = KScienceVersions.serializationVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
-        block: SerializationTargets.() -> Unit = {}
+        block: SerializationTargets.() -> Unit = {},
     ): Unit = project.run {
         plugins.apply("org.jetbrains.kotlin.plugin.serialization")
         val artifactName = if (version.startsWith("0")) {
@@ -95,17 +95,23 @@ class KScienceExtension(val project: Project) {
         SerializationTargets(sourceSet, configuration).apply(block)
     }
 
+    /**
+     * Add platform-specific JavaFX dependencies with given list of [FXModule]s
+     */
     fun useFx(
         vararg modules: FXModule,
         configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
         version: String = "11",
-        platform: FXPlatform = defaultPlatform
+        platform: FXPlatform = defaultPlatform,
     ) = project.useFx(modules.toList(), configuration, version, platform)
 
+    /**
+     * Add dependency on kotlinx-html library
+     */
     fun useHtml(
         version: String = KScienceVersions.htmlVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+        configuration: DependencyConfiguration = DependencyConfiguration.API,
     ): Unit = project.useCommonDependency(
         "org.jetbrains.kotlinx:kotlinx-html:$version",
         dependencySourceSet = sourceSet,
@@ -115,8 +121,16 @@ class KScienceExtension(val project: Project) {
     /**
      * Use kotlinx-datetime library with default version or [version]
      */
-    fun useDateTime(version: String = KScienceVersions.dateTimeVersion){
-        project.useCommonDependency("org.jetbrains.kotlinx:kotlinx-datetime:$version")
+    fun useDateTime(
+        version: String = KScienceVersions.dateTimeVersion,
+        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
+        configuration: DependencyConfiguration = DependencyConfiguration.API,
+    ) {
+        project.useCommonDependency(
+            "org.jetbrains.kotlinx:kotlinx-datetime:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
+        )
     }
 
     /**
