@@ -21,7 +21,7 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
         configure<PublishingExtension> {
 
             plugins.withId("org.jetbrains.kotlin.js") {
-                val kotlin: KotlinJsProjectExtension = extensions.findByType<KotlinJsProjectExtension>()!!
+                val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
 
                 val sourcesJar: Jar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
@@ -29,13 +29,14 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
                         from(it.kotlin)
                     }
                 }
-
-                publications {
-                    create("js", MavenPublication::class) {
-                        kotlin.js().components.forEach {
-                            from(it)
+                afterEvaluate {
+                    publications {
+                        create("js", MavenPublication::class) {
+                            kotlin.js().components.forEach {
+                                from(it)
+                            }
+                            artifact(sourcesJar)
                         }
-                        artifact(sourcesJar)
                     }
                 }
             }
