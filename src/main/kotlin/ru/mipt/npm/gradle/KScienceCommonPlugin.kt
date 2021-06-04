@@ -14,6 +14,7 @@ import ru.mipt.npm.gradle.internal.applyRepos
 import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
+@Suppress("UNUSED_VARIABLE")
 open class KScienceCommonPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         //Common configuration
