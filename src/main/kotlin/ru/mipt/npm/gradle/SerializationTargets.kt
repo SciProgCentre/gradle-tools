@@ -59,6 +59,7 @@ class SerializationTargets(
         )
     }
 
+    @Deprecated("To be removed")
     fun Project.bson(
         version: String = KScienceVersions.Serialization.bsonVersion
     ) {
