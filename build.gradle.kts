@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.9.10"
+version = "0.10.0"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -25,17 +25,17 @@ repositories {
 val kotlinVersion = "1.5.10"
 
 java {
-    targetCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
-// Add plugins used in buildSrc as dependencies, also we should specify version only here
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:0.10.0-53")
     implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
     implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.16.1")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.1.2")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.5.0")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.6.0")
 }
 
 project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply {

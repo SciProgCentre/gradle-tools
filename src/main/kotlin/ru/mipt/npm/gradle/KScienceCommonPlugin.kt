@@ -63,7 +63,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 explicitApiWarning()
 
                 js(IR) {
-                    browser{
+                    browser {
                         commonWebpackConfig {
                             cssSupport.enabled = true
                         }
@@ -72,6 +72,9 @@ open class KScienceCommonPlugin : Plugin<Project> {
 
                 sourceSets["main"].apply {
                     languageSettings.applySettings()
+                    dependencies {
+                        api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                    }
                 }
 
                 sourceSets["test"].apply {
@@ -102,7 +105,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 js(IR) {
-                    browser{
+                    browser {
                         commonWebpackConfig {
                             cssSupport.enabled = true
                         }
@@ -110,7 +113,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 sourceSets.invoke {
-                    val commonMain by getting
+                    val commonMain by getting {
+                        dependencies {
+                            api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                        }
+                    }
                     val commonTest by getting {
                         dependencies {
                             implementation(kotlin("test-common"))

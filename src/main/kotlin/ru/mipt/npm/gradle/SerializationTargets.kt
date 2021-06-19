@@ -2,7 +2,6 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
 import ru.mipt.npm.gradle.internal.useCommonDependency
-import ru.mipt.npm.gradle.internal.useDependency
 
 class SerializationTargets(
     val sourceSet: DependencySourceSet,
@@ -54,17 +53,6 @@ class SerializationTargets(
     ) {
         useCommonDependency(
             "net.mamoe.yamlkt:yamlkt:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
-
-    @Deprecated("To be removed")
-    fun Project.bson(
-        version: String = KScienceVersions.Serialization.bsonVersion
-    ) {
-        useDependency(
-            "jvm" to "com.github.jershell:kbson:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )

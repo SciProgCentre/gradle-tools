@@ -7,14 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Lazy readme properties
+- BOM for kotlin-wrappers on JS
+- Jupyter loader
 
 ### Changed
 - API validation disabled for dev versions
+- Kotlin plugins are propagated downstream
 
 ### Deprecated
-- bson support
 
 ### Removed
+- bson support
 
 ### Fixed
 

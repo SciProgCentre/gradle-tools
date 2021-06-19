@@ -2,8 +2,6 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -134,6 +132,13 @@ class KScienceExtension(val project: Project) {
     }
 
     /**
+     * Apply jupyter plugin
+     */
+    fun useJupyter() {
+        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
+    }
+
+    /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
     fun application() {
@@ -159,11 +164,6 @@ class KScienceExtension(val project: Project) {
                 it.binaries.executable()
             }
         }
-    }
-
-    @Deprecated("Replace by applying maven-publish plugin")
-    fun publish() {
-        project.plugins.apply(MavenPublishPlugin::class)
     }
 }
 
