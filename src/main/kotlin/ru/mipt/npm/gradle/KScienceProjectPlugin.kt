@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
+import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
 import ru.mipt.npm.gradle.internal.*
@@ -200,7 +201,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        tasks.withType<DokkaTask> {
+        tasks.withType<AbstractDokkaTask> {
             dependsOn(generateReadme)
         }
 

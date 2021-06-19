@@ -36,15 +36,15 @@ class KScienceReadmeExtension(val project: Project) {
 
     data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
-    val features = ArrayList<Feature>()
+    val features: MutableList<Feature> = ArrayList()
 
     @Deprecated("Use lambda builder instead")
     fun feature(id: String, description: String, ref: String? = null, name: String = id) {
-        features.add(Feature(id, description, ref, name))
+        features += Feature(id, description, ref, name)
     }
 
     fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
-        features.add(Feature(id, description(), ref, name))
+        features += Feature(id, description(), ref, name)
     }
 
     private val properties: MutableMap<String, () -> Any?> = mutableMapOf(
@@ -55,12 +55,14 @@ class KScienceReadmeExtension(val project: Project) {
     )
 
     val actualizedProperties
-        get() = properties.mapValues { (_, value) ->
-            value.invoke()
-        }
+        get() = properties.mapValues { (_, value) -> value() }
 
     fun property(key: String, value: Any?) {
         properties[key] = { value }
+    }
+
+    fun property(key: String, value: () -> Any?) {
+        properties[key] = value
     }
 
     fun propertyByTemplate(key: String, template: String) {
@@ -73,7 +75,7 @@ class KScienceReadmeExtension(val project: Project) {
     fun propertyByTemplate(key: String, template: File) {
         val actual = actualizedProperties
         properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
-        additionalFiles.add(template)
+        additionalFiles += template
     }
 
     /**
