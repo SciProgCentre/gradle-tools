@@ -20,33 +20,42 @@ internal fun Project.setupPublication(vcs: String) = allprojects {
     plugins.withId("maven-publish") {
         configure<PublishingExtension> {
 
-            plugins.withId("ru.mipt.npm.gradle.js") {
-                val kotlin = extensions.findByType<KotlinJsProjectExtension>()!!
+            plugins.withId("org.jetbrains.kotlin.js") {
+                val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
 
                 val sourcesJar: Jar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
-                    from(kotlin.sourceSets["main"].kotlin)
+                    kotlin.sourceSets.forEach{
+                        from(it.kotlin)
+                    }
                 }
-
-                publications {
-                    create("js", MavenPublication::class) {
-                        from(components["kotlin"])
-                        artifact(sourcesJar)
+                afterEvaluate {
+                    publications {
+                        create("js", MavenPublication::class) {
+                            kotlin.js().components.forEach {
+                                from(it)
+                            }
+                            artifact(sourcesJar)
+                        }
                     }
                 }
             }
 
-            plugins.withId("ru.mipt.npm.gradle.jvm") {
+            plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
                 val sourcesJar: Jar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
-                    from(kotlin.sourceSets["main"].kotlin)
+                    kotlin.sourceSets.forEach{
+                        from(it.kotlin)
+                    }
                 }
 
                 publications {
                     create("jvm", MavenPublication::class) {
-                        from(components["kotlin"])
+                        kotlin.target.components.forEach {
+                            from(it)
+                        }
                         artifact(sourcesJar)
                     }
                 }
@@ -110,7 +119,7 @@ internal val Project.publicationTarget: String
 
 internal fun Project.addGithubPublishing(
     githubOrg: String,
-    githubProject: String
+    githubProject: String,
 ) {
     if (requestPropertyOrNull("publishing.enabled") != "true") {
         logger.info("Skipping github publishing because publishing is disabled")
@@ -139,8 +148,6 @@ internal fun Project.addGithubPublishing(
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToGithubRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }
@@ -174,8 +181,6 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToSpaceRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }
@@ -229,8 +234,6 @@ internal fun Project.addSonatypePublishing() {
                     }
                 }
             }
-            val publicationTask = tasks.getByName("publish${publicationTarget}ToSonatypeRepository")
-            rootProject.tasks.findByName("release")?.dependsOn(publicationTask)
         }
     }
 }

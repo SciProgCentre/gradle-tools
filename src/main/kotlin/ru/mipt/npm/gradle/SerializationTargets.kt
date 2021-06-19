@@ -1,10 +1,7 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.repositories
 import ru.mipt.npm.gradle.internal.useCommonDependency
-import ru.mipt.npm.gradle.internal.useDependency
 
 class SerializationTargets(
     val sourceSet: DependencySourceSet,
@@ -44,11 +41,8 @@ class SerializationTargets(
     fun Project.xml(
         version: String = KScienceVersions.Serialization.xmlVersion
     ) {
-        repositories {
-            maven("https://dl.bintray.com/pdvrieze/maven")
-        }
         useCommonDependency(
-            "net.devrieze:xmlutil-serialization:$version",
+            "io.github.pdvrieze.xmlutil:serialization:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )
@@ -59,16 +53,6 @@ class SerializationTargets(
     ) {
         useCommonDependency(
             "net.mamoe.yamlkt:yamlkt:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
-
-    fun Project.bson(
-        version: String = KScienceVersions.Serialization.bsonVersion
-    ) {
-        useDependency(
-            "jvm" to "com.github.jershell:kbson:$version",
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )

@@ -14,6 +14,7 @@ import ru.mipt.npm.gradle.internal.applyRepos
 import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
+@Suppress("UNUSED_VARIABLE")
 open class KScienceCommonPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         //Common configuration
@@ -40,7 +41,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
             }
             tasks.withType<KotlinJvmCompile> {
                 kotlinOptions {
-                    useIR = true
                     jvmTarget = KScienceVersions.JVM_TARGET.toString()
                     freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
                 }
@@ -63,7 +63,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 explicitApiWarning()
 
                 js(IR) {
-                    browser{
+                    browser {
                         commonWebpackConfig {
                             cssSupport.enabled = true
                         }
@@ -72,6 +72,9 @@ open class KScienceCommonPlugin : Plugin<Project> {
 
                 sourceSets["main"].apply {
                     languageSettings.applySettings()
+                    dependencies {
+                        api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                    }
                 }
 
                 sourceSets["test"].apply {
@@ -95,7 +98,6 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 jvm {
                     compilations.all {
                         kotlinOptions {
-                            useIR = true
                             jvmTarget = KScienceVersions.JVM_TARGET.toString()
                             freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
                         }
@@ -103,7 +105,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 js(IR) {
-                    browser{
+                    browser {
                         commonWebpackConfig {
                             cssSupport.enabled = true
                         }
@@ -111,7 +113,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 }
 
                 sourceSets.invoke {
-                    val commonMain by getting
+                    val commonMain by getting {
+                        dependencies {
+                            api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                        }
+                    }
                     val commonTest by getting {
                         dependencies {
                             implementation(kotlin("test-common"))
