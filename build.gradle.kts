@@ -13,7 +13,7 @@ version = "0.10.1"
 description = "Build tools for DataForge and kscience projects"
 
 changelog{
-    version = project.version.toString()
+    setVersion(project.version.toString())
 }
 
 repositories {

@@ -98,7 +98,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 }
             } else {
                 configure<ChangelogPluginExtension> {
-                    version = project.version.toString()
+                    setVersion(project.version.toString())
                 }
             }
         }
