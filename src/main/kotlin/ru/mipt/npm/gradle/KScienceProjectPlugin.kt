@@ -27,6 +27,12 @@ class KSciencePublishingExtension(val project: Project) {
         }
     }
 
+    private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
+        allTasks()
+            .filter { it.name == "publish${publicationTarget}To${name.capitalize()}Repository" }
+            .forEach { releaseTask?.dependsOn(it) }
+    }
+
     /**
      * github publishing
      * @param publish include github packages in release publishing. By default - false
@@ -38,15 +44,7 @@ class KSciencePublishingExtension(val project: Project) {
         }
 
         project.addGithubPublishing(githubOrg, githubProject)
-
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToGithubRepository" }
-                    ?.let { publicationTask ->
-                        releaseTask?.dependsOn(publicationTask)
-                    }
-            }
+        if (publish) linkPublicationsToReleaseTask("github")
     }
 
     private val releaseTask by lazy {
@@ -60,12 +58,7 @@ class KSciencePublishingExtension(val project: Project) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
 
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToSpaceRepository" }
-                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
-            }
+        if (publish) linkPublicationsToReleaseTask("space")
     }
 
 //    // Bintray publishing
@@ -81,12 +74,7 @@ class KSciencePublishingExtension(val project: Project) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
 
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToSonatypeRepository" }
-                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
-            }
+        if (publish) linkPublicationsToReleaseTask("sonatype")
     }
 }
 
