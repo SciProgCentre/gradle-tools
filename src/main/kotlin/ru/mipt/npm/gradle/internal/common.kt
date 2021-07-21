@@ -2,9 +2,13 @@ package ru.mipt.npm.gradle.internal
 
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.maven
+import org.gradle.language.jvm.tasks.ProcessResources
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
 internal fun LanguageSettingsBuilder.applySettings(): Unit {
@@ -46,6 +50,32 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
      }
 }
 
+
+fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js"){
+    js {
+        binaries.executable()
+        browser {
+            webpackTask {
+                outputFileName = bundleName
+            }
+        }
+    }
+
+    jvm {
+        val processResourcesTaskName =
+            compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME]
+                .processResourcesTaskName
+
+        val jsBrowserDistribution = project.tasks.getByName("jsBrowserDistribution")
+
+        project.tasks.getByName<ProcessResources>(processResourcesTaskName) {
+            duplicatesStrategy = DuplicatesStrategy.WARN
+            dependsOn(jsBrowserDistribution)
+            from(jsBrowserDistribution)
+        }
+    }
+
+}
 
 //
 //internal fun Copy.copyJVMResources(configuration: Configuration): Unit = project.afterEvaluate {

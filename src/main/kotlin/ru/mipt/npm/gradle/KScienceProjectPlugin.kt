@@ -5,6 +5,7 @@ import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
@@ -12,6 +13,8 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.dokka.gradle.DokkaTask
 import ru.mipt.npm.gradle.internal.*
+
+private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
 
 @Suppress("unused")
 class KSciencePublishingExtension(val project: Project) {
@@ -33,13 +36,17 @@ class KSciencePublishingExtension(val project: Project) {
         if (!initializedFlag) {
             vcs("https://github.com/$githubOrg/$githubProject")
         }
+
         project.addGithubPublishing(githubOrg, githubProject)
 
-        if (publish) {
-            project.tasks.findByName("publish${project.publicationTarget}ToGithubRepository")?.let {publicationTask->
-                releaseTask?.dependsOn(publicationTask)
+        if (publish)
+            project.afterEvaluate {
+                allTasks()
+                    .find { it.name == "publish${publicationTarget}ToGithubRepository" }
+                    ?.let { publicationTask ->
+                        releaseTask?.dependsOn(publicationTask)
+                    }
             }
-        }
     }
 
     private val releaseTask by lazy {
@@ -52,11 +59,13 @@ class KSciencePublishingExtension(val project: Project) {
     fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", publish: Boolean = false) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
-        if (publish) {
-            project.tasks.findByName("publish${project.publicationTarget}ToSpaceRepository")?.let { publicationTask ->
-                releaseTask?.dependsOn(publicationTask)
+
+        if (publish)
+            project.afterEvaluate {
+                allTasks()
+                    .find { it.name == "publish${publicationTarget}ToSpaceRepository" }
+                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
             }
-        }
     }
 
 //    // Bintray publishing
@@ -71,15 +80,15 @@ class KSciencePublishingExtension(val project: Project) {
     fun sonatype(publish: Boolean = true) {
         require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
-        if (publish) {
-            project.tasks.findByName("publish${project.publicationTarget}ToSonatypeRepository")
-                ?.let { publicationTask ->
-                    releaseTask?.dependsOn(publicationTask)
-                }
-        }
+
+        if (publish)
+            project.afterEvaluate {
+                allTasks()
+                    .find { it.name == "publish${publicationTarget}ToSonatypeRepository" }
+                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
+            }
     }
 }
-
 
 /**
  * Apply extension and repositories
@@ -98,7 +107,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
                 }
             } else {
                 configure<ChangelogPluginExtension> {
-                    version = project.version.toString()
+                    version.set(project.version.toString())
                 }
             }
         }

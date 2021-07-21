@@ -8,9 +8,6 @@ A primary plugin. When used with kotlin-jvm, kotlin-js or kotlin-mulitplatform c
 ## ru.mipt.npm.gradle.project
 Root project tool including JetBrains changelog plugin an kotlin binary compatibility validator tool.
 
-## ru.mipt.npm.gradle.publish
-Enables publishing to maven-central, bintray, Space and github.
-
 ## ru.mipt.npm.gradle.mpp
 `= kotlin("multiplatform") + ru.mipt.npm.gradle.common`
 

@@ -17,6 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+## [0.10.2]
+### Added
+- Experimental automatic JS project bundling in MPP
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+-Release task (#19)
+
+### Security
+
 ## [0.10.0]
 ### Added
 - Lazy readme properties
