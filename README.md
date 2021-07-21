@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/ru.mipt.npm.gradle.project/ru.mipt.npm.gradle.project.gradle.plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22ru.mipt.npm.gradle.project%22%20AND%20a:%22ru.mipt.npm.gradle.project.gradle.plugin%22)
+
 # KScience build tools
 
 A collection of gradle plugins for building and publish in *kscience* and *dataforge* projects.
