@@ -1,0 +1,26 @@
+[versions]
+atomicfu = "0.16.2"
+binary-compatibility-validator = "0.6.0"
+changelog = "1.2.1"
+dokka = "1.5.0"
+kotlin = "1.5.21"
+kotlin-jupyter = "0.10.0-173"
+
+[libraries]
+atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
+changelog-gradle = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
+dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+
+[kotlin-jupyter-gradle]
+module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin"
+version.ref = "kotlin-jupyter"
+
+[libraries.binary-compatibility-validator]
+module = "org.jetbrains.kotlinx:binary-compatibility-validator"
+version.ref = "binary-compatibility-validator"
+
+[plugins]
+changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

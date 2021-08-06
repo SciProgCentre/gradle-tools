@@ -3,8 +3,8 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     signing
-    id("org.jetbrains.changelog") version "1.2.0"
-    id("org.jetbrains.dokka") version "1.5.0"
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.dokka)
 }
 
 group = "ru.mipt.npm"
@@ -12,9 +12,7 @@ version = "0.10.2"
 
 description = "Build tools for DataForge and kscience projects"
 
-changelog{
-    setVersion(project.version.toString())
-}
+changelog.version.set(project.version.toString())
 
 repositories {
     mavenCentral()
@@ -22,23 +20,19 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
-val kotlinVersion = "1.5.21"
-
-java {
-    targetCompatibility = JavaVersion.VERSION_11
-}
+java.targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
-    api("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:0.10.0-126-1")
-    implementation("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
-    implementation("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.16.2")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.5.0")
-    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:1.2.0")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.6.0")
+    api(libs.kotlin.gradle)
+    implementation(libs.atomicfu.gradle)
+    implementation(libs.binary.compatibility.validator)
+    implementation(libs.changelog.gradle)
+    implementation(libs.dokka.gradle)
+    implementation(libs.kotlin.jupyter.gradle)
+    implementation(libs.kotlin.serialization)
 }
 
-project.extensions.findByType<GradlePluginDevelopmentExtension>()?.apply {
+gradlePlugin {
     plugins {
         create("common") {
             id = "ru.mipt.npm.gradle.common"
@@ -88,12 +82,12 @@ afterEvaluate {
     publishing {
         val vcs = "https://github.com/mipt-npm/gradle-tools"
 
-        val sourcesJar: Jar by tasks.creating(Jar::class) {
+        val sourcesJar by tasks.creating(Jar::class) {
             archiveClassifier.set("sources")
             from(sourceSets.named("main").get().allSource)
         }
 
-        val javadocsJar: Jar by tasks.creating(Jar::class) {
+        val javadocsJar by tasks.creating(Jar::class) {
             group = "documentation"
             archiveClassifier.set("javadoc")
             from(tasks.dokkaHtml)
@@ -113,19 +107,20 @@ afterEvaluate {
                     licenses {
                         license {
                             name.set("The Apache Software License, Version 2.0")
-                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                             distribution.set("repo")
                         }
                     }
+
                     developers {
                         developer {
                             id.set("MIPT-NPM")
                             name.set("MIPT nuclear physics methods laboratory")
                             organization.set("MIPT")
-                            organizationUrl.set("http://npm.mipt.ru")
+                            organizationUrl.set("https://npm.mipt.ru")
                         }
-
                     }
+
                     scm {
                         url.set(vcs)
                         tag.set(project.version.toString())
@@ -134,21 +129,20 @@ afterEvaluate {
             }
         }
 
-        val spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/mipt-npm/maven"
+        val spaceRepo = "https://maven.pkg.jetbrains.space/mipt-npm/p/mipt-npm/maven"
         val spaceUser: String? = project.findProperty("publishing.space.user") as? String
         val spaceToken: String? = project.findProperty("publishing.space.token") as? String
 
         if (spaceUser != null && spaceToken != null) {
             project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
-            repositories {
-                maven {
-                    name = "space"
-                    url = uri(spaceRepo)
-                    credentials {
-                        username = spaceUser
-                        password = spaceToken
-                    }
 
+            repositories.maven {
+                name = "space"
+                url = uri(spaceRepo)
+
+                credentials {
+                    username = spaceUser
+                    password = spaceToken
                 }
             }
         }
@@ -167,22 +161,20 @@ afterEvaluate {
                 plugins.apply("signing")
             }
 
-            repositories {
-                maven {
-                    name = "sonatype"
-                    url = uri(sonatypeRepo)
-                    credentials {
-                        username = sonatypeUser
-                        password = sonatypePassword
-                    }
+            repositories.maven {
+                name = "sonatype"
+                url = uri(sonatypeRepo)
+
+                credentials {
+                    username = sonatypeUser
+                    password = sonatypePassword
                 }
             }
+
             signing {
                 //useGpgCmd()
                 sign(publications)
             }
         }
     }
-
 }
-
