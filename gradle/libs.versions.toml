@@ -13,7 +13,7 @@ dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 
-[kotlin-jupyter-gradle]
+[libraries.kotlin-jupyter-gradle]
 module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin"
 version.ref = "kotlin-jupyter"
 
