@@ -44,6 +44,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Use coroutines-core with default version or [version]
      */
+    @Deprecated("Use version catalog.")
     fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -57,6 +58,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Use kotlinx-atmicfu plugin and library
      */
+    @Deprecated("Use version catalog.")
     fun useAtomic(
         version: String = KScienceVersions.atomicVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -73,6 +75,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Use core serialization library and configure targets
      */
+    @Deprecated("Use version catalog.")
     fun useSerialization(
         version: String = KScienceVersions.serializationVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -106,6 +109,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Add dependency on kotlinx-html library
      */
+    @Deprecated("Use version catalog.")
     fun useHtml(
         version: String = KScienceVersions.htmlVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
@@ -119,6 +123,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Use kotlinx-datetime library with default version or [version]
      */
+    @Deprecated("Use version catalog.")
     fun useDateTime(
         version: String = KScienceVersions.dateTimeVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,

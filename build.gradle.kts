@@ -1,15 +1,15 @@
 plugins {
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.dokka)
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
     signing
-    alias(libs.plugins.changelog)
-    alias(libs.plugins.dokka)
+    `version-catalog`
 }
 
 group = "ru.mipt.npm"
-version = "0.10.2"
-
+version = libs.versions.tools.get()
 description = "Build tools for DataForge and kscience projects"
 
 changelog.version.set(project.version.toString())
@@ -78,29 +78,41 @@ gradlePlugin {
     }
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.named("main").get().allSource)
+}
+
+val javadocsJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
+}
+
+catalog.versionCatalog {
+    from(files("gradle/libs.versions.toml"))
+}
+
 afterEvaluate {
     publishing {
         val vcs = "https://github.com/mipt-npm/gradle-tools"
 
-        val sourcesJar by tasks.creating(Jar::class) {
-            archiveClassifier.set("sources")
-            from(sourceSets.named("main").get().allSource)
-        }
-
-        val javadocsJar by tasks.creating(Jar::class) {
-            group = "documentation"
-            archiveClassifier.set("javadoc")
-            from(tasks.dokkaHtml)
-        }
-
         // Process each publication we have in this project
-        publications.filterIsInstance<MavenPublication>().forEach { publication ->
-            publication.apply {
+        publications {
+            create<MavenPublication>("catalog") {
+                from(components["versionCatalog"])
+                this.artifactId = "version-catalog"
+
+                pom {
+                    name.set("version-catalog")
+                }
+            }
+
+            withType<MavenPublication> {
                 artifact(sourcesJar)
                 artifact(javadocsJar)
 
                 pom {
-                    name.set(project.name)
                     description.set(project.description)
                     url.set(vcs)
 

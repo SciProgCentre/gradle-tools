@@ -5,6 +5,7 @@ import org.gradle.api.JavaVersion
 /**
  * Build constants
  */
+@Deprecated("Use version catalog.")
 object KScienceVersions {
     const val kotlinVersion = "1.5.21"
     const val kotlinxNodeVersion = "0.0.7"
