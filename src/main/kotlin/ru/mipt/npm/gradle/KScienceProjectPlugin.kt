@@ -11,7 +11,6 @@ import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
-import org.jetbrains.dokka.gradle.DokkaTask
 import ru.mipt.npm.gradle.internal.*
 
 private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
@@ -131,7 +130,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
                     }
                 }
             }
-            tasks.withType<DokkaTask> {
+
+            tasks.withType<AbstractDokkaTask> {
                 dependsOn(generateReadme)
             }
         }
