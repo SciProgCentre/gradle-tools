@@ -87,7 +87,6 @@ internal fun Project.useCommonDependency(
         }
     }
 
-
     withPlugin("org.jetbrains.kotlin.jvm") {
         configure<KotlinJvmProjectExtension> {
             sourceSets.findByName(dependencySourceSet.setName)?.apply {
@@ -102,6 +101,7 @@ internal fun Project.useCommonDependency(
             }
         }
     }
+
     withPlugin("org.jetbrains.kotlin.js") {
         configure<KotlinJsProjectExtension> {
             sourceSets.findByName(dependencySourceSet.setName)?.apply {

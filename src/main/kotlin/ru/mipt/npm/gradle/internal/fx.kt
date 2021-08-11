@@ -2,6 +2,7 @@ package ru.mipt.npm.gradle.internal
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -10,7 +11,7 @@ import ru.mipt.npm.gradle.DependencyConfiguration
 import ru.mipt.npm.gradle.FXModule
 import ru.mipt.npm.gradle.FXPlatform
 
-val defaultPlatform: FXPlatform = when {
+internal val defaultPlatform: FXPlatform = when {
     Os.isFamily(Os.FAMILY_WINDOWS) -> FXPlatform.WINDOWS
     Os.isFamily(Os.FAMILY_MAC) -> FXPlatform.MAC
     Os.isFamily(Os.FAMILY_UNIX) -> FXPlatform.LINUX
