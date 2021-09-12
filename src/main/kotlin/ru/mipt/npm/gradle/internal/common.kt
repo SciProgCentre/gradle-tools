@@ -15,12 +15,13 @@ internal fun LanguageSettingsBuilder.applySettings() {
     languageVersion = "1.5"
     apiVersion = "1.5"
     progressiveMode = true
-    useExperimentalAnnotation("kotlin.Experimental")
-    useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
-    useExperimentalAnnotation("kotlin.ExperimentalStdlibApi")
-    useExperimentalAnnotation("kotlin.time.ExperimentalTime")
-    useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
-    useExperimentalAnnotation("kotlin.js.ExperimentalJsExport")
+
+    optIn("kotlin.Experimental")
+    optIn("kotlin.ExperimentalUnsignedTypes")
+    optIn("kotlin.ExperimentalStdlibApi")
+    optIn("kotlin.time.ExperimentalTime")
+    optIn("kotlin.contracts.ExperimentalContracts")
+    optIn("kotlin.js.ExperimentalJsExport")
 }
 
 internal fun RepositoryHandler.applyRepos() {

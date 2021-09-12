@@ -37,6 +37,8 @@ dependencies {
     implementation(libs.kotlin.serialization)
 }
 
+//declaring exported plugins
+
 gradlePlugin {
     plugins {
         create("common") {
@@ -83,6 +85,14 @@ gradlePlugin {
     }
 }
 
+//publishing version catalog
+
+catalog.versionCatalog {
+    from(files("gradle/libs.versions.toml"))
+}
+
+//publishing the artifact
+
 val sourcesJar by tasks.creating(Jar::class) {
     archiveClassifier.set("sources")
     from(sourceSets.named("main").get().allSource)
@@ -92,10 +102,6 @@ val javadocsJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     archiveClassifier.set("javadoc")
     from(tasks.dokkaHtml)
-}
-
-catalog.versionCatalog {
-    from(files("gradle/libs.versions.toml"))
 }
 
 afterEvaluate {
@@ -194,4 +200,8 @@ afterEvaluate {
             }
         }
     }
+}
+
+tasks.processResources.configure {
+    from("gradle/libs.versions.toml")
 }

@@ -1,26 +1,31 @@
 package ru.mipt.npm.gradle
 
 import org.gradle.api.JavaVersion
+import org.gradle.internal.impldep.org.tomlj.Toml
 
 /**
  * Build constants
  */
-@Deprecated("Use version catalog.")
-object KScienceVersions {
-    const val kotlinVersion = "1.5.30"
-    const val kotlinxNodeVersion = "0.0.7"
-    const val coroutinesVersion = "1.5.1"
-    const val serializationVersion = "1.2.2"
-    const val atomicVersion = "0.16.2"
-    const val ktorVersion = "1.6.2"
-    const val htmlVersion = "0.7.3"
-    const val dateTimeVersion = "0.2.1"
-    const val jsBom = "0.0.1-pre.216-kotlin-1.5.20"
+public object KScienceVersions {
+
+    private val toml =
+        Toml.parse(KScienceVersions.javaClass.getResource("/libs.versions.toml")!!.readText())
+
+
+    public val kotlinVersion: String = toml.getString("versions.kotlin")!!
+    public val kotlinxNodeVersion: String = toml.getString("versions.kotlinx-nodejs")!!
+    public val coroutinesVersion: String = toml.getString("versions.kotlinx-coroutines")!!
+    public val serializationVersion: String = toml.getString("versions.kotlinx-serialization")!!
+    public val atomicVersion: String = toml.getString("versions.atomicfu")!!
+    public val ktorVersion: String = toml.getString("versions.ktor")!!
+    public val htmlVersion: String = toml.getString("versions.kotlinx-html")!!
+    public val dateTimeVersion: String = toml.getString("versions.kotlinx-datetime")!!
+    public val jsBom: String = toml.getString("versions.jsBom")!!
 
     public val JVM_TARGET: JavaVersion = JavaVersion.VERSION_11
 
     public object Serialization {
-        public const val xmlVersion: String = "0.82.0"
-        public const val yamlKtVersion: String = "0.10.0"
+        public val xmlVersion: String = toml.getString("versions.xmlutil")!!
+        public val yamlKtVersion: String = toml.getString("versions.yamlkt")!!
     }
 }
