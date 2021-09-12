@@ -4,13 +4,13 @@ import kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
 import ru.mipt.npm.gradle.internal.defaultPlatform
 import ru.mipt.npm.gradle.internal.useCommonDependency
 import ru.mipt.npm.gradle.internal.useFx
@@ -135,8 +135,19 @@ public class KScienceExtension(public val project: Project) {
     /**
      * Apply jupyter plugin
      */
+    @Deprecated("Use jupyterLibrary")
     public fun useJupyter() {
         project.apply("org.jetbrains.kotlin.jupyter.api")
+    }
+
+    /**
+     * Apply jupyter plugin and add entry point for the jupyter library
+     */
+    public fun jupyterLibrary(pluginClass: String, vararg additionalPluginClasses: String) {
+        project.apply("org.jetbrains.kotlin.jupyter.api")
+        project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
+            libraryProducers = listOf(pluginClass, *additionalPluginClasses)
+        }
     }
 
     /**

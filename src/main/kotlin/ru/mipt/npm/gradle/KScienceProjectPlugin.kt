@@ -65,15 +65,15 @@ public class KSciencePublishingExtension(public val project: Project) {
      *
      * @param githubProject the GitHub project.
      * @param githubOrg the GitHub user or organization.
-     * @param released whether publish packages in the `release` task to the GitHub repository.
+     * @param release whether publish packages in the `release` task to the GitHub repository.
      */
-    public fun github(githubProject: String, githubOrg: String = "mipt-npm", released: Boolean = false, published: Boolean = true) {
+    public fun github(githubProject: String, githubOrg: String = "mipt-npm", release: Boolean = false, publish: Boolean = true) {
         // Automatically initialize VCS using GitHub
         if (!isVcsInitialized)
             git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
 
-        if (published) project.addGithubPublishing(githubOrg, githubProject)
-        if (released) linkPublicationsToReleaseTask("github")
+        if (publish) project.addGithubPublishing(githubOrg, githubProject)
+        if (release) linkPublicationsToReleaseTask("github")
     }
 
     private val releaseTask by lazy {
@@ -84,13 +84,13 @@ public class KSciencePublishingExtension(public val project: Project) {
      * Adds Space Packages Maven repository to publishing.
      *
      * @param spaceRepo the repository URL.
-     * @param released whether publish packages in the `release` task to the Space repository.
+     * @param release whether publish packages in the `release` task to the Space repository.
      */
-    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", released: Boolean = false) {
+    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", release: Boolean = true) {
         require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
 
-        if (released) linkPublicationsToReleaseTask("space")
+        if (release) linkPublicationsToReleaseTask("space")
     }
 
 //    // Bintray publishing
@@ -102,13 +102,13 @@ public class KSciencePublishingExtension(public val project: Project) {
     /**
      * Adds Sonatype Maven repository to publishing.
      *
-     * @param released whether publish packages in the `release` task to the Sonatype repository.
+     * @param release whether publish packages in the `release` task to the Sonatype repository.
      */
-    public fun sonatype(released: Boolean = true) {
+    public fun sonatype(release: Boolean = true) {
         require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
 
-        if (released) linkPublicationsToReleaseTask("sonatype")
+        if (release) linkPublicationsToReleaseTask("sonatype")
     }
 }
 
