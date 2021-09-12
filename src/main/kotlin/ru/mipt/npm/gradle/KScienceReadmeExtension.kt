@@ -3,10 +3,10 @@ package ru.mipt.npm.gradle
 import groovy.text.SimpleTemplateEngine
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.*
 import java.io.File
 
-enum class Maturity {
+public enum class Maturity {
     PROTOTYPE,
     EXPERIMENTAL,
     DEVELOPMENT,
@@ -14,16 +14,17 @@ enum class Maturity {
 }
 
 
-class KScienceReadmeExtension(val project: Project) {
-    var description: String = project.description ?: ""
-    var maturity: Maturity = Maturity.EXPERIMENTAL
+public class KScienceReadmeExtension(public val project: Project) {
+    public var description: String = project.description ?: ""
+
+    public var maturity: Maturity = Maturity.EXPERIMENTAL
         set(value) {
             field = value
             val projectName = project.name
             if (value == Maturity.EXPERIMENTAL || value == Maturity.PROTOTYPE) {
                 project.rootProject.run {
                     plugins.withId("org.jetbrains.kotlinx.binary-compatibility-validator") {
-                        extensions.getByType<ApiValidationExtension>().apply {
+                        extensions.findByType<ApiValidationExtension>()?.apply {
                             project.logger.warn("$value project $projectName is excluded from API validation")
                             ignoredProjects.add(projectName)
                         }
@@ -32,18 +33,18 @@ class KScienceReadmeExtension(val project: Project) {
             }
         }
 
-    var readmeTemplate: File = project.file("docs/README-TEMPLATE.md")
+    public var readmeTemplate: File = project.file("docs/README-TEMPLATE.md")
 
-    data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
+    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
-    val features: MutableList<Feature> = ArrayList()
+    public val features: MutableList<Feature> = ArrayList()
 
-    @Deprecated("Use lambda builder instead")
-    fun feature(id: String, description: String, ref: String? = null, name: String = id) {
+    @Deprecated("Use lambda builder instead.")
+    public fun feature(id: String, description: String, ref: String? = null, name: String = id) {
         features += Feature(id, description, ref, name)
     }
 
-    fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
+    public fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
         features += Feature(id, description(), ref, name)
     }
 
@@ -54,25 +55,25 @@ class KScienceReadmeExtension(val project: Project) {
         "features" to { featuresString() }
     )
 
-    val actualizedProperties
+    public val actualizedProperties: Map<String, Any?>
         get() = properties.mapValues { (_, value) -> value() }
 
-    fun property(key: String, value: Any?) {
+    public fun property(key: String, value: Any?) {
         properties[key] = { value }
     }
 
-    fun property(key: String, value: () -> Any?) {
+    public fun property(key: String, value: () -> Any?) {
         properties[key] = value
     }
 
-    fun propertyByTemplate(key: String, template: String) {
+    public fun propertyByTemplate(key: String, template: String) {
         val actual = actualizedProperties
         properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
     }
 
     internal val additionalFiles = ArrayList<File>()
 
-    fun propertyByTemplate(key: String, template: File) {
+    public fun propertyByTemplate(key: String, template: File) {
         val actual = actualizedProperties
         properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
         additionalFiles += template
@@ -81,7 +82,7 @@ class KScienceReadmeExtension(val project: Project) {
     /**
      * Generate a markdown string listing features
      */
-    fun featuresString(itemPrefix: String = " - ", pathPrefix: String = "") = buildString {
+    public fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
             appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }
@@ -90,12 +91,10 @@ class KScienceReadmeExtension(val project: Project) {
     /**
      * Generate a readme string from the stub
      */
-    fun readmeString(): String? {
-        return if (readmeTemplate.exists()) {
-            val actual = actualizedProperties
-            SimpleTemplateEngine().createTemplate(readmeTemplate).make(actual).toString()
-        } else {
-            null
-        }
+    public fun readmeString(): String? = if (readmeTemplate.exists()) {
+        val actual = actualizedProperties
+        SimpleTemplateEngine().createTemplate(readmeTemplate).make(actual).toString()
+    } else {
+        null
     }
 }

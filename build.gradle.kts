@@ -10,6 +10,7 @@ plugins {
 
 group = "ru.mipt.npm"
 version = libs.versions.tools.get()
+
 description = "Build tools for DataForge and kscience projects"
 
 changelog.version.set(project.version.toString())
@@ -20,7 +21,11 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
+val kotlinVersion = "1.5.30"
+
 java.targetCompatibility = JavaVersion.VERSION_11
+
+kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
@@ -170,7 +175,7 @@ afterEvaluate {
             }
 
             if (plugins.findPlugin("signing") == null) {
-                plugins.apply("signing")
+                apply<SigningPlugin>()
             }
 
             repositories.maven {

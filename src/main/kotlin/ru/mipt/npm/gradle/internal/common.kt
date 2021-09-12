@@ -11,7 +11,7 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
-internal fun LanguageSettingsBuilder.applySettings(): Unit {
+internal fun LanguageSettingsBuilder.applySettings() {
     languageVersion = "1.5"
     apiVersion = "1.5"
     progressiveMode = true
@@ -23,7 +23,7 @@ internal fun LanguageSettingsBuilder.applySettings(): Unit {
     useExperimentalAnnotation("kotlin.js.ExperimentalJsExport")
 }
 
-internal fun RepositoryHandler.applyRepos(): Unit {
+internal fun RepositoryHandler.applyRepos() {
     mavenCentral()
     maven("https://repo.kotlin.link")
 }
@@ -50,8 +50,7 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
      }
 }
 
-
-fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js"){
+internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js"){
     js {
         binaries.executable()
         browser {
