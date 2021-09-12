@@ -22,6 +22,8 @@ repositories {
 
 java.targetCompatibility = JavaVersion.VERSION_11
 
+kotlin.explicitApiWarning()
+
 dependencies {
     api(libs.kotlin.gradle)
     implementation(libs.atomicfu.gradle)
@@ -158,7 +160,7 @@ afterEvaluate {
             }
 
             if (plugins.findPlugin("signing") == null) {
-                plugins.apply("signing")
+                apply<SigningPlugin>()
             }
 
             repositories.maven {

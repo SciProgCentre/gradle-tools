@@ -17,13 +17,41 @@ import ru.mipt.npm.gradle.internal.*
 private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
 
 @Suppress("unused")
-class KSciencePublishingExtension(val project: Project) {
-    private var initializedFlag = false
+public class KSciencePublishingExtension(public val project: Project) {
+    private var isVcsInitialized = false
 
-    fun vcs(vcsUrl: String) {
-        if (!initializedFlag) {
-            project.setupPublication(vcsUrl)
-            initializedFlag = true
+    @Deprecated("Use git function and report an issue if other VCS is used.")
+    public fun vcs(vcsUrl: String) {
+        if (!isVcsInitialized) {
+            project.setupPublication {
+                url.set(vcsUrl)
+                scm { url.set(vcsUrl) }
+            }
+
+            isVcsInitialized = true
+        }
+    }
+
+    /**
+     * Configures Git repository for the publication.
+     *
+     * @param vcsUrl URL of the repository's web interface.
+     * @param connectionUrl URL of the Git repository.
+     * @param developerConnectionUrl URL of the Git repository for developers.
+     */
+    public fun git(vcsUrl: String, connectionUrl: String? = null, developerConnectionUrl: String? = connectionUrl) {
+        if (!isVcsInitialized) {
+            project.setupPublication {
+                url.set(vcsUrl)
+
+                scm {
+                    url.set(vcsUrl)
+                    connectionUrl?.let { connection.set("scm:git:$it") }
+                    developerConnectionUrl?.let { developerConnection.set("scm:git:$it") }
+                }
+            }
+
+            isVcsInitialized = true
         }
     }
 
@@ -34,17 +62,19 @@ class KSciencePublishingExtension(val project: Project) {
     }
 
     /**
-     * github publishing
-     * @param publish include github packages in release publishing. By default - false
+     * Adds GitHub as VCS and adds GitHub Packages Maven repository to publishing.
+     *
+     * @param githubProject the GitHub project.
+     * @param githubOrg the GitHub user or organization.
+     * @param released whether publish packages in the `release` task to the GitHub repository.
      */
-    fun github(githubProject: String, githubOrg: String = "mipt-npm", publish: Boolean = false) {
-        //automatically initialize vcs using github
-        if (!initializedFlag) {
-            vcs("https://github.com/$githubOrg/$githubProject")
-        }
+    public fun github(githubProject: String, githubOrg: String = "mipt-npm", released: Boolean = false, published: Boolean = true) {
+        // Automatically initialize VCS using GitHub
+        if (!isVcsInitialized)
+            git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
 
-        project.addGithubPublishing(githubOrg, githubProject)
-        if (publish) linkPublicationsToReleaseTask("github")
+        if (published) project.addGithubPublishing(githubOrg, githubProject)
+        if (released) linkPublicationsToReleaseTask("github")
     }
 
     private val releaseTask by lazy {
@@ -52,13 +82,16 @@ class KSciencePublishingExtension(val project: Project) {
     }
 
     /**
-     *  Space publishing
+     * Adds Space Packages Maven repository to publishing.
+     *
+     * @param spaceRepo the repository URL.
+     * @param released whether publish packages in the `release` task to the Space repository.
      */
-    fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", publish: Boolean = false) {
-        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
+    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", released: Boolean = false) {
+        require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
 
-        if (publish) linkPublicationsToReleaseTask("space")
+        if (released) linkPublicationsToReleaseTask("space")
     }
 
 //    // Bintray publishing
@@ -68,20 +101,23 @@ class KSciencePublishingExtension(val project: Project) {
 //    var bintrayRepo: String? by project.extra
 
     /**
-     *  Sonatype publishing
+     * Adds Sonatype Maven repository to publishing.
+     *
+     * @param released whether publish packages in the `release` task to the Sonatype repository.
      */
-    fun sonatype(publish: Boolean = true) {
-        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
+    public fun sonatype(released: Boolean = true) {
+        require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSonatypePublishing()
 
-        if (publish) linkPublicationsToReleaseTask("sonatype")
+        if (released) linkPublicationsToReleaseTask("sonatype")
     }
 }
 
 /**
- * Apply extension and repositories
+ * Applies third-party plugins (Dokka, Changelog, binary compatibility validator); configures Maven publishing, README
+ * generation.
  */
-open class KScienceProjectPlugin : Plugin<Project> {
+public open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
 
@@ -219,7 +255,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
         }
     }
 
-    companion object {
-        const val RELEASE_GROUP = "release"
+    public companion object {
+        public const val RELEASE_GROUP: String = "release"
     }
 }

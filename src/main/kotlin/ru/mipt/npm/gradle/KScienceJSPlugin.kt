@@ -4,13 +4,14 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
-open class KScienceJSPlugin : Plugin<Project> {
+public open class KScienceJSPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
-        if (plugins.findPlugin("org.jetbrains.kotlin.js") == null) {
-            pluginManager.apply("org.jetbrains.kotlin.js")
+        if (!plugins.hasPlugin("org.jetbrains.kotlin.js")) {
+            apply("org.jetbrains.kotlin.js")
         } else {
             logger.info("Kotlin JS plugin is already present")
         }
-        plugins.apply(KScienceCommonPlugin::class)
+
+        apply<KScienceCommonPlugin>()
     }
 }
