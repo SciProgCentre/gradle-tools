@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "ru.mipt.npm"
-version = "0.10.2"
+version = "0.10.3"
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -19,6 +19,8 @@ repositories {
     gradlePluginPortal()
     maven("https://repo.kotlin.link")
 }
+
+val kotlinVersion = "1.5.30"
 
 java.targetCompatibility = JavaVersion.VERSION_11
 

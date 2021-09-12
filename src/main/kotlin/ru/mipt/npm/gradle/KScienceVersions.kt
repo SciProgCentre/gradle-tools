@@ -5,16 +5,16 @@ import org.gradle.api.JavaVersion
 /**
  * Build constants
  */
-public object KScienceVersions {
-    public const val kotlinVersion: String = "1.5.21"
-    public const val kotlinxNodeVersion: String = "0.0.7"
-    public const val coroutinesVersion: String = "1.5.1"
-    public const val serializationVersion: String = "1.2.2"
-    public const val atomicVersion: String = "0.16.2"
-    public const val ktorVersion: String = "1.6.1"
-    public const val htmlVersion: String = "0.7.3"
-    public const val dateTimeVersion: String = "0.2.1"
-    public const val jsBom: String = "0.0.1-pre.216-kotlin-1.5.20"
+object KScienceVersions {
+    const val kotlinVersion = "1.5.30"
+    const val kotlinxNodeVersion = "0.0.7"
+    const val coroutinesVersion = "1.5.1"
+    const val serializationVersion = "1.2.2"
+    const val atomicVersion = "0.16.2"
+    const val ktorVersion = "1.6.2"
+    const val htmlVersion = "0.7.3"
+    const val dateTimeVersion = "0.2.1"
+    const val jsBom = "0.0.1-pre.216-kotlin-1.5.20"
 
     public val JVM_TARGET: JavaVersion = JavaVersion.VERSION_11
 
