@@ -2,10 +2,7 @@ package ru.mipt.npm.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.findPlugin
-import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
@@ -16,7 +13,7 @@ public class KScienceNodePlugin : Plugin<Project> {
         //Apply multiplatform plugin is not applied, apply it
         if (plugins.findPlugin("org.jetbrains.kotlin.multiplatform") == null) {
             logger.info("Kotlin multiplatform plugin is not resolved. Adding it automatically")
-            apply("org.jetbrains.kotlin.multiplatform")
+            plugins.apply("org.jetbrains.kotlin.multiplatform")
         }
 
         if (plugins.findPlugin(KScienceCommonPlugin::class) == null) {

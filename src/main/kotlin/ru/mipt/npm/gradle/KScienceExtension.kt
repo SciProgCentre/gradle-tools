@@ -82,7 +82,7 @@ public class KScienceExtension(public val project: Project) {
         configuration: DependencyConfiguration = DependencyConfiguration.API,
         block: SerializationTargets.() -> Unit = {},
     ): Unit = project.run {
-        apply("org.jetbrains.kotlin.plugin.serialization")
+        plugins.apply("org.jetbrains.kotlin.plugin.serialization")
         val artifactName = if (version.startsWith("0")) {
             "kotlinx-serialization-runtime"
         } else {
@@ -137,14 +137,14 @@ public class KScienceExtension(public val project: Project) {
      */
     @Deprecated("Use jupyterLibrary")
     public fun useJupyter() {
-        project.apply("org.jetbrains.kotlin.jupyter.api")
+        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
     }
 
     /**
      * Apply jupyter plugin and add entry point for the jupyter library
      */
     public fun jupyterLibrary(pluginClass: String, vararg additionalPluginClasses: String) {
-        project.apply("org.jetbrains.kotlin.jupyter.api")
+        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
         project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
             libraryProducers = listOf(pluginClass, *additionalPluginClasses)
         }

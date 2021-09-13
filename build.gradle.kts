@@ -21,8 +21,6 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
-val kotlinVersion = "1.5.30"
-
 java.targetCompatibility = JavaVersion.VERSION_11
 
 kotlin.explicitApiWarning()
@@ -35,6 +33,13 @@ dependencies {
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
+    implementation("org.tomlj:tomlj:1.0.0")
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 //declaring exported plugins
@@ -203,5 +208,6 @@ afterEvaluate {
 }
 
 tasks.processResources.configure {
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
     from("gradle/libs.versions.toml")
 }

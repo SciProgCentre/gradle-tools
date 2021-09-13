@@ -10,7 +10,7 @@ public class KScienceNativePlugin : Plugin<Project> {
         //Apply multiplatform plugin is not applied, apply it
         if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
             logger.info("Kotlin multiplatform plugin is not resolved. Adding it automatically")
-            apply("org.jetbrains.kotlin.multiplatform")
+            plugins.apply("org.jetbrains.kotlin.multiplatform")
         }
 
         if (!plugins.hasPlugin(KScienceCommonPlugin::class)) {
