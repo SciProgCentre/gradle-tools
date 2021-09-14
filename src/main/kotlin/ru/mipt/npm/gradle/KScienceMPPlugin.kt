@@ -3,6 +3,7 @@ package ru.mipt.npm.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.hasPlugin
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 
 public open class KScienceMPPlugin : Plugin<Project> {
