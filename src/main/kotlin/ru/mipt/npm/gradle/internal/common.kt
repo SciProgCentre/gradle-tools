@@ -16,7 +16,7 @@ internal fun LanguageSettingsBuilder.applySettings() {
     apiVersion = "1.5"
     progressiveMode = true
 
-    optIn("kotlin.Experimental")
+    optIn("kotlin.RequiresOptIn")
     optIn("kotlin.ExperimentalUnsignedTypes")
     optIn("kotlin.ExperimentalStdlibApi")
     optIn("kotlin.time.ExperimentalTime")
