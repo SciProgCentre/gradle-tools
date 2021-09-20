@@ -12,8 +12,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
 internal fun LanguageSettingsBuilder.applySettings() {
-    languageVersion = "1.5"
-    apiVersion = "1.5"
+    languageVersion = "1.6"
+    apiVersion = "1.6"
     progressiveMode = true
 
     optIn("kotlin.RequiresOptIn")
