@@ -28,12 +28,11 @@ public open class KScienceCommonPlugin : Plugin<Project> {
             configure<KotlinJvmProjectExtension> {
                 explicitApiWarning()
 
-                sourceSets["main"].apply {
+                sourceSets.all {
                     languageSettings.applySettings()
                 }
 
                 sourceSets["test"].apply {
-                    languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test-junit5"))
                         implementation("org.junit.jupiter:junit-jupiter:5.6.1")
@@ -69,15 +68,17 @@ public open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
 
-                sourceSets["main"].apply {
+                sourceSets.all {
                     languageSettings.applySettings()
+                }
+
+                sourceSets["main"].apply {
                     dependencies {
                         api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
                     }
                 }
 
                 sourceSets["test"].apply {
-                    languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test-js"))
                     }
@@ -138,12 +139,8 @@ public open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
 
-                afterEvaluate {
-                    targets.all {
-                        sourceSets.all {
-                            languageSettings.applySettings()
-                        }
-                    }
+                sourceSets.all {
+                    languageSettings.applySettings()
                 }
 
                 (tasks.findByName("jsProcessResources") as? Copy)?.apply {
