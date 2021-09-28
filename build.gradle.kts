@@ -187,6 +187,16 @@ afterEvaluate {
                 "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             }
 
+            repositories.maven {
+                name = "sonatype"
+                url = uri(sonatypeRepo)
+
+                credentials {
+                    username = sonatypeUser
+                    password = sonatypePassword
+                }
+            }
+
             if (plugins.findPlugin("signing") == null) {
                 apply<SigningPlugin>()
             }
