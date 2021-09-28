@@ -1,17 +1,21 @@
 package ru.mipt.npm.gradle
 
+import kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
 import ru.mipt.npm.gradle.internal.defaultPlatform
 import ru.mipt.npm.gradle.internal.useCommonDependency
 import ru.mipt.npm.gradle.internal.useFx
 
-enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
+public enum class FXModule(public val artifact: String, public vararg val dependencies: FXModule) {
     BASE("javafx-base"),
     GRAPHICS("javafx-graphics", BASE),
     CONTROLS("javafx-controls", GRAPHICS, BASE),
@@ -21,30 +25,29 @@ enum class FXModule(val artifact: String, vararg val dependencies: FXModule) {
     WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
 }
 
-enum class FXPlatform(val id: String) {
+public enum class FXPlatform(public val id: String) {
     WINDOWS("win"),
     LINUX("linux"),
     MAC("mac")
 }
 
-enum class DependencyConfiguration {
+public enum class DependencyConfiguration {
     API,
     IMPLEMENTATION,
-    COMPILE_ONLY
+    COMPILE_ONLY,
 }
 
-enum class DependencySourceSet(val setName: String, val suffix: String) {
+public enum class DependencySourceSet(public val setName: String, public val suffix: String) {
     MAIN("main", "Main"),
     TEST("test", "Test")
 }
 
 
-class KScienceExtension(val project: Project) {
-
+public class KScienceExtension(public val project: Project) {
     /**
      * Use coroutines-core with default version or [version]
      */
-    fun useCoroutines(
+    public fun useCoroutines(
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
@@ -55,14 +58,14 @@ class KScienceExtension(val project: Project) {
     )
 
     /**
-     * Use kotlinx-atmicfu plugin and library
+     * Use kotlinx-atomicfu plugin and library
      */
-    fun useAtomic(
+    public fun useAtomic(
         version: String = KScienceVersions.atomicVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION,
     ): Unit = project.run {
-        plugins.apply("kotlinx-atomicfu")
+        apply<AtomicFUGradlePlugin>()
         useCommonDependency(
             "org.jetbrains.kotlinx:atomicfu:$version",
             dependencySourceSet = sourceSet,
@@ -73,7 +76,7 @@ class KScienceExtension(val project: Project) {
     /**
      * Use core serialization library and configure targets
      */
-    fun useSerialization(
+    public fun useSerialization(
         version: String = KScienceVersions.serializationVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
@@ -90,23 +93,23 @@ class KScienceExtension(val project: Project) {
             dependencySourceSet = sourceSet,
             dependencyConfiguration = configuration
         )
-        SerializationTargets(sourceSet, configuration).apply(block)
+        SerializationTargets(sourceSet, configuration).block()
     }
 
     /**
      * Add platform-specific JavaFX dependencies with given list of [FXModule]s
      */
-    fun useFx(
+    public fun useFx(
         vararg modules: FXModule,
         configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
         version: String = "11",
         platform: FXPlatform = defaultPlatform,
-    ) = project.useFx(modules.toList(), configuration, version, platform)
+    ): Unit = project.useFx(modules.toList(), configuration, version, platform)
 
     /**
      * Add dependency on kotlinx-html library
      */
-    fun useHtml(
+    public fun useHtml(
         version: String = KScienceVersions.htmlVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
@@ -119,35 +122,44 @@ class KScienceExtension(val project: Project) {
     /**
      * Use kotlinx-datetime library with default version or [version]
      */
-    fun useDateTime(
+    public fun useDateTime(
         version: String = KScienceVersions.dateTimeVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
-    ) {
-        project.useCommonDependency(
-            "org.jetbrains.kotlinx:kotlinx-datetime:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
+    ): Unit = project.useCommonDependency(
+        "org.jetbrains.kotlinx:kotlinx-datetime:$version",
+        dependencySourceSet = sourceSet,
+        dependencyConfiguration = configuration
+    )
 
     /**
      * Apply jupyter plugin
      */
-    fun useJupyter() {
+    @Deprecated("Use jupyterLibrary")
+    public fun useJupyter() {
         project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
+    }
+
+    /**
+     * Apply jupyter plugin and add entry point for the jupyter library
+     */
+    public fun jupyterLibrary(pluginClass: String, vararg additionalPluginClasses: String) {
+        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
+        project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
+            libraryProducers = listOf(pluginClass, *additionalPluginClasses)
+        }
     }
 
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
-    fun application() {
+    public fun application() {
         project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
         }
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            project.plugins.apply(ApplicationPlugin::class.java)
+            project.apply<ApplicationPlugin>()
         }
 
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
@@ -160,8 +172,9 @@ class KScienceExtension(val project: Project) {
             js {
                 binaries.executable()
             }
-            targets.filterIsInstance<KotlinNativeTarget>().forEach {
-                it.binaries.executable()
+
+            targets.withType<KotlinNativeTarget> {
+                binaries.executable()
             }
         }
     }

@@ -1,25 +1,32 @@
 package ru.mipt.npm.gradle
 
+
 import org.gradle.api.JavaVersion
+import org.tomlj.Toml
 
 /**
  * Build constants
  */
-object KScienceVersions {
-    const val kotlinVersion = "1.5.21"
-    const val kotlinxNodeVersion = "0.0.7"
-    const val coroutinesVersion = "1.5.1"
-    const val serializationVersion = "1.2.2"
-    const val atomicVersion = "0.16.2"
-    const val ktorVersion = "1.6.1"
-    const val htmlVersion = "0.7.3"
-    const val dateTimeVersion = "0.2.1"
-    const val jsBom = "0.0.1-pre.216-kotlin-1.5.20"
+public object KScienceVersions {
 
-    val JVM_TARGET = JavaVersion.VERSION_11
+    private val toml by lazy {
+        Toml.parse(javaClass.getResource("/libs.versions.toml")!!.readText())
+    }
 
-    object Serialization{
-        const val xmlVersion = "0.82.0"
-        const val yamlKtVersion = "0.10.0"
+    public val kotlinVersion: String get() = toml.getString("versions.kotlin")!!
+    public val kotlinxNodeVersion: String get() = toml.getString("versions.kotlinx-nodejs")!!
+    public val coroutinesVersion: String get() = toml.getString("versions.kotlinx-coroutines")!!
+    public val serializationVersion: String get() = toml.getString("versions.kotlinx-serialization")!!
+    public val atomicVersion: String get() = toml.getString("versions.atomicfu")!!
+    public val ktorVersion: String get() = toml.getString("versions.ktor")!!
+    public val htmlVersion: String get() = toml.getString("versions.kotlinx-html")!!
+    public val dateTimeVersion: String get() = toml.getString("versions.kotlinx-datetime")!!
+    public val jsBom: String get() = toml.getString("versions.jsBom")!!
+
+    public val JVM_TARGET: JavaVersion = JavaVersion.VERSION_11
+
+    public object Serialization {
+        public val xmlVersion: String get() = toml.getString("versions.xmlutil")!!
+        public val yamlKtVersion: String get() = toml.getString("versions.yamlkt")!!
     }
 }

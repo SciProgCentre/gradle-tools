@@ -11,42 +11,70 @@ import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
-import org.jetbrains.dokka.gradle.DokkaTask
 import ru.mipt.npm.gradle.internal.*
 
 private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
 
 @Suppress("unused")
-class KSciencePublishingExtension(val project: Project) {
-    private var initializedFlag = false
+public class KSciencePublishingExtension(public val project: Project) {
+    private var isVcsInitialized = false
 
-    fun vcs(vcsUrl: String) {
-        if (!initializedFlag) {
-            project.setupPublication(vcsUrl)
-            initializedFlag = true
+    @Deprecated("Use git function and report an issue if other VCS is used.")
+    public fun vcs(vcsUrl: String) {
+        if (!isVcsInitialized) {
+            project.setupPublication {
+                url.set(vcsUrl)
+                scm { url.set(vcsUrl) }
+            }
+
+            isVcsInitialized = true
         }
     }
 
     /**
-     * github publishing
-     * @param publish include github packages in release publishing. By default - false
+     * Configures Git repository (sources) for the publication.
+     *
+     * @param vcsUrl URL of the repository's web interface.
+     * @param connectionUrl URL of the Git repository.
+     * @param developerConnectionUrl URL of the Git repository for developers.
      */
-    fun github(githubProject: String, githubOrg: String = "mipt-npm", publish: Boolean = false) {
-        //automatically initialize vcs using github
-        if (!initializedFlag) {
-            vcs("https://github.com/$githubOrg/$githubProject")
+    public fun git(vcsUrl: String, connectionUrl: String? = null, developerConnectionUrl: String? = connectionUrl) {
+        if (!isVcsInitialized) {
+            project.setupPublication {
+                url.set(vcsUrl)
+
+                scm {
+                    url.set(vcsUrl)
+                    connectionUrl?.let { connection.set("scm:git:$it") }
+                    developerConnectionUrl?.let { developerConnection.set("scm:git:$it") }
+                }
+            }
+
+            isVcsInitialized = true
+        }
+    }
+
+    private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
+        allTasks()
+            .filter { it.name == "publish${publicationTarget}To${name.capitalize()}Repository" }
+            .forEach { releaseTask?.dependsOn(it) }
+    }
+
+    /**
+     * Adds GitHub as VCS and adds GitHub Packages Maven repository to publishing.
+     *
+     * @param githubProject the GitHub project.
+     * @param githubOrg the GitHub user or organization.
+     * @param release whether publish packages in the `release` task to the GitHub repository.
+     */
+    public fun github(githubProject: String, githubOrg: String = "mipt-npm", release: Boolean = false, publish: Boolean = true) {
+        // Automatically initialize VCS using GitHub
+        if (!isVcsInitialized) {
+            git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
         }
 
-        project.addGithubPublishing(githubOrg, githubProject)
-
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToGithubRepository" }
-                    ?.let { publicationTask ->
-                        releaseTask?.dependsOn(publicationTask)
-                    }
-            }
+        if (publish) project.addGithubPublishing(githubOrg, githubProject)
+        if (release) linkPublicationsToReleaseTask("github")
     }
 
     private val releaseTask by lazy {
@@ -54,18 +82,15 @@ class KSciencePublishingExtension(val project: Project) {
     }
 
     /**
-     *  Space publishing
+     * Adds Space Packages Maven repository to publishing.
+     *
+     * @param spaceRepo the repository URL.
+     * @param release whether publish packages in the `release` task to the Space repository.
      */
-    fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", publish: Boolean = false) {
-        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
+    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", release: Boolean = true) {
         project.addSpacePublishing(spaceRepo)
 
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToSpaceRepository" }
-                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
-            }
+        if (release) linkPublicationsToReleaseTask("space")
     }
 
 //    // Bintray publishing
@@ -75,25 +100,23 @@ class KSciencePublishingExtension(val project: Project) {
 //    var bintrayRepo: String? by project.extra
 
     /**
-     *  Sonatype publishing
+     * Adds Sonatype Maven repository to publishing.
+     *
+     * @param release whether publish packages in the `release` task to the Sonatype repository.
      */
-    fun sonatype(publish: Boolean = true) {
-        require(initializedFlag) { "The project vcs is not set up use 'vcs' method to do so" }
+    public fun sonatype(release: Boolean = true) {
+        require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
         project.addSonatypePublishing()
 
-        if (publish)
-            project.afterEvaluate {
-                allTasks()
-                    .find { it.name == "publish${publicationTarget}ToSonatypeRepository" }
-                    ?.let { publicationTask -> releaseTask?.dependsOn(publicationTask) }
-            }
+        if (release) linkPublicationsToReleaseTask("sonatype")
     }
 }
 
 /**
- * Apply extension and repositories
+ * Applies third-party plugins (Dokka, Changelog, binary compatibility validator); configures Maven publishing, README
+ * generation.
  */
-open class KScienceProjectPlugin : Plugin<Project> {
+public open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
 
@@ -143,7 +166,8 @@ open class KScienceProjectPlugin : Plugin<Project> {
                     }
                 }
             }
-            tasks.withType<DokkaTask> {
+
+            tasks.withType<AbstractDokkaTask> {
                 dependsOn(generateReadme)
             }
         }
@@ -231,7 +255,7 @@ open class KScienceProjectPlugin : Plugin<Project> {
         }
     }
 
-    companion object {
-        const val RELEASE_GROUP = "release"
+    public companion object {
+        public const val RELEASE_GROUP: String = "release"
     }
 }

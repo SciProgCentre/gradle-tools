@@ -6,6 +6,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
+import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -15,7 +16,7 @@ import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 @Suppress("UNUSED_VARIABLE")
-open class KScienceCommonPlugin : Plugin<Project> {
+public open class KScienceCommonPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         //Common configuration
         registerKScienceExtension()
@@ -27,12 +28,11 @@ open class KScienceCommonPlugin : Plugin<Project> {
             configure<KotlinJvmProjectExtension> {
                 explicitApiWarning()
 
-                sourceSets["main"].apply {
+                sourceSets.all {
                     languageSettings.applySettings()
                 }
 
                 sourceSets["test"].apply {
-                    languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test-junit5"))
                         implementation("org.junit.jupiter:junit-jupiter:5.6.1")
@@ -50,10 +50,8 @@ open class KScienceCommonPlugin : Plugin<Project> {
                 targetCompatibility = KScienceVersions.JVM_TARGET
             }
 
-            tasks.apply {
-                withType<Test> {
-                    useJUnitPlatform()
-                }
+            tasks.withType<Test> {
+                useJUnitPlatform()
             }
         }
 
@@ -70,15 +68,17 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
 
-                sourceSets["main"].apply {
+                sourceSets.all {
                     languageSettings.applySettings()
+                }
+
+                sourceSets["main"].apply {
                     dependencies {
                         api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
                     }
                 }
 
                 sourceSets["test"].apply {
-                    languageSettings.applySettings()
                     dependencies {
                         implementation(kotlin("test-js"))
                     }
@@ -112,7 +112,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
 
-                sourceSets.invoke {
+                sourceSets {
                     val commonMain by getting {
                         dependencies {
                             api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
@@ -128,7 +128,7 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     val jvmTest by getting {
                         dependencies {
                             implementation(kotlin("test-junit5"))
-                            implementation("org.junit.jupiter:junit-jupiter:5.6.1")
+                            implementation("org.junit.jupiter:junit-jupiter:5.7.2")
                         }
                     }
                     val jsMain by getting
@@ -139,12 +139,8 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     }
                 }
 
-                afterEvaluate {
-                    targets.all {
-                        sourceSets.all {
-                            languageSettings.applySettings()
-                        }
-                    }
+                sourceSets.all {
+                    languageSettings.applySettings()
                 }
 
                 (tasks.findByName("jsProcessResources") as? Copy)?.apply {
@@ -155,18 +151,15 @@ open class KScienceCommonPlugin : Plugin<Project> {
                     targetCompatibility = KScienceVersions.JVM_TARGET
                 }
 
-                tasks.apply {
-                    withType<Test> {
-                        useJUnitPlatform()
-                    }
+                tasks.withType<Test> {
+                    useJUnitPlatform()
                 }
             }
         }
 
         // apply dokka for all projects
         if (!plugins.hasPlugin("org.jetbrains.dokka")) {
-            plugins.apply("org.jetbrains.dokka")
+            apply<DokkaPlugin>()
         }
-
     }
 }

@@ -1,14 +1,15 @@
 plugins {
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.dokka)
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
     signing
-    alias(libs.plugins.changelog)
-    alias(libs.plugins.dokka)
+    `version-catalog`
 }
 
 group = "ru.mipt.npm"
-version = "0.10.2"
+version = libs.versions.tools.get()
 
 description = "Build tools for DataForge and kscience projects"
 
@@ -22,6 +23,8 @@ repositories {
 
 java.targetCompatibility = JavaVersion.VERSION_11
 
+kotlin.explicitApiWarning()
+
 dependencies {
     api(libs.kotlin.gradle)
     implementation(libs.atomicfu.gradle)
@@ -30,7 +33,18 @@ dependencies {
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
+    implementation("org.tomlj:tomlj:1.0.0")
+//    // nexus publishing plugin
+//    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
+
+    testImplementation(kotlin("test"))
 }
+
+tasks.test {
+    useJUnitPlatform()
+}
+
+//declaring exported plugins
 
 gradlePlugin {
     plugins {
@@ -78,29 +92,45 @@ gradlePlugin {
     }
 }
 
+//publishing version catalog
+
+catalog.versionCatalog {
+    from(files("gradle/libs.versions.toml"))
+}
+
+//publishing the artifact
+
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.named("main").get().allSource)
+}
+
+val javadocsJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
+}
+
 afterEvaluate {
     publishing {
         val vcs = "https://github.com/mipt-npm/gradle-tools"
 
-        val sourcesJar by tasks.creating(Jar::class) {
-            archiveClassifier.set("sources")
-            from(sourceSets.named("main").get().allSource)
-        }
-
-        val javadocsJar by tasks.creating(Jar::class) {
-            group = "documentation"
-            archiveClassifier.set("javadoc")
-            from(tasks.dokkaHtml)
-        }
-
         // Process each publication we have in this project
-        publications.filterIsInstance<MavenPublication>().forEach { publication ->
-            publication.apply {
+        publications {
+            create<MavenPublication>("catalog") {
+                from(components["versionCatalog"])
+                this.artifactId = "version-catalog"
+
+                pom {
+                    name.set("version-catalog")
+                }
+            }
+
+            withType<MavenPublication> {
                 artifact(sourcesJar)
                 artifact(javadocsJar)
 
                 pom {
-                    name.set(project.name)
                     description.set(project.description)
                     url.set(vcs)
 
@@ -157,10 +187,6 @@ afterEvaluate {
                 "https://oss.sonatype.org/service/local/staging/deploy/maven2"
             }
 
-            if (plugins.findPlugin("signing") == null) {
-                plugins.apply("signing")
-            }
-
             repositories.maven {
                 name = "sonatype"
                 url = uri(sonatypeRepo)
@@ -171,10 +197,19 @@ afterEvaluate {
                 }
             }
 
+            if (plugins.findPlugin("signing") == null) {
+                apply<SigningPlugin>()
+            }
+
             signing {
                 //useGpgCmd()
                 sign(publications)
             }
         }
     }
+}
+
+tasks.processResources.configure {
+    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    from("gradle/libs.versions.toml")
 }
