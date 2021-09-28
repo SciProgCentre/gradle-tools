@@ -9,7 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.10.4]
+### Added
+
+### Changed
 - Kotlin 1.6
+
 
 ### Deprecated
 
@@ -18,22 +32,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Some issues with opt-ins
 
+
 ### Security
+
 ## [0.10.2]
 ### Added
 - Experimental automatic JS project bundling in MPP
 
+
 ### Changed
 - Remove vcs requirement for Space publication
 
-### Deprecated
-
-### Removed
 
 ### Fixed
 -Release task (#19)
-
-### Security
 
 ## [0.10.0]
 ### Added
@@ -41,23 +53,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BOM for kotlin-wrappers on JS
 - Jupyter loader
 
+
 ### Changed
 - API validation disabled for dev versions
 - Kotlin plugins are propagated downstream
 
-### Deprecated
 
 ### Removed
 - bson support
-
-### Fixed
-
-### Security
 
 ## [0.9.5]
 ### Added
 - Disable API validation for snapshots
 - `-Xjvm-default=all` on JVM
+
 
 ### Changed
 - `publication.platform` changed to `publishing.platform`
@@ -65,59 +74,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `useDateTime` in extension
 - Kotlin 1.5
 
-### Deprecated
 
 ### Removed
 - Publish plugin. Use MavenPublish instead
 
+
 ### Fixed
 - Removed unnecessary `afterEvaluate` for compatibility with gradle 7.0
-
-### Security
 
 ## [0.9.0]
 ### Added
 - Skip sonatype publishing for dev versions
 
+
 ### Changed
 - Publishing repositories are explicit and defined in the top level project
 - Paths to publishing properties now use dot notation like `publishing.github.user`
 
+
 ### Deprecated
 - Publishing plugin
 
+
 ### Removed
 - Bintray publishing
-
-### Fixed
-
-### Security
 
 ## [0.8.4]
 ### Added
 - Adaptive support for host OS in native
 - CSS support for JS targets
 
+
 ### Changed
 - Kotlin 1.4.31
 - Coroutines 1.4.3
 
-### Deprecated
-
-### Removed
 
 ### Fixed
 - Plugin loading order for publishing
 - Release task
 - Readme generation for multi-module project
 
-### Security
-
 ## [0.8.1]
 ### Added
 - Ktor version to versions
 - Add sonatype publishing
 - Per-platform release publishing
+
 
 ### Changed
 - Kotlin to 1.4.30 stable.
@@ -126,19 +129,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Common plugin id changed to `common`
 - Plugins group changed to `ru.mipt.npm` with `gradle` prefix
 
-### Deprecated
 
 ### Removed
 - kaml
+
 
 ### Fixed
 - Fix publishing load order for sonatype
 - Fix root project readme
 
-### Security
-
 ## [0.7.4]
-
 ### Added
 - Changelog plugin automatically applied to `project`.
 - Feature matrix and Readme generation task for a `project` plugin.
@@ -146,6 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separate `yamlKt` serialization target
 - Moved all logic to a common plugin, leaving only proxies for platform plugins
 - Suppress API validation for modules with maturity below DEVELOPMENT
+
 
 ### Changed
 - Remove node plugin. Node binaries should be turned on manually.
@@ -157,29 +158,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved internals to internals
 - Kotlin 1.4.30-RC
 
+
 ### Deprecated
 - Support of `kaml` and `snake-yaml` in favor of `yamlKt`
 - Publish plugin
 
+
 ### Removed
 - `useDokka` method. Documentation jar should be added manually if needed.
 
-
-### Fixed
-
-### Security
 ## [0.6.0]
-
 ### Added
 - Migrate to kotlin 1.4.0
 - Separate Native (current platform) and nodeJs plugins.
 - Add `application()` toggle in plugin configuration to produce binaries on JS and applicaion plugin on jvm.
 - Add `publish` to expose publishing configuration.
 
+
 ### Changed
 -Publishing in bintray now is automatic.
 
 ## [0.5.2]
-
 ### Added
 - Copy resources for jvm modules and jvm source sets in mpp.
