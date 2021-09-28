@@ -32,7 +32,7 @@ public class KSciencePublishingExtension(public val project: Project) {
     }
 
     /**
-     * Configures Git repository for the publication.
+     * Configures Git repository (sources) for the publication.
      *
      * @param vcsUrl URL of the repository's web interface.
      * @param connectionUrl URL of the Git repository.
@@ -69,8 +69,9 @@ public class KSciencePublishingExtension(public val project: Project) {
      */
     public fun github(githubProject: String, githubOrg: String = "mipt-npm", release: Boolean = false, publish: Boolean = true) {
         // Automatically initialize VCS using GitHub
-        if (!isVcsInitialized)
+        if (!isVcsInitialized) {
             git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
+        }
 
         if (publish) project.addGithubPublishing(githubOrg, githubProject)
         if (release) linkPublicationsToReleaseTask("github")
@@ -87,7 +88,6 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param release whether publish packages in the `release` task to the Space repository.
      */
     public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", release: Boolean = true) {
-        require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
         project.addSpacePublishing(spaceRepo)
 
         if (release) linkPublicationsToReleaseTask("space")
@@ -105,7 +105,7 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param release whether publish packages in the `release` task to the Sonatype repository.
      */
     public fun sonatype(release: Boolean = true) {
-        require(isVcsInitialized) { "The project vcs is not set up use 'vcs' method to do so" }
+        require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
         project.addSonatypePublishing()
 
         if (release) linkPublicationsToReleaseTask("sonatype")

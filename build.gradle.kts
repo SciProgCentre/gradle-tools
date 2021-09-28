@@ -34,6 +34,8 @@ dependencies {
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
     implementation("org.tomlj:tomlj:1.0.0")
+//    // nexus publishing plugin
+//    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 
     testImplementation(kotlin("test"))
 }
@@ -187,16 +189,6 @@ afterEvaluate {
 
             if (plugins.findPlugin("signing") == null) {
                 apply<SigningPlugin>()
-            }
-
-            repositories.maven {
-                name = "sonatype"
-                url = uri(sonatypeRepo)
-
-                credentials {
-                    username = sonatypeUser
-                    password = sonatypePassword
-                }
             }
 
             signing {

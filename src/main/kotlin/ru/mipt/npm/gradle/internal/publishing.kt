@@ -25,7 +25,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             plugins.withId("org.jetbrains.kotlin.js") {
                 val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
 
-                val sourcesJar  by tasks.creating(Jar::class) {
+                val sourcesJar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
 
                     kotlin.sourceSets.all {
@@ -155,7 +155,7 @@ internal fun Project.addGithubPublishing(
 
 internal fun Project.addSpacePublishing(spaceRepo: String) {
     if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping github publishing because publishing is disabled")
+        logger.info("Skipping space publishing because publishing is disabled")
         return
     }
 
@@ -188,7 +188,7 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
 
 internal fun Project.addSonatypePublishing() {
     if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping github publishing because publishing is disabled")
+        logger.info("Skipping sonatype publishing because publishing is disabled")
         return
     }
 
@@ -204,18 +204,16 @@ internal fun Project.addSonatypePublishing() {
 
     val sonatypeUser: String = requestProperty("publishing.sonatype.user")
     val sonatypePassword: String = requestProperty("publishing.sonatype.password")
-    val signingId: String? = requestPropertyOrNull("publishing.signing.id")
 
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                val sonatypeRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-
-                if (!plugins.hasPlugin("signing") ) {
+                if (!plugins.hasPlugin("signing")) {
                     apply<SigningPlugin>()
                 }
 
                 extensions.configure<SigningExtension>("signing") {
+                    val signingId: String? = requestPropertyOrNull("publishing.signing.id")
                     if (!signingId.isNullOrBlank()) {
                         val signingKey: String = requestProperty("publishing.signing.key")
                         val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
@@ -227,6 +225,7 @@ internal fun Project.addSonatypePublishing() {
                 }
 
                 repositories.maven {
+                    val sonatypeRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                     name = "sonatype"
                     url = uri(sonatypeRepo)
 
