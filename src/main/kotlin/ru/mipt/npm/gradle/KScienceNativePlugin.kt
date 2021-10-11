@@ -34,7 +34,7 @@ public class KScienceNativePlugin : Plugin<Project> {
                 }
 
                 val nativeTest by creating {
-                    dependsOn(nativeMain)
+                    //should NOT depend on nativeMain because automatic dependency by plugin
                     dependsOn(commonTest)
                 }
 
