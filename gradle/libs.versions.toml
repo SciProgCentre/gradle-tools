@@ -1,5 +1,5 @@
 [versions]
-tools = "0.10.4"
+tools = "0.10.5"
 kotlin = "1.6.0-M1"
 atomicfu = "0.16.2"
 binary-compatibility-validator = "0.7.1"
