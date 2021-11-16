@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- html builders for readme
 
 ### Changed
+- Kotlin 1.6.0
+- Use indy lambdas by default #32 
 
 ### Deprecated
 

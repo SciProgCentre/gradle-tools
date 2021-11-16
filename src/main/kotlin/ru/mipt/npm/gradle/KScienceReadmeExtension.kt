@@ -1,16 +1,23 @@
 package ru.mipt.npm.gradle
 
 import groovy.text.SimpleTemplateEngine
+import kotlinx.html.TagConsumer
+import kotlinx.html.div
+import kotlinx.html.stream.createHTML
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.findByType
 import java.io.File
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 public enum class Maturity {
     PROTOTYPE,
     EXPERIMENTAL,
     DEVELOPMENT,
-    STABLE
+    STABLE,
+    DEPRECATED
 }
 
 
@@ -48,6 +55,20 @@ public class KScienceReadmeExtension(public val project: Project) {
         features += Feature(id, description(), ref, name)
     }
 
+    public fun featureWithHtml(
+        id: String,
+        ref: String? = null,
+        name: String = id,
+        htmlBuilder: TagConsumer<String>.() -> Unit,
+    ) {
+        val text = createHTML().apply {
+            div("readme-feature") {
+                htmlBuilder()
+            }
+        }.finalize()
+        features += Feature(id, text, ref, name)
+    }
+
     private val properties: MutableMap<String, () -> Any?> = mutableMapOf(
         "name" to { project.name },
         "group" to { project.group },
@@ -82,7 +103,7 @@ public class KScienceReadmeExtension(public val project: Project) {
     /**
      * Generate a markdown string listing features
      */
-    public fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
+    internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
             appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }

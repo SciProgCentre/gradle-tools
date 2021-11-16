@@ -33,6 +33,8 @@ dependencies {
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
+    @Suppress("UnstableApiUsage")
+    implementation(libs.kotlinx.html)
     implementation("org.tomlj:tomlj:1.0.0")
 //    // nexus publishing plugin
 //    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
@@ -94,6 +96,7 @@ gradlePlugin {
 
 //publishing version catalog
 
+@Suppress("UnstableApiUsage")
 catalog.versionCatalog {
     from(files("gradle/libs.versions.toml"))
 }
@@ -210,6 +213,6 @@ afterEvaluate {
 }
 
 tasks.processResources.configure {
-    duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from("gradle/libs.versions.toml")
 }

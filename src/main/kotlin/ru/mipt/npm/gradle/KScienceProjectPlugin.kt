@@ -240,7 +240,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
         //val patchChangelog by tasks.getting
 
-        val release by tasks.creating {
+        @Suppress("UNUSED_VARIABLE") val release by tasks.creating {
             group = RELEASE_GROUP
             description = "Publish development or production release based on version suffix"
             dependsOn(generateReadme)
