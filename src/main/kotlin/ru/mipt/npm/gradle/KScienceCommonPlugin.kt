@@ -17,6 +17,11 @@ import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 @Suppress("UNUSED_VARIABLE")
 public open class KScienceCommonPlugin : Plugin<Project> {
+    public companion object{
+        public val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all","-Xlambdas=indy")
+    }
+
+
     override fun apply(project: Project): Unit = project.run {
         //Common configuration
         registerKScienceExtension()
@@ -35,14 +40,14 @@ public open class KScienceCommonPlugin : Plugin<Project> {
                 sourceSets["test"].apply {
                     dependencies {
                         implementation(kotlin("test-junit5"))
-                        implementation("org.junit.jupiter:junit-jupiter:5.6.1")
+                        implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
                     }
                 }
             }
             tasks.withType<KotlinJvmCompile> {
                 kotlinOptions {
                     jvmTarget = KScienceVersions.JVM_TARGET.toString()
-                    freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
+                    freeCompilerArgs = freeCompilerArgs + defaultJvmArgs
                 }
             }
 
@@ -99,7 +104,7 @@ public open class KScienceCommonPlugin : Plugin<Project> {
                     compilations.all {
                         kotlinOptions {
                             jvmTarget = KScienceVersions.JVM_TARGET.toString()
-                            freeCompilerArgs = freeCompilerArgs + "-Xjvm-default=all"
+                            freeCompilerArgs = freeCompilerArgs + defaultJvmArgs
                         }
                     }
                 }
@@ -128,7 +133,7 @@ public open class KScienceCommonPlugin : Plugin<Project> {
                     val jvmTest by getting {
                         dependencies {
                             implementation(kotlin("test-junit5"))
-                            implementation("org.junit.jupiter:junit-jupiter:5.7.2")
+                            implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
                         }
                     }
                     val jsMain by getting

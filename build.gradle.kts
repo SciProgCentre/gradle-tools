@@ -96,6 +96,7 @@ gradlePlugin {
 
 //publishing version catalog
 
+@Suppress("UnstableApiUsage")
 catalog.versionCatalog {
     from(files("gradle/libs.versions.toml"))
 }

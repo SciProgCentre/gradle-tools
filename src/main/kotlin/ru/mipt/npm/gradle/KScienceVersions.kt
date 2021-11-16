@@ -22,6 +22,7 @@ public object KScienceVersions {
     public val htmlVersion: String get() = toml.getString("versions.kotlinx-html")!!
     public val dateTimeVersion: String get() = toml.getString("versions.kotlinx-datetime")!!
     public val jsBom: String get() = toml.getString("versions.jsBom")!!
+    internal val junit: String get() = toml.getString("versions.junit")!!
 
     public val JVM_TARGET: JavaVersion = JavaVersion.VERSION_11
 
