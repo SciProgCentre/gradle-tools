@@ -48,10 +48,10 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
                 from(task)
             }
         }
-     }
+    }
 }
 
-internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js"){
+internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js") {
     js {
         binaries.executable()
         browser {

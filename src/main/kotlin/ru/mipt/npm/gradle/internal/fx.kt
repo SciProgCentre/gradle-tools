@@ -2,7 +2,6 @@ package ru.mipt.npm.gradle.internal
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension

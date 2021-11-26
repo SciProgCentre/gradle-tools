@@ -16,5 +16,5 @@ public open class KScienceMPPlugin : Plugin<Project> {
         }
 
         apply<KScienceCommonPlugin>()
-     }
+    }
 }

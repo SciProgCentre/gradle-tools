@@ -67,7 +67,12 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param githubOrg the GitHub user or organization.
      * @param release whether publish packages in the `release` task to the GitHub repository.
      */
-    public fun github(githubProject: String, githubOrg: String = "mipt-npm", release: Boolean = false, publish: Boolean = true) {
+    public fun github(
+        githubProject: String,
+        githubOrg: String = "mipt-npm",
+        release: Boolean = false,
+        publish: Boolean = true
+    ) {
         // Automatically initialize VCS using GitHub
         if (!isVcsInitialized) {
             git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
@@ -87,7 +92,10 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param spaceRepo the repository URL.
      * @param release whether publish packages in the `release` task to the Space repository.
      */
-    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", release: Boolean = true) {
+    public fun space(
+        spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven",
+        release: Boolean = true
+    ) {
         project.addSpacePublishing(spaceRepo)
 
         if (release) linkPublicationsToReleaseTask("space")

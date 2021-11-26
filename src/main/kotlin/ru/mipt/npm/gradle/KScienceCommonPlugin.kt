@@ -17,8 +17,8 @@ import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 @Suppress("UNUSED_VARIABLE")
 public open class KScienceCommonPlugin : Plugin<Project> {
-    public companion object{
-        public val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all","-Xlambdas=indy")
+    public companion object {
+        public val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy")
     }
 
 
