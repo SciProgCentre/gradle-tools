@@ -54,10 +54,18 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE") private val release by project.tasks.creating {
+        group = KScienceProjectPlugin.RELEASE_GROUP
+        description = "Publish development or production release based on version suffix"
+    }
+
     private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
         allTasks()
             .filter { it.name == "publish${publicationTarget}To${name.capitalize()}Repository" }
-            .forEach { releaseTask?.dependsOn(it) }
+            .forEach {
+                logger.info("Linking $it to release")
+                release.dependsOn(it)
+            }
     }
 
     /**
@@ -65,40 +73,42 @@ public class KSciencePublishingExtension(public val project: Project) {
      *
      * @param githubProject the GitHub project.
      * @param githubOrg the GitHub user or organization.
-     * @param release whether publish packages in the `release` task to the GitHub repository.
+     * @param publish add publish task for github.
+     * @param addToRelease publish packages in the `release` task to the GitHub repository.
      */
     public fun github(
         githubProject: String,
         githubOrg: String = "mipt-npm",
-        release: Boolean = false,
-        publish: Boolean = true
+        addToRelease: Boolean = project.requestPropertyOrNull("publishing.github") == "true",
     ) {
         // Automatically initialize VCS using GitHub
         if (!isVcsInitialized) {
             git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
         }
 
-        if (publish) project.addGithubPublishing(githubOrg, githubProject)
-        if (release) linkPublicationsToReleaseTask("github")
-    }
-
-    private val releaseTask by lazy {
-        project.tasks.findByName("release")
+        if (addToRelease) {
+            try {
+                project.addGithubPublishing(githubOrg, githubProject)
+                linkPublicationsToReleaseTask("github")
+            } catch (t: Throwable){
+                project.logger.error("Failed to set up github publication", t)
+            }
+        }
     }
 
     /**
      * Adds Space Packages Maven repository to publishing.
      *
      * @param spaceRepo the repository URL.
-     * @param release whether publish packages in the `release` task to the Space repository.
+     * @param addToRelease publish packages in the `release` task to the Space repository.
      */
     public fun space(
         spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven",
-        release: Boolean = true
+        addToRelease: Boolean = project.requestPropertyOrNull("publishing.space") != "false",
     ) {
         project.addSpacePublishing(spaceRepo)
 
-        if (release) linkPublicationsToReleaseTask("space")
+        if (addToRelease) linkPublicationsToReleaseTask("space")
     }
 
 //    // Bintray publishing
@@ -110,13 +120,15 @@ public class KSciencePublishingExtension(public val project: Project) {
     /**
      * Adds Sonatype Maven repository to publishing.
      *
-     * @param release whether publish packages in the `release` task to the Sonatype repository.
+     * @param addToRelease  publish packages in the `release` task to the Sonatype repository.
      */
-    public fun sonatype(release: Boolean = true) {
+    public fun sonatype(
+        addToRelease: Boolean = (project.requestPropertyOrNull("publishing.sonatype") != "false"),
+    ) {
         require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
         project.addSonatypePublishing()
 
-        if (release) linkPublicationsToReleaseTask("sonatype")
+        if (addToRelease) linkPublicationsToReleaseTask("sonatype")
     }
 }
 
@@ -243,14 +255,6 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         tasks.withType<AbstractDokkaTask> {
-            dependsOn(generateReadme)
-        }
-
-        //val patchChangelog by tasks.getting
-
-        @Suppress("UNUSED_VARIABLE") val release by tasks.creating {
-            group = RELEASE_GROUP
-            description = "Publish development or production release based on version suffix"
             dependsOn(generateReadme)
         }
 

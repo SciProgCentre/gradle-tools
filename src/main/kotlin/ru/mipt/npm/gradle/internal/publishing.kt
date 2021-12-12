@@ -11,10 +11,10 @@ import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-private fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
+internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)
 
-private fun Project.requestProperty(propertyName: String): String = requestPropertyOrNull(propertyName)
+internal fun Project.requestProperty(propertyName: String): String = requestPropertyOrNull(propertyName)
     ?: error("Property $propertyName not defined")
 
 
@@ -126,8 +126,8 @@ internal fun Project.addGithubPublishing(
         logger.info("Skipping github publishing because publishing is disabled")
         return
     }
-    if (requestPropertyOrNull("publishing.github") == "false") {
-        logger.info("Skipping github publishing  because `publishing.github == false`")
+    if (requestPropertyOrNull("publishing.github") != "false") {
+        logger.info("Skipping github publishing  because `publishing.github != true`")
         return
     }
 
