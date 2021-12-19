@@ -143,10 +143,10 @@ public class KScienceExtension(public val project: Project) {
     /**
      * Apply jupyter plugin and add entry point for the jupyter library
      */
-    public fun jupyterLibrary(pluginClass: String, vararg additionalPluginClasses: String) {
+    public fun jupyterLibrary(vararg pluginClasses: String) {
         project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
         project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
-            libraryProducers = listOf(pluginClass, *additionalPluginClasses)
+            libraryProducers = pluginClasses.toList()
         }
     }
 
