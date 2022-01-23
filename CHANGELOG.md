@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.11.1-kotlin-1.6.10]
+### Added
 - Default templates for README and ARTIFACT
 
 ### Changed
@@ -17,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+- JS publication sources jar
 
 ### Security
 
@@ -29,14 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Use indy lambdas by default #32 
 - Change version scheme to `<version>-kotlin-<kotlin version>`
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 - remove `nativeMain` dependency from `nativeTest`
-
-### Security
 
 ## [0.10.4]
 ### Changed

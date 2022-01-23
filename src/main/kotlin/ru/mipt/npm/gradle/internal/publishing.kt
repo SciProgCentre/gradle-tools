@@ -27,9 +27,8 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 
                 val sourcesJar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
-
-                    kotlin.sourceSets.all {
-                        from(kotlin)
+                    kotlin.sourceSets.forEach {
+                        from(it.kotlin)
                     }
                 }
                 afterEvaluate {

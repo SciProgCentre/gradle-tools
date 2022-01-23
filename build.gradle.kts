@@ -136,6 +136,7 @@ afterEvaluate {
                 artifact(javadocsJar)
 
                 pom {
+                    name.set(project.name)
                     description.set(project.description)
                     url.set(vcs)
 
