@@ -39,6 +39,8 @@ dependencies {
 //    // nexus publishing plugin
 //    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 
+    implementation("org.freemarker:freemarker:2.3.31")
+
     testImplementation(kotlin("test"))
 }
 
@@ -122,7 +124,7 @@ afterEvaluate {
         publications {
             create<MavenPublication>("catalog") {
                 from(components["versionCatalog"])
-                this.artifactId = "version-catalog"
+                artifactId = "version-catalog"
 
                 pom {
                     name.set("version-catalog")

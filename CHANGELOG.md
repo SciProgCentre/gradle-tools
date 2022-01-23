@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Default templates for README and ARTIFACT
 
 ### Changed
+- Replaced Groovy templates by FreeMarker
 
 ### Deprecated
 

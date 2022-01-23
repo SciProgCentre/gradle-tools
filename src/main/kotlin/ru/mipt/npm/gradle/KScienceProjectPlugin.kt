@@ -1,6 +1,5 @@
 package ru.mipt.npm.gradle
 
-import groovy.text.SimpleTemplateEngine
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
@@ -54,7 +53,8 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
-    @Suppress("UNUSED_VARIABLE") private val release by project.tasks.creating {
+    @Suppress("UNUSED_VARIABLE")
+    private val release by project.tasks.creating {
         group = KScienceProjectPlugin.RELEASE_GROUP
         description = "Publish development or production release based on version suffix"
     }
@@ -90,7 +90,7 @@ public class KSciencePublishingExtension(public val project: Project) {
             try {
                 project.addGithubPublishing(githubOrg, githubProject)
                 linkPublicationsToReleaseTask("github")
-            } catch (t: Throwable){
+            } catch (t: Throwable) {
                 project.logger.error("Failed to set up github publication", t)
             }
         }
@@ -170,7 +170,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
-                readmeExtension.additionalFiles.forEach {
+                readmeExtension.inputFiles.forEach {
                     if (it.exists()) {
                         inputs.file(it)
                     }
@@ -205,7 +205,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)
             }
-            rootReadmeExtension.additionalFiles.forEach {
+
+            rootReadmeExtension.inputFiles.forEach {
                 if (it.exists()) {
                     inputs.file(it)
                 }
@@ -242,13 +243,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                         appendLine("<hr/>")
                     }
 
-                    val rootReadmeProperties: Map<String, Any?> =
-                        rootReadmeExtension.actualizedProperties + ("modules" to modulesString)
+                    rootReadmeExtension.property("modules", modulesString)
 
-                    readmeFile.writeText(
-                        SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate)
-                            .make(rootReadmeProperties).toString()
-                    )
+                    rootReadmeExtension.readmeString()?.let {
+                        readmeFile.writeText(it)
+                    }
                 }
 
             }
