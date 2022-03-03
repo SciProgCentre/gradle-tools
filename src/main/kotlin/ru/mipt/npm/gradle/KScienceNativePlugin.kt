@@ -23,6 +23,8 @@ public class KScienceNativePlugin : Plugin<Project> {
                 linuxX64(),
                 mingwX64(),
                 macosX64(),
+                iosX64(),
+                iosArm64()
             )
 
             sourceSets {
