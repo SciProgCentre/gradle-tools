@@ -53,8 +53,6 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
-    private val releaseTasks = mutableSetOf<Task>()
-
     private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
         allTasks()
             .filter { it.name.startsWith("publish") && it.name.endsWith("To${name.capitalize()}Repository") }
@@ -67,7 +65,6 @@ public class KSciencePublishingExtension(public val project: Project) {
                     description = "Publish development or production release based on version suffix"
                 }
 
-                releaseTasks += releaseTask
                 releaseTask.dependsOn(it)
             }
     }
