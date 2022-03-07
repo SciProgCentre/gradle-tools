@@ -107,16 +107,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 
 internal fun Project.isSnapshot() = "dev" in version.toString() || version.toString().endsWith("SNAPSHOT")
 
-internal val Project.publicationTarget: String
-    get() {
-        val publicationPlatform = project.findProperty("publishing.platform") as? String
-        return if (publicationPlatform == null) {
-            "AllPublications"
-        } else {
-            publicationPlatform.capitalize() + "Publication"
-        }
-    }
-
 internal fun Project.addGithubPublishing(
     githubOrg: String,
     githubProject: String,

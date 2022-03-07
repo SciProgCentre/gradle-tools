@@ -33,7 +33,6 @@ dependencies {
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
-    @Suppress("UnstableApiUsage")
     implementation(libs.kotlinx.html)
     implementation("org.tomlj:tomlj:1.0.0")
 //    // nexus publishing plugin
@@ -60,7 +59,7 @@ gradlePlugin {
 
         create("project") {
             id = "ru.mipt.npm.gradle.project"
-            description = "The root plugin for multimodule project infrastructure"
+            description = "The root plugin for multi-module project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
         }
 
@@ -213,6 +212,10 @@ afterEvaluate {
             }
         }
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks.processResources.configure {

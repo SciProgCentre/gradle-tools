@@ -53,18 +53,22 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
-    @Suppress("UNUSED_VARIABLE")
-    private val release by project.tasks.creating {
-        group = KScienceProjectPlugin.RELEASE_GROUP
-        description = "Publish development or production release based on version suffix"
-    }
+    private val releaseTasks = mutableSetOf<Task>()
 
     private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
         allTasks()
-            .filter { it.name == "publish${publicationTarget}To${name.capitalize()}Repository" }
+            .filter { it.name.startsWith("publish") && it.name.endsWith("To${name.capitalize()}Repository") }
             .forEach {
-                logger.info("Linking $it to release")
-                release.dependsOn(it)
+                val theName = "release${it.name.removePrefix("publish").removeSuffix("")}"
+                logger.info("Making $theName task depend on ${it.name}")
+
+                val releaseTask = project.tasks.findByName(theName) ?: project.tasks.create(theName) {
+                    group = KScienceProjectPlugin.RELEASE_GROUP
+                    description = "Publish development or production release based on version suffix"
+                }
+
+                releaseTasks += releaseTask
+                releaseTask.dependsOn(it)
             }
     }
 
@@ -73,7 +77,6 @@ public class KSciencePublishingExtension(public val project: Project) {
      *
      * @param githubProject the GitHub project.
      * @param githubOrg the GitHub user or organization.
-     * @param publish add publish task for github.
      * @param addToRelease publish packages in the `release` task to the GitHub repository.
      */
     public fun github(
