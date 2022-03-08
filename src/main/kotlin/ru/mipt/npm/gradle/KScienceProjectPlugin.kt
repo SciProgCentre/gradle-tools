@@ -4,7 +4,9 @@ import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.plugins.BasePluginExtension
+import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
@@ -12,11 +14,12 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import ru.mipt.npm.gradle.internal.*
 
-private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
-
-@Suppress("unused")
+/**
+ * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
+ */
 public class KSciencePublishingExtension(public val project: Project) {
     private var isVcsInitialized = false
+    internal val repositoryNames = mutableSetOf<String>()
 
     @Deprecated("Use git function and report an issue if other VCS is used.")
     public fun vcs(vcsUrl: String) {
@@ -53,22 +56,6 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
-    private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
-        allTasks()
-            .filter { it.name.startsWith("publish") && it.name.endsWith("To${name.capitalize()}Repository") }
-            .forEach {
-                val theName = "release${it.name.removePrefix("publish").removeSuffix("To${name.capitalize()}Repository")}"
-                logger.info("Making $theName task depend on ${it.name}")
-
-                val releaseTask = project.tasks.findByName(theName) ?: project.tasks.create(theName) {
-                    group = KScienceProjectPlugin.RELEASE_GROUP
-                    description = "Publish development or production release based on version suffix"
-                }
-
-                releaseTask.dependsOn(it)
-            }
-    }
-
     /**
      * Adds GitHub as VCS and adds GitHub Packages Maven repository to publishing.
      *
@@ -89,7 +76,7 @@ public class KSciencePublishingExtension(public val project: Project) {
         if (addToRelease) {
             try {
                 project.addGithubPublishing(githubOrg, githubProject)
-                linkPublicationsToReleaseTask("github")
+                repositoryNames += "github"
             } catch (t: Throwable) {
                 project.logger.error("Failed to set up github publication", t)
             }
@@ -108,14 +95,8 @@ public class KSciencePublishingExtension(public val project: Project) {
     ) {
         project.addSpacePublishing(spaceRepo)
 
-        if (addToRelease) linkPublicationsToReleaseTask("space")
+        if (addToRelease) repositoryNames += "space"
     }
-
-//    // Bintray publishing
-//    var bintrayOrg: String? by project.extra
-//    var bintrayUser: String? by project.extra
-//    var bintrayApiKey: String? by project.extra
-//    var bintrayRepo: String? by project.extra
 
     /**
      * Adds Sonatype Maven repository to publishing.
@@ -128,7 +109,7 @@ public class KSciencePublishingExtension(public val project: Project) {
         require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
         project.addSonatypePublishing()
 
-        if (addToRelease) linkPublicationsToReleaseTask("sonatype")
+        if (addToRelease) repositoryNames += "sonatype"
     }
 }
 
@@ -139,7 +120,6 @@ public class KSciencePublishingExtension(public val project: Project) {
 public open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
-
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 
@@ -156,7 +136,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         val rootReadmeExtension = KScienceReadmeExtension(this)
-        extensions.add("ksciencePublish", KSciencePublishingExtension(this))
+        val ksciencePublish = KSciencePublishingExtension(this)
+        extensions.add("ksciencePublish", ksciencePublish)
         extensions.add("readme", rootReadmeExtension)
 
         //Add readme generators to individual subprojects
@@ -189,6 +170,29 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
             tasks.withType<AbstractDokkaTask> {
                 dependsOn(generateReadme)
+            }
+        }
+
+        allprojects {
+            afterEvaluate {
+                ksciencePublish.repositoryNames.forEach { repositoryName ->
+                    val repositoryNameCapitalized = repositoryName.capitalize()
+
+                    tasks.withType<PublishToMavenRepository>()
+                        .filter { it.name.startsWith("publish") && it.name.endsWith("To${repositoryNameCapitalized}Repository") }
+                        .forEach {
+                            val theName = "release${
+                                it.name.removePrefix("publish").removeSuffix("To${repositoryNameCapitalized}Repository")
+                            }"
+
+                            val releaseTask = tasks.findByName(theName) ?: tasks.create(theName) {
+                                group = RELEASE_GROUP
+                                description = "Publish development or production release based on version suffix"
+                            }
+
+                            releaseTask.dependsOn(it)
+                        }
+                }
             }
         }
 
@@ -228,8 +232,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                             val name = subproject.name
                             val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                             val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
-                            appendLine("<hr/>")
-                            appendLine("\n* ### [$name]($path)")
+                            appendLine("\n### [$name]($path)")
                             if (ext != null) {
                                 appendLine("> ${ext.description}")
                                 appendLine(">\n> **Maturity**: ${ext.maturity}")
@@ -240,7 +243,6 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                                 }
                             }
                         }
-                        appendLine("<hr/>")
                     }
 
                     rootReadmeExtension.property("modules", modulesString)
