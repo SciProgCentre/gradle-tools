@@ -1,5 +1,5 @@
 [versions]
-tools = "0.11.1-kotlin-1.6.10"
+tools = "0.11.2-kotlin-1.6.10"
 kotlin = "1.6.10"
 atomicfu = "0.17.1"
 binary-compatibility-validator = "0.8.0"
@@ -18,7 +18,7 @@ kotlinx-serialization = "1.3.2"
 ktor = "1.6.7"
 xmlutil = "0.84.0"
 yamlkt = "0.10.2"
-jsBom = "0.0.1-pre.290-kotlin-1.6.10"
+jsBom = "0.0.1-pre.313-kotlin-1.6.10"
 junit = "5.8.2"
 
 [libraries]

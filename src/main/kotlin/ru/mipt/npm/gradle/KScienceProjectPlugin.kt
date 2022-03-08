@@ -4,8 +4,6 @@ import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.BasePluginExtension
-import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
@@ -173,6 +171,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
+        val releaseAll by tasks.creating {
+            group = RELEASE_GROUP
+            description = "Publish development or production release based on version suffix"
+        }
+
         allprojects {
             afterEvaluate {
                 ksciencePublish.repositoryNames.forEach { repositoryName ->
@@ -185,12 +188,14 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                                 it.name.removePrefix("publish").removeSuffix("To${repositoryNameCapitalized}Repository")
                             }"
 
-                            val releaseTask = tasks.findByName(theName) ?: tasks.create(theName) {
+                            val targetReleaseTask = tasks.findByName(theName) ?: tasks.create(theName) {
                                 group = RELEASE_GROUP
-                                description = "Publish development or production release based on version suffix"
+                                description = "Publish platform release artifact"
                             }
 
-                            releaseTask.dependsOn(it)
+                            releaseAll.dependsOn(targetReleaseTask)
+
+                            targetReleaseTask.dependsOn(it)
                         }
                 }
             }

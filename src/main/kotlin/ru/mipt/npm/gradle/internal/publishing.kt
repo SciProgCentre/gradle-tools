@@ -31,15 +31,14 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                         from(it.kotlin)
                     }
                 }
-                afterEvaluate {
-                    publications.create<MavenPublication>("js") {
-                        kotlin.js().components.forEach {
-                            from(it)
-                        }
-
-                        artifact(sourcesJar)
+                publications.create<MavenPublication>("js") {
+                    kotlin.js().components.forEach {
+                        from(it)
                     }
+
+                    artifact(sourcesJar)
                 }
+
             }
 
             plugins.withId("org.jetbrains.kotlin.jvm") {
@@ -68,37 +67,35 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             }
 
             // Process each publication we have in this project
-            afterEvaluate {
-                publications.withType<MavenPublication> {
-                    artifact(dokkaJar)
+            publications.withType<MavenPublication> {
+                artifact(dokkaJar)
 
-                    pom {
-                        name.set(project.name)
-                        description.set(project.description ?: project.name)
+                pom {
+                    name.set(project.name)
+                    description.set(project.description ?: project.name)
 
-                        licenses {
-                            license {
-                                name.set("The Apache Software License, Version 2.0")
-                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                                distribution.set("repo")
-                            }
+                    licenses {
+                        license {
+                            name.set("The Apache Software License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                            distribution.set("repo")
                         }
-
-                        developers {
-                            developer {
-                                id.set("MIPT-NPM")
-                                name.set("MIPT nuclear physics methods laboratory")
-                                organization.set("MIPT")
-                                organizationUrl.set("https://npm.mipt.ru")
-                            }
-                        }
-
-                        scm {
-                            tag.set(project.version.toString())
-                        }
-
-                        mavenPomConfiguration()
                     }
+
+                    developers {
+                        developer {
+                            id.set("MIPT-NPM")
+                            name.set("MIPT nuclear physics methods laboratory")
+                            organization.set("MIPT")
+                            organizationUrl.set("https://npm.mipt.ru")
+                        }
+                    }
+
+                    scm {
+                        tag.set(project.version.toString())
+                    }
+
+                    mavenPomConfiguration()
                 }
             }
         }
