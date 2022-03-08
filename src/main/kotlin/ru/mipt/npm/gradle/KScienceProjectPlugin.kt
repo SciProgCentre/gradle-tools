@@ -57,7 +57,7 @@ public class KSciencePublishingExtension(public val project: Project) {
         allTasks()
             .filter { it.name.startsWith("publish") && it.name.endsWith("To${name.capitalize()}Repository") }
             .forEach {
-                val theName = "release${it.name.removePrefix("publish").removeSuffix("")}"
+                val theName = "release${it.name.removePrefix("publish").removeSuffix("To${name.capitalize()}Repository")}"
                 logger.info("Making $theName task depend on ${it.name}")
 
                 val releaseTask = project.tasks.findByName(theName) ?: project.tasks.create(theName) {
