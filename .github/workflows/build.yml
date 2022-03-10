@@ -1,9 +1,9 @@
-name: Gradle publish
+name: Gradle build
 
 on:
-  workflow_dispatch:
-  release:
-    types: [ created ]
+  push:
+    branches: [ dev, master ]
+  pull_request:
 
 jobs:
   build:
@@ -26,8 +26,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - uses: gradle/wrapper-validation-action@v1.0.4
-      - name: Publish artifacts
-        run: >
-          ./gradlew publishAllPublicationsToSpaceRepository --no-daemon --build-cache
-          -Ppublishing.space.user=${{ secrets.SPACE_APP_ID }}
-          -Ppublishing.space.token=${{ secrets.SPACE_APP_SECRET }}
+      - name: Build
+        run: ./gradlew build --build-cache --no-daemon --stacktrace
