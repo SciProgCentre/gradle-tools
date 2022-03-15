@@ -1,6 +1,9 @@
 package ru.mipt.npm.gradle
 
-import groovy.text.SimpleTemplateEngine
+import freemarker.cache.StringTemplateLoader
+import freemarker.template.Configuration
+import freemarker.template.Template
+import freemarker.template.TemplateNotFoundException
 import kotlinx.html.TagConsumer
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
@@ -8,6 +11,7 @@ import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import java.io.File
+import java.io.StringWriter
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -18,6 +22,12 @@ public enum class Maturity {
     DEVELOPMENT,
     STABLE,
     DEPRECATED
+}
+
+private fun Template.processToString(args: Map<String, Any?>): String {
+    val writer = StringWriter()
+    process(args, writer)
+    return writer.toString()
 }
 
 
@@ -40,7 +50,41 @@ public class KScienceReadmeExtension(public val project: Project) {
             }
         }
 
+    /**
+     * If true, use default templates provided by plugin if override is not defined
+     */
+    public var useDefaultReadmeTemplate: Boolean = true
+
+    /**
+     * Use this template file if it is provided, otherwise use default template
+     */
     public var readmeTemplate: File = project.file("docs/README-TEMPLATE.md")
+        set(value) {
+            field = value
+            if (value.exists()) {
+                fmLoader.putTemplate("readme", value.readText())
+            }
+        }
+
+    private val fmLoader = StringTemplateLoader().apply {
+        putTemplate(
+            "artifact",
+            this@KScienceReadmeExtension.javaClass.getResource("/templates/ARTIFACT-TEMPLATE.md")!!.readText()
+        )
+        if (readmeTemplate.exists()) {
+            putTemplate("readme", readmeTemplate.readText())
+        } else if (useDefaultReadmeTemplate) {
+            putTemplate(
+                "readme",
+                this@KScienceReadmeExtension.javaClass.getResource("/templates/README-TEMPLATE.md")!!.readText()
+            )
+        }
+    }
+
+    private val fmCfg = Configuration(Configuration.VERSION_2_3_31).apply {
+        defaultEncoding = "UTF-8"
+        templateLoader = fmLoader
+    }
 
     public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
@@ -73,11 +117,20 @@ public class KScienceReadmeExtension(public val project: Project) {
         "name" to { project.name },
         "group" to { project.group },
         "version" to { project.version },
-        "features" to { featuresString() }
+        "description" to { project.description ?: "" },
+        "features" to { featuresString() },
+        "published" to { project.plugins.findPlugin("maven-publish") != null },
+        "artifact" to {
+            val projectProperties = mapOf(
+                "name" to project.name,
+                "group" to project.group,
+                "version" to project.version
+            )
+            fmCfg.getTemplate("artifact").processToString(projectProperties)
+        }
     )
 
-    public val actualizedProperties: Map<String, Any?>
-        get() = properties.mapValues { (_, value) -> value() }
+    public fun getPropertyValues(): Map<String, Any?> = properties.mapValues { (_, value) -> value() }
 
     public fun property(key: String, value: Any?) {
         properties[key] = { value }
@@ -87,17 +140,28 @@ public class KScienceReadmeExtension(public val project: Project) {
         properties[key] = value
     }
 
-    public fun propertyByTemplate(key: String, template: String) {
-        val actual = actualizedProperties
-        properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
+    public fun propertyByTemplate(key: String, templateString: String) {
+        //need to freeze it, otherwise values could change
+        val actual = getPropertyValues()
+        fmLoader.putTemplate(key, templateString)
+        val template = fmCfg.getTemplate(key)
+
+        properties[key] = { template.processToString(actual) }
     }
 
-    internal val additionalFiles = ArrayList<File>()
+    /**
+     * Files that are use in readme generation
+     */
+    internal val inputFiles = ArrayList<File>()
 
-    public fun propertyByTemplate(key: String, template: File) {
-        val actual = actualizedProperties
-        properties[key] = { SimpleTemplateEngine().createTemplate(template).make(actual).toString() }
-        additionalFiles += template
+    public fun propertyByTemplate(key: String, templateFile: File) {
+        //need to freeze it, otherwise values could change
+        val actual = getPropertyValues()
+        fmLoader.putTemplate(key, templateFile.readText())
+        val template: Template = fmCfg.getTemplate(key)
+
+        properties[key] = { template.processToString(actual) }
+        inputFiles += templateFile
     }
 
     /**
@@ -110,12 +174,12 @@ public class KScienceReadmeExtension(public val project: Project) {
     }
 
     /**
-     * Generate a readme string from the stub
+     * Generate a readme string from the template
      */
-    public fun readmeString(): String? = if (readmeTemplate.exists()) {
-        val actual = actualizedProperties
-        SimpleTemplateEngine().createTemplate(readmeTemplate).make(actual).toString()
-    } else {
+    public fun readmeString(): String? = try {
+        fmCfg.getTemplate("readme").processToString(getPropertyValues())
+    } catch (ex: TemplateNotFoundException) {
+        project.logger.warn("Template with name ${ex.templateName} not found in ${project.name}")
         null
     }
 }

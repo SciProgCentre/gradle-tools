@@ -1,11 +1,10 @@
 package ru.mipt.npm.gradle
 
-import groovy.text.SimpleTemplateEngine
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
@@ -13,11 +12,12 @@ import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import ru.mipt.npm.gradle.internal.*
 
-private fun Project.allTasks(): Set<Task> = allprojects.flatMapTo(HashSet()) { it.tasks }
-
-@Suppress("unused")
+/**
+ * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
+ */
 public class KSciencePublishingExtension(public val project: Project) {
     private var isVcsInitialized = false
+    internal val repositoryNames = mutableSetOf<String>()
 
     @Deprecated("Use git function and report an issue if other VCS is used.")
     public fun vcs(vcsUrl: String) {
@@ -54,61 +54,60 @@ public class KSciencePublishingExtension(public val project: Project) {
         }
     }
 
-    private fun linkPublicationsToReleaseTask(name: String) = project.afterEvaluate {
-        allTasks()
-            .filter { it.name == "publish${publicationTarget}To${name.capitalize()}Repository" }
-            .forEach { releaseTask?.dependsOn(it) }
-    }
-
     /**
      * Adds GitHub as VCS and adds GitHub Packages Maven repository to publishing.
      *
      * @param githubProject the GitHub project.
      * @param githubOrg the GitHub user or organization.
-     * @param release whether publish packages in the `release` task to the GitHub repository.
+     * @param addToRelease publish packages in the `release` task to the GitHub repository.
      */
-    public fun github(githubProject: String, githubOrg: String = "mipt-npm", release: Boolean = false, publish: Boolean = true) {
+    public fun github(
+        githubProject: String,
+        githubOrg: String = "mipt-npm",
+        addToRelease: Boolean = project.requestPropertyOrNull("publishing.github") == "true",
+    ) {
         // Automatically initialize VCS using GitHub
         if (!isVcsInitialized) {
             git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
         }
 
-        if (publish) project.addGithubPublishing(githubOrg, githubProject)
-        if (release) linkPublicationsToReleaseTask("github")
-    }
-
-    private val releaseTask by lazy {
-        project.tasks.findByName("release")
+        if (addToRelease) {
+            try {
+                project.addGithubPublishing(githubOrg, githubProject)
+                repositoryNames += "github"
+            } catch (t: Throwable) {
+                project.logger.error("Failed to set up github publication", t)
+            }
+        }
     }
 
     /**
      * Adds Space Packages Maven repository to publishing.
      *
      * @param spaceRepo the repository URL.
-     * @param release whether publish packages in the `release` task to the Space repository.
+     * @param addToRelease publish packages in the `release` task to the Space repository.
      */
-    public fun space(spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven", release: Boolean = true) {
+    public fun space(
+        spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven",
+        addToRelease: Boolean = project.requestPropertyOrNull("publishing.space") != "false",
+    ) {
         project.addSpacePublishing(spaceRepo)
 
-        if (release) linkPublicationsToReleaseTask("space")
+        if (addToRelease) repositoryNames += "space"
     }
-
-//    // Bintray publishing
-//    var bintrayOrg: String? by project.extra
-//    var bintrayUser: String? by project.extra
-//    var bintrayApiKey: String? by project.extra
-//    var bintrayRepo: String? by project.extra
 
     /**
      * Adds Sonatype Maven repository to publishing.
      *
-     * @param release whether publish packages in the `release` task to the Sonatype repository.
+     * @param addToRelease  publish packages in the `release` task to the Sonatype repository.
      */
-    public fun sonatype(release: Boolean = true) {
+    public fun sonatype(
+        addToRelease: Boolean = (project.requestPropertyOrNull("publishing.sonatype") != "false"),
+    ) {
         require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
         project.addSonatypePublishing()
 
-        if (release) linkPublicationsToReleaseTask("sonatype")
+        if (addToRelease) repositoryNames += "sonatype"
     }
 }
 
@@ -119,7 +118,6 @@ public class KSciencePublishingExtension(public val project: Project) {
 public open class KScienceProjectPlugin : Plugin<Project> {
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
-
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 
@@ -136,7 +134,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         val rootReadmeExtension = KScienceReadmeExtension(this)
-        extensions.add("ksciencePublish", KSciencePublishingExtension(this))
+        val ksciencePublish = KSciencePublishingExtension(this)
+        extensions.add("ksciencePublish", ksciencePublish)
         extensions.add("readme", rootReadmeExtension)
 
         //Add readme generators to individual subprojects
@@ -150,7 +149,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
-                readmeExtension.additionalFiles.forEach {
+                readmeExtension.inputFiles.forEach {
                     if (it.exists()) {
                         inputs.file(it)
                     }
@@ -172,6 +171,36 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
+        val releaseAll by tasks.creating {
+            group = RELEASE_GROUP
+            description = "Publish development or production release based on version suffix"
+        }
+
+        allprojects {
+            afterEvaluate {
+                ksciencePublish.repositoryNames.forEach { repositoryName ->
+                    val repositoryNameCapitalized = repositoryName.capitalize()
+
+                    tasks.withType<PublishToMavenRepository>()
+                        .filter { it.name.startsWith("publish") && it.name.endsWith("To${repositoryNameCapitalized}Repository") }
+                        .forEach {
+                            val theName = "release${
+                                it.name.removePrefix("publish").removeSuffix("To${repositoryNameCapitalized}Repository")
+                            }"
+
+                            val targetReleaseTask = tasks.findByName(theName) ?: tasks.create(theName) {
+                                group = RELEASE_GROUP
+                                description = "Publish platform release artifact"
+                            }
+
+                            releaseAll.dependsOn(targetReleaseTask)
+
+                            targetReleaseTask.dependsOn(it)
+                        }
+                }
+            }
+        }
+
         val generateReadme by tasks.creating {
             group = "documentation"
             description = "Generate a README file and a feature matrix if stub is present"
@@ -185,7 +214,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)
             }
-            rootReadmeExtension.additionalFiles.forEach {
+
+            rootReadmeExtension.inputFiles.forEach {
                 if (it.exists()) {
                     inputs.file(it)
                 }
@@ -207,8 +237,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                             val name = subproject.name
                             val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                             val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
-                            appendLine("<hr/>")
-                            appendLine("\n* ### [$name]($path)")
+                            appendLine("\n### [$name]($path)")
                             if (ext != null) {
                                 appendLine("> ${ext.description}")
                                 appendLine(">\n> **Maturity**: ${ext.maturity}")
@@ -219,30 +248,19 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                                 }
                             }
                         }
-                        appendLine("<hr/>")
                     }
 
-                    val rootReadmeProperties: Map<String, Any?> =
-                        rootReadmeExtension.actualizedProperties + ("modules" to modulesString)
+                    rootReadmeExtension.property("modules", modulesString)
 
-                    readmeFile.writeText(
-                        SimpleTemplateEngine().createTemplate(rootReadmeExtension.readmeTemplate)
-                            .make(rootReadmeProperties).toString()
-                    )
+                    rootReadmeExtension.readmeString()?.let {
+                        readmeFile.writeText(it)
+                    }
                 }
 
             }
         }
 
         tasks.withType<AbstractDokkaTask> {
-            dependsOn(generateReadme)
-        }
-
-        //val patchChangelog by tasks.getting
-
-        @Suppress("UNUSED_VARIABLE") val release by tasks.creating {
-            group = RELEASE_GROUP
-            description = "Publish development or production release based on version suffix"
             dependsOn(generateReadme)
         }
 

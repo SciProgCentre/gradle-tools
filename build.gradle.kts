@@ -33,11 +33,12 @@ dependencies {
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
-    @Suppress("UnstableApiUsage")
     implementation(libs.kotlinx.html)
     implementation("org.tomlj:tomlj:1.0.0")
 //    // nexus publishing plugin
 //    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
+
+    implementation("org.freemarker:freemarker:2.3.31")
 
     testImplementation(kotlin("test"))
 }
@@ -58,7 +59,7 @@ gradlePlugin {
 
         create("project") {
             id = "ru.mipt.npm.gradle.project"
-            description = "The root plugin for multimodule project infrastructure"
+            description = "The root plugin for multi-module project infrastructure"
             implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
         }
 
@@ -122,7 +123,7 @@ afterEvaluate {
         publications {
             create<MavenPublication>("catalog") {
                 from(components["versionCatalog"])
-                this.artifactId = "version-catalog"
+                artifactId = "version-catalog"
 
                 pom {
                     name.set("version-catalog")
@@ -134,6 +135,7 @@ afterEvaluate {
                 artifact(javadocsJar)
 
                 pom {
+                    name.set(project.name)
                     description.set(project.description)
                     url.set(vcs)
 
@@ -210,6 +212,10 @@ afterEvaluate {
             }
         }
     }
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "11"
 }
 
 tasks.processResources.configure {

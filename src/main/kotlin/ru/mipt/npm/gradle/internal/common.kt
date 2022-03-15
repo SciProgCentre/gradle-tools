@@ -11,9 +11,12 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 
-internal fun LanguageSettingsBuilder.applySettings() {
-    languageVersion = "1.6"
-    apiVersion = "1.6"
+internal fun LanguageSettingsBuilder.applySettings(
+    kotlinVersion: KotlinVersion
+) {
+    val versionString = "${kotlinVersion.major}.${kotlinVersion.minor}"
+    languageVersion = versionString
+    apiVersion = versionString
     progressiveMode = true
 
     optIn("kotlin.RequiresOptIn")
@@ -48,10 +51,10 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
                 from(task)
             }
         }
-     }
+    }
 }
 
-internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js"){
+internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js") {
     js {
         binaries.executable()
         browser {

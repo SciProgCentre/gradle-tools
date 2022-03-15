@@ -7,46 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+
+### Changed
+- Separate release tasks for each target
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.11.1-kotlin-1.6.10]
+### Added
+- Default templates for README and ARTIFACT
+
+### Changed
+- Replaced Groovy templates by FreeMarker
+
+### Deprecated
+
+### Removed
+
+### Fixed
+- JS publication sources jar
+
+### Security
+
+## [0.10.9-kotlin-1.6.10]
+### Added
 - html builders for readme
 
 ### Changed
 - Kotlin 1.6.0
 - Use indy lambdas by default #32 
-
-### Deprecated
-
-### Removed
+- Change version scheme to `<version>-kotlin-<kotlin version>`
 
 ### Fixed
 - remove `nativeMain` dependency from `nativeTest`
 
-### Security
-
 ## [0.10.4]
-### Added
-
 ### Changed
 - Kotlin 1.6
 
-
-### Deprecated
-
-### Removed
-
 ### Fixed
 - Some issues with opt-ins
-
-
-### Security
 
 ## [0.10.2]
 ### Added
 - Experimental automatic JS project bundling in MPP
 
-
 ### Changed
 - Remove vcs requirement for Space publication
-
 
 ### Fixed
 -Release task (#19)
@@ -57,11 +70,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BOM for kotlin-wrappers on JS
 - Jupyter loader
 
-
 ### Changed
 - API validation disabled for dev versions
 - Kotlin plugins are propagated downstream
-
 
 ### Removed
 - bson support
@@ -71,17 +82,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Disable API validation for snapshots
 - `-Xjvm-default=all` on JVM
 
-
 ### Changed
 - `publication.platform` changed to `publishing.platform`
 - Dokka version to `1.4.30`
 - `useDateTime` in extension
 - Kotlin 1.5
 
-
 ### Removed
 - Publish plugin. Use MavenPublish instead
-
 
 ### Fixed
 - Removed unnecessary `afterEvaluate` for compatibility with gradle 7.0
@@ -90,15 +98,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Skip sonatype publishing for dev versions
 
-
 ### Changed
 - Publishing repositories are explicit and defined in the top level project
 - Paths to publishing properties now use dot notation like `publishing.github.user`
 
-
 ### Deprecated
 - Publishing plugin
-
 
 ### Removed
 - Bintray publishing
@@ -108,11 +113,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adaptive support for host OS in native
 - CSS support for JS targets
 
-
 ### Changed
 - Kotlin 1.4.31
 - Coroutines 1.4.3
-
 
 ### Fixed
 - Plugin loading order for publishing
@@ -125,7 +128,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add sonatype publishing
 - Per-platform release publishing
 
-
 ### Changed
 - Kotlin to 1.4.30 stable.
 - Added intermediate jsCommon main/test sourcesSet for node plugin.
@@ -133,10 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Common plugin id changed to `common`
 - Plugins group changed to `ru.mipt.npm` with `gradle` prefix
 
-
 ### Removed
 - kaml
-
 
 ### Fixed
 - Fix publishing load order for sonatype
@@ -151,7 +151,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved all logic to a common plugin, leaving only proxies for platform plugins
 - Suppress API validation for modules with maturity below DEVELOPMENT
 
-
 ### Changed
 - Remove node plugin. Node binaries should be turned on manually.
 - Use default webpack distribution path.
@@ -162,11 +161,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved internals to internals
 - Kotlin 1.4.30-RC
 
-
 ### Deprecated
 - Support of `kaml` and `snake-yaml` in favor of `yamlKt`
 - Publish plugin
-
 
 ### Removed
 - `useDokka` method. Documentation jar should be added manually if needed.
@@ -177,7 +174,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separate Native (current platform) and nodeJs plugins.
 - Add `application()` toggle in plugin configuration to produce binaries on JS and applicaion plugin on jvm.
 - Add `publish` to expose publishing configuration.
-
 
 ### Changed
 -Publishing in bintray now is automatic.

@@ -11,10 +11,10 @@ import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-private fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
+internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)
 
-private fun Project.requestProperty(propertyName: String): String = requestPropertyOrNull(propertyName)
+internal fun Project.requestProperty(propertyName: String): String = requestPropertyOrNull(propertyName)
     ?: error("Property $propertyName not defined")
 
 
@@ -27,20 +27,18 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 
                 val sourcesJar by tasks.creating(Jar::class) {
                     archiveClassifier.set("sources")
-
-                    kotlin.sourceSets.all {
-                        from(kotlin)
+                    kotlin.sourceSets.forEach {
+                        from(it.kotlin)
                     }
                 }
-                afterEvaluate {
-                    publications.create<MavenPublication>("js") {
-                        kotlin.js().components.forEach {
-                            from(it)
-                        }
-
-                        artifact(sourcesJar)
+                publications.create<MavenPublication>("js") {
+                    kotlin.js().components.forEach {
+                        from(it)
                     }
+
+                    artifact(sourcesJar)
                 }
+
             }
 
             plugins.withId("org.jetbrains.kotlin.jvm") {
@@ -69,37 +67,35 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             }
 
             // Process each publication we have in this project
-            afterEvaluate {
-                publications.withType<MavenPublication> {
-                    artifact(dokkaJar)
+            publications.withType<MavenPublication> {
+                artifact(dokkaJar)
 
-                    pom {
-                        name.set(project.name)
-                        description.set(project.description ?: project.name)
+                pom {
+                    name.set(project.name)
+                    description.set(project.description ?: project.name)
 
-                        licenses {
-                            license {
-                                name.set("The Apache Software License, Version 2.0")
-                                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                                distribution.set("repo")
-                            }
+                    licenses {
+                        license {
+                            name.set("The Apache Software License, Version 2.0")
+                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                            distribution.set("repo")
                         }
-
-                        developers {
-                            developer {
-                                id.set("MIPT-NPM")
-                                name.set("MIPT nuclear physics methods laboratory")
-                                organization.set("MIPT")
-                                organizationUrl.set("https://npm.mipt.ru")
-                            }
-                        }
-
-                        scm {
-                            tag.set(project.version.toString())
-                        }
-
-                        mavenPomConfiguration()
                     }
+
+                    developers {
+                        developer {
+                            id.set("MIPT-NPM")
+                            name.set("MIPT nuclear physics methods laboratory")
+                            organization.set("MIPT")
+                            organizationUrl.set("https://npm.mipt.ru")
+                        }
+                    }
+
+                    scm {
+                        tag.set(project.version.toString())
+                    }
+
+                    mavenPomConfiguration()
                 }
             }
         }
@@ -107,16 +103,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 }
 
 internal fun Project.isSnapshot() = "dev" in version.toString() || version.toString().endsWith("SNAPSHOT")
-
-internal val Project.publicationTarget: String
-    get() {
-        val publicationPlatform = project.findProperty("publishing.platform") as? String
-        return if (publicationPlatform == null) {
-            "AllPublications"
-        } else {
-            publicationPlatform.capitalize() + "Publication"
-        }
-    }
 
 internal fun Project.addGithubPublishing(
     githubOrg: String,
@@ -126,8 +112,8 @@ internal fun Project.addGithubPublishing(
         logger.info("Skipping github publishing because publishing is disabled")
         return
     }
-    if (requestPropertyOrNull("publishing.github") == "false") {
-        logger.info("Skipping github publishing  because `publishing.github == false`")
+    if (requestPropertyOrNull("publishing.github") != "false") {
+        logger.info("Skipping github publishing  because `publishing.github != true`")
         return
     }
 
