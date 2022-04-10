@@ -15,7 +15,7 @@ import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 
-private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy")
+private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xcontext-receivers")
 
 public fun Project.configureKScience(
     kotlinVersion: KotlinVersion
@@ -38,6 +38,7 @@ public fun Project.configureKScience(
                 dependencies {
                     implementation(kotlin("test-junit5"))
                     implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
         }
@@ -83,6 +84,7 @@ public fun Project.configureKScience(
             sourceSets["test"].apply {
                 dependencies {
                     implementation(kotlin("test-js"))
+                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
         }
@@ -124,6 +126,7 @@ public fun Project.configureKScience(
                     dependencies {
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
+                        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                     }
                 }
                 val jvmMain by getting
