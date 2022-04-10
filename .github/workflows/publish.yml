@@ -1,0 +1,24 @@
+name: Gradle publish
+
+on:
+  workflow_dispatch:
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2.5.0
+        with:
+          java-version: 11
+          distribution: liberica
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+          publishAllPublicationsToSpaceRepository
+          -Ppublishing.space.user=${{ secrets.SPACE_APP_ID }}
+          -Ppublishing.space.token=${{ secrets.SPACE_APP_SECRET }}
