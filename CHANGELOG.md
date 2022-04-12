@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Coroutine tests as default dependency for tests
+- Context receiver flag
 
 ### Changed
 - Separate release tasks for each target
+- Kotlin 1.6.20
+- Context receivers enabled
+- Ktor 2.0
 
 ### Deprecated
 

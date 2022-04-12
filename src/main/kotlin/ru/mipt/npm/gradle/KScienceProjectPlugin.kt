@@ -166,39 +166,9 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
-            tasks.withType<AbstractDokkaTask> {
-                dependsOn(generateReadme)
-            }
-        }
-
-        val releaseAll by tasks.creating {
-            group = RELEASE_GROUP
-            description = "Publish development or production release based on version suffix"
-        }
-
-        allprojects {
-            afterEvaluate {
-                ksciencePublish.repositoryNames.forEach { repositoryName ->
-                    val repositoryNameCapitalized = repositoryName.capitalize()
-
-                    tasks.withType<PublishToMavenRepository>()
-                        .filter { it.name.startsWith("publish") && it.name.endsWith("To${repositoryNameCapitalized}Repository") }
-                        .forEach {
-                            val theName = "release${
-                                it.name.removePrefix("publish").removeSuffix("To${repositoryNameCapitalized}Repository")
-                            }"
-
-                            val targetReleaseTask = tasks.findByName(theName) ?: tasks.create(theName) {
-                                group = RELEASE_GROUP
-                                description = "Publish platform release artifact"
-                            }
-
-                            releaseAll.dependsOn(targetReleaseTask)
-
-                            targetReleaseTask.dependsOn(it)
-                        }
-                }
-            }
+//            tasks.withType<AbstractDokkaTask> {
+//                dependsOn(generateReadme)
+//            }
         }
 
         val generateReadme by tasks.creating {
@@ -262,6 +232,39 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
         tasks.withType<AbstractDokkaTask> {
             dependsOn(generateReadme)
+        }
+
+
+        val releaseAll by tasks.creating {
+            group = RELEASE_GROUP
+            description = "Publish development or production release based on version suffix"
+            dependsOn(generateReadme)
+        }
+
+        allprojects {
+            afterEvaluate {
+                ksciencePublish.repositoryNames.forEach { repositoryName ->
+                    val repositoryNameCapitalized = repositoryName.capitalize()
+
+                    val pattern = "publish(?<publication>.*)PublicationTo${repositoryNameCapitalized}Repository"
+                        .toRegex()
+
+                    tasks.withType<PublishToMavenRepository>().toList().forEach forEachPublication@ {
+                        val matchResult = pattern.matchEntire(it.name) ?: return@forEachPublication
+                        val publicationName = matchResult.groups["publication"]!!.value.capitalize()
+                        val releaseTaskName = "release$publicationName"
+
+                        val targetReleaseTask = rootProject.tasks.findByName(releaseTaskName) ?: rootProject.tasks.create(releaseTaskName) {
+                            group = RELEASE_GROUP
+                            description = "Publish platform release artifact for $publicationName to all repositories"
+                        }
+
+                        releaseAll.dependsOn(targetReleaseTask)
+
+                        targetReleaseTask.dependsOn(it)
+                    }
+                }
+            }
         }
 
         // Disable API validation for snapshots

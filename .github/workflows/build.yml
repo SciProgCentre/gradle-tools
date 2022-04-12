@@ -1,9 +1,9 @@
-name: Gradle publish
+name: Gradle build
 
 on:
-  workflow_dispatch:
-  release:
-    types: [ created ]
+  push:
+    branches: [ dev, master ]
+  pull_request:
 
 jobs:
   build:
@@ -18,7 +18,4 @@ jobs:
           distribution: liberica
       - uses: gradle/gradle-build-action@v2
         with:
-          arguments: |
-          publishAllPublicationsToSpaceRepository
-          -Ppublishing.space.user=${{ secrets.SPACE_APP_ID }}
-          -Ppublishing.space.token=${{ secrets.SPACE_APP_SECRET }}
+          arguments: build
