@@ -28,8 +28,6 @@ public fun Project.configureKScience(
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         //logger.info("Applying KScience configuration for JVM project")
         configure<KotlinJvmProjectExtension> {
-            explicitApiWarning()
-
             sourceSets.all {
                 languageSettings.applySettings(kotlinVersion)
             }
@@ -41,6 +39,8 @@ public fun Project.configureKScience(
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
+
+            explicitApiWarning()
         }
         tasks.withType<KotlinJvmCompile> {
             kotlinOptions {
@@ -61,8 +61,6 @@ public fun Project.configureKScience(
     pluginManager.withPlugin("org.jetbrains.kotlin.js") {
         //logger.info("Applying KScience configuration for JS project")
         configure<KotlinJsProjectExtension> {
-            explicitApiWarning()
-
             js(IR) {
                 browser {
                     commonWebpackConfig {
@@ -87,6 +85,8 @@ public fun Project.configureKScience(
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
+
+            explicitApiWarning()
         }
 
         (tasks.findByName("processResources") as? Copy)?.apply {
@@ -97,8 +97,6 @@ public fun Project.configureKScience(
 
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         configure<KotlinMultiplatformExtension> {
-            explicitApiWarning()
-
             jvm {
                 compilations.all {
                     kotlinOptions {
@@ -159,6 +157,8 @@ public fun Project.configureKScience(
             tasks.withType<Test> {
                 useJUnitPlatform()
             }
+
+            explicitApiWarning()
         }
     }
 

@@ -19,8 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Deprecated
 
 ### Removed
+- Ktor specific artifacts from version catalog
 
 ### Fixed
+- Moved signing out of sonatype block
 
 ### Security
 
