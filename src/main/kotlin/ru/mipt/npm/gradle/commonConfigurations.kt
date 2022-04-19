@@ -18,8 +18,8 @@ import ru.mipt.npm.gradle.internal.fromJsDependencies
 private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xcontext-receivers")
 
 public fun Project.configureKScience(
-    kotlinVersion: KotlinVersion
-){
+    kotlinVersion: KotlinVersion,
+) {
     //Common configuration
     registerKScienceExtension()
     repositories.applyRepos()
@@ -40,7 +40,7 @@ public fun Project.configureKScience(
                 }
             }
 
-            explicitApiWarning()
+            if (explicitApi != null) explicitApiWarning()
         }
         tasks.withType<KotlinJvmCompile> {
             kotlinOptions {
@@ -86,7 +86,7 @@ public fun Project.configureKScience(
                 }
             }
 
-            explicitApiWarning()
+            if (explicitApi != null) explicitApiWarning()
         }
 
         (tasks.findByName("processResources") as? Copy)?.apply {
@@ -158,7 +158,7 @@ public fun Project.configureKScience(
                 useJUnitPlatform()
             }
 
-            explicitApiWarning()
+            if (explicitApi != null) explicitApiWarning()
         }
     }
 
