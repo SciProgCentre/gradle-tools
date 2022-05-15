@@ -12,9 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Separate release tasks for each target
-- Kotlin 1.6.20
-- Context receivers enabled
-- Ktor 2.0
+- Kotlin 1.7.0
+- Ktor 2.0.1
 - ExplicitAPI does not override existing value
 
 ### Deprecated
