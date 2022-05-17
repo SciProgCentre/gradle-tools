@@ -40,7 +40,7 @@ public fun Project.configureKScience(
                 }
             }
 
-            if (explicitApi != null) explicitApiWarning()
+            if (explicitApi == null) explicitApiWarning()
         }
         tasks.withType<KotlinJvmCompile> {
             kotlinOptions {
@@ -86,7 +86,7 @@ public fun Project.configureKScience(
                 }
             }
 
-            if (explicitApi != null) explicitApiWarning()
+            if (explicitApi == null) explicitApiWarning()
         }
 
         (tasks.findByName("processResources") as? Copy)?.apply {
@@ -158,7 +158,7 @@ public fun Project.configureKScience(
                 useJUnitPlatform()
             }
 
-            if (explicitApi != null) explicitApiWarning()
+            if (explicitApi == null) explicitApiWarning()
         }
     }
 
