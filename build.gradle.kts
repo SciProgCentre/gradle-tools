@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.changelog)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.kotlin.jvm)
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`

@@ -7,19 +7,19 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.mipt.npm.gradle.internal.applyRepos
 import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 
-private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xcontext-receivers")
+private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy")
 
 public fun Project.configureKScience(
-    kotlinVersion: KotlinVersion
-){
+    kotlinVersion: KotlinVersion,
+) {
     //Common configuration
     registerKScienceExtension()
     repositories.applyRepos()
@@ -28,8 +28,6 @@ public fun Project.configureKScience(
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         //logger.info("Applying KScience configuration for JVM project")
         configure<KotlinJvmProjectExtension> {
-            explicitApiWarning()
-
             sourceSets.all {
                 languageSettings.applySettings(kotlinVersion)
             }
@@ -41,8 +39,10 @@ public fun Project.configureKScience(
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
+
+            if (explicitApi == null) explicitApiWarning()
         }
-        tasks.withType<KotlinJvmCompile> {
+        tasks.withType<KotlinCompile> {
             kotlinOptions {
                 jvmTarget = KScienceVersions.JVM_TARGET.toString()
                 freeCompilerArgs = freeCompilerArgs + defaultJvmArgs
@@ -61,8 +61,6 @@ public fun Project.configureKScience(
     pluginManager.withPlugin("org.jetbrains.kotlin.js") {
         //logger.info("Applying KScience configuration for JS project")
         configure<KotlinJsProjectExtension> {
-            explicitApiWarning()
-
             js(IR) {
                 browser {
                     commonWebpackConfig {
@@ -87,6 +85,8 @@ public fun Project.configureKScience(
                     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
+
+            if (explicitApi == null) explicitApiWarning()
         }
 
         (tasks.findByName("processResources") as? Copy)?.apply {
@@ -97,8 +97,6 @@ public fun Project.configureKScience(
 
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         configure<KotlinMultiplatformExtension> {
-            explicitApiWarning()
-
             jvm {
                 compilations.all {
                     kotlinOptions {
@@ -159,6 +157,8 @@ public fun Project.configureKScience(
             tasks.withType<Test> {
                 useJUnitPlatform()
             }
+
+            if (explicitApi == null) explicitApiWarning()
         }
     }
 

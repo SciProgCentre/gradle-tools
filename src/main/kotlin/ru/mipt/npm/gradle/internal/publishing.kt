@@ -10,6 +10,7 @@ import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.targets
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)
@@ -31,12 +32,15 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                         from(it.kotlin)
                     }
                 }
-                publications.create<MavenPublication>("js") {
-                    kotlin.js().components.forEach {
-                        from(it)
-                    }
 
-                    artifact(sourcesJar)
+                afterEvaluate {
+                    publications.create<MavenPublication>("js") {
+                        kotlin.targets.flatMap { it.components }.forEach {
+                            from(it)
+                        }
+
+                        artifact(sourcesJar)
+                    }
                 }
 
             }
@@ -51,12 +55,14 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                     }
                 }
 
-                publications.create<MavenPublication>("jvm") {
-                    kotlin.target.components.forEach {
-                        from(it)
-                    }
+                afterEvaluate {
+                    publications.create<MavenPublication>("jvm") {
+                        kotlin.target.components.forEach {
+                            from(it)
+                        }
 
-                    artifact(sourcesJar)
+                        artifact(sourcesJar)
+                    }
                 }
             }
 
@@ -97,6 +103,23 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 
                     mavenPomConfiguration()
                 }
+            }
+
+
+            if (!plugins.hasPlugin("signing")) {
+                apply<SigningPlugin>()
+            }
+
+            extensions.configure<SigningExtension>("signing") {
+                val signingId: String? = requestPropertyOrNull("publishing.signing.id")
+                if (!signingId.isNullOrBlank()) {
+                    val signingKey: String = requestProperty("publishing.signing.key")
+                    val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
+
+                    // if key is provided, use it
+                    useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
+                } // else use file signing
+                sign(publications)
             }
         }
     }
@@ -194,22 +217,6 @@ internal fun Project.addSonatypePublishing() {
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                if (!plugins.hasPlugin("signing")) {
-                    apply<SigningPlugin>()
-                }
-
-                extensions.configure<SigningExtension>("signing") {
-                    val signingId: String? = requestPropertyOrNull("publishing.signing.id")
-                    if (!signingId.isNullOrBlank()) {
-                        val signingKey: String = requestProperty("publishing.signing.key")
-                        val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
-
-                        // if key is provided, use it
-                        useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
-                    } // else use file signing
-                    sign(publications)
-                }
-
                 repositories.maven {
                     val sonatypeRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                     name = "sonatype"
