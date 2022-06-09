@@ -7,9 +7,9 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.mipt.npm.gradle.internal.applyRepos
 import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
@@ -42,7 +42,7 @@ public fun Project.configureKScience(
 
             if (explicitApi == null) explicitApiWarning()
         }
-        tasks.withType<KotlinJvmCompile> {
+        tasks.withType<KotlinCompile> {
             kotlinOptions {
                 jvmTarget = KScienceVersions.JVM_TARGET.toString()
                 freeCompilerArgs = freeCompilerArgs + defaultJvmArgs
