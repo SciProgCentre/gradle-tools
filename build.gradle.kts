@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.changelog)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.kotlin.jvm)
+    //alias(libs.plugins.kotlin.jvm) apply false
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
@@ -28,12 +28,11 @@ kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
-    implementation(libs.atomicfu.gradle)
     implementation(libs.binary.compatibility.validator)
     implementation(libs.changelog.gradle)
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
-    implementation(libs.kotlin.serialization)
+    //implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation("org.tomlj:tomlj:1.0.0")
 //    // nexus publishing plugin
