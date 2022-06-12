@@ -50,11 +50,18 @@ public class KScienceExtension(public val project: Project) {
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
-    ): Unit = project.useCommonDependency(
-        "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version",
-        dependencySourceSet = sourceSet,
-        dependencyConfiguration = configuration
-    )
+    ): Unit {
+        project.useCommonDependency(
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version",
+            dependencySourceSet = sourceSet,
+            dependencyConfiguration = configuration
+        )
+        project.useCommonDependency(
+            "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version",
+            dependencySourceSet = DependencySourceSet.TEST,
+            dependencyConfiguration = DependencyConfiguration.IMPLEMENTATION
+        )
+    }
 
     /**
      * Use core serialization library and configure targets

@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- Coroutines tests are applied only when explicit `useCoroutines` is used.
 
 ### Deprecated
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Atomicfu support inside the plugin
 
 ### Fixed
+- Rollback coroutines to 1.6.1
 
 ### Security
 
