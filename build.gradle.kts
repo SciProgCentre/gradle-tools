@@ -28,7 +28,6 @@ kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
-    implementation(libs.atomicfu.gradle)
     implementation(libs.binary.compatibility.validator)
     implementation(libs.changelog.gradle)
     implementation(libs.dokka.gradle)

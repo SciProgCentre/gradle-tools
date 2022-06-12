@@ -1,6 +1,5 @@
 package ru.mipt.npm.gradle
 
-import kotlinx.atomicfu.plugin.gradle.AtomicFUGradlePlugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.kotlin.dsl.apply
@@ -56,22 +55,6 @@ public class KScienceExtension(public val project: Project) {
         dependencySourceSet = sourceSet,
         dependencyConfiguration = configuration
     )
-
-    /**
-     * Use kotlinx-atomicfu plugin and library
-     */
-    public fun useAtomic(
-        version: String = KScienceVersions.atomicVersion,
-        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.IMPLEMENTATION,
-    ): Unit = project.run {
-        apply<AtomicFUGradlePlugin>()
-        useCommonDependency(
-            "org.jetbrains.kotlinx:atomicfu:$version",
-            dependencySourceSet = sourceSet,
-            dependencyConfiguration = configuration
-        )
-    }
 
     /**
      * Use core serialization library and configure targets
