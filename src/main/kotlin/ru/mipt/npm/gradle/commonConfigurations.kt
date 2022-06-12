@@ -36,7 +36,6 @@ public fun Project.configureKScience(
                 dependencies {
                     implementation(kotlin("test-junit5"))
                     implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
 
@@ -82,7 +81,6 @@ public fun Project.configureKScience(
             sourceSets["test"].apply {
                 dependencies {
                     implementation(kotlin("test-js"))
-                    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                 }
             }
 
@@ -124,7 +122,6 @@ public fun Project.configureKScience(
                     dependencies {
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
-                        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${KScienceVersions.coroutinesVersion}")
                     }
                 }
                 val jvmMain by getting
