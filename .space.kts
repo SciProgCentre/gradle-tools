@@ -16,15 +16,19 @@ job("Publish"){
             api.space().projects.automation.deployments.start(
                 project = api.projectIdentifier(),
                 targetIdentifier = TargetIdentifier.Key("gradle-tools"),
-                version = "current",
+                version = api.gitRevision(),
                 // automatically update deployment status based on a status of a job
                 syncWithAutomationJob = true
             )
-            api.gradlew(
-                "publishAllPublicationsToSpaceRepository",
-                "-Ppublishing.space.user=\"$spaceUser\"",
-                "-Ppublishing.space.token=\"$spaceToken\"",
-            )
+            try {
+                api.gradlew(
+                    "publishAllPublicationsToSpaceRepository",
+                    "-Ppublishing.space.user=\"$spaceUser\"",
+                    "-Ppublishing.space.token=\"$spaceToken\"",
+                )
+            } catch (ex: Exception) {
+                println("Publish failed")
+            }
         }
     }
 }
