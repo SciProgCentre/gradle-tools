@@ -15,7 +15,7 @@ import ru.mipt.npm.gradle.internal.applySettings
 import ru.mipt.npm.gradle.internal.fromJsDependencies
 
 
-private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy")
+private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xjdk-release=11")
 
 public fun Project.configureKScience(
     kotlinVersion: KotlinVersion,
