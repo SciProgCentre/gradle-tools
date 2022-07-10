@@ -95,6 +95,16 @@ gradlePlugin {
     }
 }
 
+tasks.create("version") {
+    val versionFile = project.buildDir.resolve("project-version.txt")
+    outputs.file(versionFile)
+    doLast {
+        versionFile.createNewFile()
+        versionFile.writeText(project.version.toString())
+        println(project.version)
+    }
+}
+
 //publishing version catalog
 
 @Suppress("UnstableApiUsage")
