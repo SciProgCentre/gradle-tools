@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
 import ru.mipt.npm.gradle.internal.defaultPlatform
 import ru.mipt.npm.gradle.internal.useCommonDependency
@@ -166,6 +167,19 @@ public class KScienceExtension(public val project: Project) {
 
             targets.withType<KotlinNativeTarget> {
                 binaries.executable()
+            }
+        }
+    }
+
+    /**
+     * Add context receivers to this project and all subprojects
+     */
+    public fun withContextReceivers(){
+        project.allprojects{
+            tasks.withType<KotlinCompile>{
+                kotlinOptions{
+                    freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+                }
             }
         }
     }
