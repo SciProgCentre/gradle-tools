@@ -1,6 +1,6 @@
 [versions]
-tools = "0.11.8-kotlin-1.7.10"
-kotlin = "1.7.10"
+tools = "0.12.0-kotlin-1.7.20-Beta"
+kotlin = "1.7.20-Beta"
 atomicfu = "0.18.2"
 binary-compatibility-validator = "0.10.1"
 changelog = "1.3.1"
@@ -82,13 +82,13 @@ changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 
-gradle-common = { id = "ru.mipt.npm.gradle.common", version.ref = "tools" }
-gradle-project = { id = "ru.mipt.npm.gradle.project", version.ref = "tools" }
-gradle-mpp = { id = "ru.mipt.npm.gradle.mpp", version.ref = "tools" }
-gradle-jvm = { id = "ru.mipt.npm.gradle.jvm", version.ref = "tools" }
-gradle-js = { id = "ru.mipt.npm.gradle.js", version.ref = "tools" }
-gradle-native = { id = "ru.mipt.npm.gradle.native", version.ref = "tools" }
-gradle-node = { id = "ru.mipt.npm.gradle.node", version.ref = "tools" }
+gradle-common = { id = "space.kscience.gradle.common", version.ref = "tools" }
+gradle-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
+gradle-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
+gradle-jvm = { id = "space.kscience.gradle.jvm", version.ref = "tools" }
+gradle-js = { id = "space.kscience.gradle.js", version.ref = "tools" }
+gradle-native = { id = "space.kscience.gradle.native", version.ref = "tools" }
+gradle-node = { id = "space.kscience.gradle.node", version.ref = "tools" }
 
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }

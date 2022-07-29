@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle.internal
+package space.kscience.gradle.internal
 
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
@@ -6,9 +6,9 @@ import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
-import ru.mipt.npm.gradle.DependencyConfiguration
-import ru.mipt.npm.gradle.FXModule
-import ru.mipt.npm.gradle.FXPlatform
+import space.kscience.gradle.DependencyConfiguration
+import space.kscience.gradle.FXModule
+import space.kscience.gradle.FXPlatform
 
 internal val defaultPlatform: FXPlatform = when {
     Os.isFamily(Os.FAMILY_WINDOWS) -> FXPlatform.WINDOWS

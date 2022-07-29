@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle.internal
+package space.kscience.gradle.internal
 
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -10,7 +10,7 @@ import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.targets
+import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)

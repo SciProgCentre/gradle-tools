@@ -1,28 +1,28 @@
-[![Maven Central](https://img.shields.io/maven-central/v/ru.mipt.npm.gradle.project/ru.mipt.npm.gradle.project.gradle.plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22ru.mipt.npm.gradle.project%22%20AND%20a:%22ru.mipt.npm.gradle.project.gradle.plugin%22)
+[![Maven Central](https://img.shields.io/maven-central/v/space.kscience.gradle.project/space.kscience.gradle.project.gradle.plugin.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22space.kscience.gradle.project%22%20AND%20a:%22space.kscience.gradle.project.gradle.plugin%22)
 
 # KScience build tools
 
 A collection of gradle plugins for building and publish in *kscience* and *dataforge* projects.
 
-## ru.mipt.npm.gradle.common
+## space.kscience.gradle.common
 A primary plugin. When used with kotlin-jvm, kotlin-js or kotlin-mulitplatform configures the project for appropriate target.
 
-## ru.mipt.npm.gradle.project
+## space.kscience.gradle.project
 Root project tool including JetBrains changelog plugin an kotlin binary compatibility validator tool.
 
-## ru.mipt.npm.gradle.mpp
-`= kotlin("multiplatform") + ru.mipt.npm.gradle.common`
+## space.kscience.gradle.mpp
+`= kotlin("multiplatform") + space.kscience.gradle.common`
 
 Includes JVM-IR and JS-IR-Browser targets.
 
-## ru.mipt.npm.gradle.jvm
-`= kotlin("jvm") + ru.mipt.npm.gradle.common`
+## space.kscience.gradle.jvm
+`= kotlin("jvm") + space.kscience.gradle.common`
 
-## ru.mipt.npm.gradle.js
-`= kotlin("js") + ru.mipt.npm.gradle.common`
+## space.kscience.gradle.js
+`= kotlin("js") + space.kscience.gradle.common`
 
-## ru.mipt.npm.gradle.native
-add default native targets to `ru.mipt.npm.gradle.mpp`
+## space.kscience.gradle.native
+add default native targets to `space.kscience.gradle.mpp`
 
-## ru.mipt.npm.gradle.node
-add node target to `ru.mipt.npm.gradle.mpp`
+## space.kscience.gradle.node
+add node target to `space.kscience.gradle.mpp`

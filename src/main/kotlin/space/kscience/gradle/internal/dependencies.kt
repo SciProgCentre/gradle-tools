@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle.internal
+package space.kscience.gradle.internal
 
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
@@ -6,8 +6,8 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import ru.mipt.npm.gradle.DependencyConfiguration
-import ru.mipt.npm.gradle.DependencySourceSet
+import space.kscience.gradle.DependencyConfiguration
+import space.kscience.gradle.DependencySourceSet
 
 internal fun Project.useDependency(
     vararg pairs: Pair<String, String>,

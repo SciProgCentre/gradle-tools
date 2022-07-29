@@ -9,10 +9,10 @@ plugins {
     `version-catalog`
 }
 
-group = "ru.mipt.npm"
+group = "space.kscience"
 version = libs.versions.tools.get()
 
-description = "Build tools for DataForge and kscience projects"
+description = "Build tools for kotlin for science projects"
 
 changelog.version.set(project.version.toString())
 
@@ -52,50 +52,51 @@ tasks.test {
 gradlePlugin {
     plugins {
         create("common") {
-            id = "ru.mipt.npm.gradle.common"
+            id = "space.kscience.gradle.common"
             description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
-            implementationClass = "ru.mipt.npm.gradle.KScienceCommonPlugin"
+            implementationClass = "space.kscience.gradle.KScienceCommonPlugin"
         }
 
         create("project") {
-            id = "ru.mipt.npm.gradle.project"
+            id = "space.kscience.gradle.project"
             description = "The root plugin for multi-module project infrastructure"
-            implementationClass = "ru.mipt.npm.gradle.KScienceProjectPlugin"
+            implementationClass = "space.kscience.gradle.KScienceProjectPlugin"
         }
 
         create("mpp") {
-            id = "ru.mipt.npm.gradle.mpp"
+            id = "space.kscience.gradle.mpp"
             description = "Pre-configured multiplatform project"
-            implementationClass = "ru.mipt.npm.gradle.KScienceMPPlugin"
+            implementationClass = "space.kscience.gradle.KScienceMPPlugin"
         }
 
         create("jvm") {
-            id = "ru.mipt.npm.gradle.jvm"
+            id = "space.kscience.gradle.jvm"
             description = "Pre-configured JVM project"
-            implementationClass = "ru.mipt.npm.gradle.KScienceJVMPlugin"
+            implementationClass = "space.kscience.gradle.KScienceJVMPlugin"
         }
 
         create("js") {
-            id = "ru.mipt.npm.gradle.js"
+            id = "space.kscience.gradle.js"
             description = "Pre-configured JS project"
-            implementationClass = "ru.mipt.npm.gradle.KScienceJSPlugin"
+            implementationClass = "space.kscience.gradle.KScienceJSPlugin"
         }
 
         create("native") {
-            id = "ru.mipt.npm.gradle.native"
+            id = "space.kscience.gradle.native"
             description = "Additional native targets to be use alongside mpp"
-            implementationClass = "ru.mipt.npm.gradle.KScienceNativePlugin"
+            implementationClass = "space.kscience.gradle.KScienceNativePlugin"
         }
 
         create("node") {
-            id = "ru.mipt.npm.gradle.node"
+            id = "space.kscience.gradle.node"
             description = "Additional nodejs target to be use alongside mpp"
-            implementationClass = "ru.mipt.npm.gradle.KScienceNodePlugin"
+            implementationClass = "space.kscience.gradle.KScienceNodePlugin"
         }
     }
 }
 
 tasks.create("version") {
+    group = "publishing"
     val versionFile = project.buildDir.resolve("project-version.txt")
     outputs.file(versionFile)
     doLast {
@@ -174,7 +175,7 @@ afterEvaluate {
             }
         }
 
-        val spaceRepo = "https://maven.pkg.jetbrains.space/mipt-npm/p/mipt-npm/maven"
+        val spaceRepo = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven"
         val spaceUser: String? = project.findProperty("publishing.space.user") as? String
         val spaceToken: String? = project.findProperty("publishing.space.token") as? String
 

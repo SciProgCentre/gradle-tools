@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
@@ -10,7 +10,7 @@ import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
-import ru.mipt.npm.gradle.internal.*
+import space.kscience.gradle.internal.*
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
@@ -239,6 +239,17 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             group = RELEASE_GROUP
             description = "Publish development or production release based on version suffix"
             dependsOn(generateReadme)
+        }
+
+        tasks.create("version") {
+            group = "publishing"
+            val versionFile = project.buildDir.resolve("project-version.txt")
+            outputs.file(versionFile)
+            doLast {
+                versionFile.createNewFile()
+                versionFile.writeText(project.version.toString())
+                println(project.version)
+            }
         }
 
         allprojects {

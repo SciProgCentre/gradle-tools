@@ -1,7 +1,7 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import org.gradle.api.Project
-import ru.mipt.npm.gradle.internal.useCommonDependency
+import space.kscience.gradle.internal.useCommonDependency
 
 public class SerializationTargets(
     public val sourceSet: DependencySourceSet,

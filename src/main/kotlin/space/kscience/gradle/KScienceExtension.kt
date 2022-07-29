@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
@@ -11,9 +11,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
-import ru.mipt.npm.gradle.internal.defaultPlatform
-import ru.mipt.npm.gradle.internal.useCommonDependency
-import ru.mipt.npm.gradle.internal.useFx
+import space.kscience.gradle.internal.defaultPlatform
+import space.kscience.gradle.internal.useCommonDependency
+import space.kscience.gradle.internal.useFx
 
 public enum class FXModule(public val artifact: String, public vararg val dependencies: FXModule) {
     BASE("javafx-base"),

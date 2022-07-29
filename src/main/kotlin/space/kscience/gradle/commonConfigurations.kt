@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -10,9 +10,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import ru.mipt.npm.gradle.internal.applyRepos
-import ru.mipt.npm.gradle.internal.applySettings
-import ru.mipt.npm.gradle.internal.fromJsDependencies
+import space.kscience.gradle.internal.applyRepos
+import space.kscience.gradle.internal.applySettings
+import space.kscience.gradle.internal.fromJsDependencies
 
 
 private val defaultJvmArgs: List<String> = listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xjdk-release=${KScienceVersions.JVM_TARGET}")
@@ -63,7 +63,9 @@ public fun Project.configureKScience(
             js(IR) {
                 browser {
                     commonWebpackConfig {
-                        cssSupport.enabled = true
+                        cssSupport{
+                            enabled = true
+                        }
                     }
                 }
             }
@@ -107,7 +109,9 @@ public fun Project.configureKScience(
             js(IR) {
                 browser {
                     commonWebpackConfig {
-                        cssSupport.enabled = true
+                        cssSupport{
+                            enabled = true
+                        }
                     }
                 }
             }

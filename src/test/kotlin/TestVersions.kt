@@ -1,6 +1,5 @@
-package ru.mipt.npm.gradle
-
 import org.junit.jupiter.api.Test
+import space.kscience.gradle.KScienceVersions
 
 class TestPlugins {
     @Test

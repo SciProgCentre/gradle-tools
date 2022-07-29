@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import freemarker.cache.StringTemplateLoader
 import freemarker.template.Configuration

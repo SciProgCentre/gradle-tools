@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Kotlin 1.7.10
 - Versions update
+- Project group changed to `space.kscience`
 
 ### Deprecated
 

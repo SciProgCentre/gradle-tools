@@ -1,4 +1,4 @@
-package ru.mipt.npm.gradle
+package space.kscience.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
