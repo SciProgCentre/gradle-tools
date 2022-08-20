@@ -10,11 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `-Xjdk-release` key
 
 ### Changed
-- Kotlin 1.7.10
+- Kotlin 1.7.20-Beta
 - Versions update
 - Project group changed to `space.kscience`
 
 ### Deprecated
+- FX configuration
 
 ### Removed
 

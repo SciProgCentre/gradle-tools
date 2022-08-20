@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
 import space.kscience.gradle.internal.defaultPlatform
@@ -43,7 +45,8 @@ public enum class DependencySourceSet(public val setName: String, public val suf
 }
 
 
-public class KScienceExtension(public val project: Project) {
+public open class KScienceExtension(public val project: Project) {
+
     /**
      * Use coroutines-core with default version or [version]
      */
@@ -90,6 +93,7 @@ public class KScienceExtension(public val project: Project) {
     /**
      * Add platform-specific JavaFX dependencies with given list of [FXModule]s
      */
+    @Deprecated("Use manual FX configuration")
     public fun useFx(
         vararg modules: FXModule,
         configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
@@ -122,14 +126,6 @@ public class KScienceExtension(public val project: Project) {
         dependencySourceSet = sourceSet,
         dependencyConfiguration = configuration
     )
-
-    /**
-     * Apply jupyter plugin
-     */
-    @Deprecated("Use jupyterLibrary")
-    public fun useJupyter() {
-        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
-    }
 
     /**
      * Apply jupyter plugin and add entry point for the jupyter library.
@@ -174,10 +170,10 @@ public class KScienceExtension(public val project: Project) {
     /**
      * Add context receivers to this project and all subprojects
      */
-    public fun withContextReceivers(){
-        project.allprojects{
-            tasks.withType<KotlinCompile>{
-                kotlinOptions{
+    public fun withContextReceivers() {
+        project.allprojects {
+            tasks.withType<KotlinCompile> {
+                kotlinOptions {
                     freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
                 }
             }
@@ -185,8 +181,76 @@ public class KScienceExtension(public val project: Project) {
     }
 }
 
-internal fun Project.registerKScienceExtension() {
-    if (extensions.findByType<KScienceExtension>() == null) {
-        extensions.add("kscience", KScienceExtension(this))
+public enum class KotlinNativePreset {
+    linuxX64,
+    mingwX64,
+    macosX64,
+    iosX64,
+    iosArm64
+}
+
+public data class KScienceNativeTarget(
+    val preset: KotlinNativePreset,
+    val targetName: String = preset.name,
+    val targetConfiguration: KotlinNativeTarget.() -> Unit = { },
+) {
+    public companion object {
+        public val linuxX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.linuxX64)
+        public val mingwX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.mingwX64)
+        public val macosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
+        public val iosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosX64)
+        public val iosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosArm64)
+    }
+}
+
+public class KScienceNativeConfiguration {
+    internal var targets: MutableMap<KotlinNativePreset, KScienceNativeTarget> = listOf(
+        KScienceNativeTarget.linuxX64,
+        KScienceNativeTarget.mingwX64,
+        KScienceNativeTarget.macosX64,
+        KScienceNativeTarget.iosX64,
+        KScienceNativeTarget.iosArm64,
+    ).associateBy { it.preset }.toMutableMap()
+
+    public fun targets(vararg target: KScienceNativeTarget) {
+        targets = target.associateBy { it.preset }.toMutableMap()
+    }
+
+    public fun target(target: KScienceNativeTarget) {
+        targets[target.preset] = target
+    }
+}
+
+public open class KScienceMppExtension(project: Project) : KScienceExtension(project) {
+    internal var jvmConfiguration: ((KotlinJvmTarget) -> Unit)? = { }
+
+    /**
+     * Custom configuration for JVM target. If null - disable JVM target
+     */
+    public fun jvm(block: KotlinJvmTarget.() -> Unit) {
+        jvmConfiguration = block
+    }
+
+    internal var jsConfiguration: ((KotlinJsTargetDsl) -> Unit)? = { }
+
+    /**
+     * Custom configuration for JS target. If null - disable JS target
+     */
+    public fun js(block: KotlinJsTargetDsl.() -> Unit) {
+        jsConfiguration = block
+    }
+
+    internal var nativeConfiguration: KScienceNativeConfiguration? = null
+
+    public fun native(block: KScienceNativeConfiguration.() -> Unit = {}) {
+        nativeConfiguration = KScienceNativeConfiguration().apply(block)
+    }
+}
+
+
+internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension(constructor: (Project) -> T): T {
+    extensions.findByType<T>()?.let { return it }
+    return constructor(this).also {
+        extensions.add("kscience", it)
     }
 }
