@@ -80,23 +80,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                     name.set(project.name)
                     description.set(project.description ?: project.name)
 
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id.set("MIPT-NPM")
-                            name.set("MIPT nuclear physics methods laboratory")
-                            organization.set("MIPT")
-                            organizationUrl.set("https://npm.mipt.ru")
-                        }
-                    }
-
                     scm {
                         tag.set(project.version.toString())
                     }

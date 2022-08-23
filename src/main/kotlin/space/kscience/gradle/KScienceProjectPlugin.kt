@@ -4,6 +4,7 @@ import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.tasks.PublishToMavenRepository
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.changelog.ChangelogPlugin
@@ -19,18 +20,6 @@ public class KSciencePublishingExtension(public val project: Project) {
     private var isVcsInitialized = false
     internal val repositoryNames = mutableSetOf<String>()
 
-    @Deprecated("Use git function and report an issue if other VCS is used.")
-    public fun vcs(vcsUrl: String) {
-        if (!isVcsInitialized) {
-            project.setupPublication {
-                url.set(vcsUrl)
-                scm { url.set(vcsUrl) }
-            }
-
-            isVcsInitialized = true
-        }
-    }
-
     /**
      * Configures Git repository (sources) for the publication.
      *
@@ -38,16 +27,23 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param connectionUrl URL of the Git repository.
      * @param developerConnectionUrl URL of the Git repository for developers.
      */
-    public fun git(vcsUrl: String, connectionUrl: String? = null, developerConnectionUrl: String? = connectionUrl) {
+    public fun pom(
+        vcsUrl: String,
+        connectionUrl: String? = null,
+        developerConnectionUrl: String? = connectionUrl,
+        connectionPrefix: String = "scm:git:",
+        pomConfig: MavenPom.() -> Unit,
+    ) {
         if (!isVcsInitialized) {
             project.setupPublication {
                 url.set(vcsUrl)
 
                 scm {
                     url.set(vcsUrl)
-                    connectionUrl?.let { connection.set("scm:git:$it") }
-                    developerConnectionUrl?.let { developerConnection.set("scm:git:$it") }
+                    connectionUrl?.let { connection.set("$connectionPrefix$it") }
+                    developerConnectionUrl?.let { developerConnection.set("$connectionPrefix$it") }
                 }
+                pomConfig()
             }
 
             isVcsInitialized = true
@@ -63,13 +59,9 @@ public class KSciencePublishingExtension(public val project: Project) {
      */
     public fun github(
         githubProject: String,
-        githubOrg: String = "mipt-npm",
+        githubOrg: String,
         addToRelease: Boolean = project.requestPropertyOrNull("publishing.github") == "true",
     ) {
-        // Automatically initialize VCS using GitHub
-        if (!isVcsInitialized) {
-            git("https://github.com/$githubOrg/${githubProject}", "https://github.com/$githubOrg/${githubProject}.git")
-        }
 
         if (addToRelease) {
             try {
@@ -88,7 +80,7 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param addToRelease publish packages in the `release` task to the Space repository.
      */
     public fun space(
-        spaceRepo: String = "https://maven.pkg.jetbrains.space/mipt-npm/p/sci/maven",
+        spaceRepo: String,
         addToRelease: Boolean = project.requestPropertyOrNull("publishing.space") != "false",
     ) {
         project.addSpacePublishing(spaceRepo)
@@ -142,6 +134,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         subprojects {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
+
+            @Suppress("UNUSED_VARIABLE")
             val generateReadme by tasks.creating {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
@@ -260,15 +254,17 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                     val pattern = "publish(?<publication>.*)PublicationTo${repositoryNameCapitalized}Repository"
                         .toRegex()
 
-                    tasks.withType<PublishToMavenRepository>().toList().forEach forEachPublication@ {
+                    tasks.withType<PublishToMavenRepository>().toList().forEach forEachPublication@{
                         val matchResult = pattern.matchEntire(it.name) ?: return@forEachPublication
                         val publicationName = matchResult.groups["publication"]!!.value.capitalize()
                         val releaseTaskName = "release$publicationName"
 
-                        val targetReleaseTask = rootProject.tasks.findByName(releaseTaskName) ?: rootProject.tasks.create(releaseTaskName) {
-                            group = RELEASE_GROUP
-                            description = "Publish platform release artifact for $publicationName to all repositories"
-                        }
+                        val targetReleaseTask =
+                            rootProject.tasks.findByName(releaseTaskName) ?: rootProject.tasks.create(releaseTaskName) {
+                                group = RELEASE_GROUP
+                                description =
+                                    "Publish platform release artifact for $publicationName to all repositories"
+                            }
 
                         releaseAll.dependsOn(targetReleaseTask)
 
