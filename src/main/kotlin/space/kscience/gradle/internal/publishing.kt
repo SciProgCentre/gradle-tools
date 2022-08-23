@@ -11,6 +11,7 @@ import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
+import space.kscience.gradle.isInDevelopment
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)
@@ -108,8 +109,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
     }
 }
 
-internal fun Project.isSnapshot() = "dev" in version.toString() || version.toString().endsWith("SNAPSHOT")
-
 internal fun Project.addGithubPublishing(
     githubOrg: String,
     githubProject: String,
@@ -184,8 +183,8 @@ internal fun Project.addSonatypePublishing() {
         return
     }
 
-    if (isSnapshot()) {
-        logger.info("Sonatype publishing skipped for dev version")
+    if (isInDevelopment) {
+        logger.info("Sonatype publishing skipped for development version")
         return
     }
 

@@ -114,7 +114,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         apply<BinaryCompatibilityValidatorPlugin>()
 
         afterEvaluate {
-            if (isSnapshot()) {
+            if (isInDevelopment) {
                 configure<ApiValidationExtension> {
                     validationDisabled = true
                 }
@@ -275,7 +275,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         // Disable API validation for snapshots
-        if (isSnapshot()) {
+        if (isInDevelopment) {
             extensions.findByType<ApiValidationExtension>()?.apply {
                 validationDisabled = true
                 logger.warn("API validation is disabled for snapshot or dev version")

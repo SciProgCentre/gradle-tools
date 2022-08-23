@@ -19,11 +19,24 @@ import space.kscience.gradle.internal.fromJsDependencies
 private val defaultKotlinJvmArgs: List<String> =
     listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xjdk-release=${KScienceVersions.JVM_TARGET}")
 
-private fun resolveKotlinVersion():KotlinVersion {
+private fun resolveKotlinVersion(): KotlinVersion {
     val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
-    return KotlinVersion(major.toInt(),minor.toInt(),patch.toInt())
+    return KotlinVersion(major.toInt(), minor.toInt(), patch.toInt())
 }
 
+
+/**
+ * Check if this project version has a development tag (`development` property to true, "dev" in the middle or "SNAPSHOT" in the end).
+ */
+public val Project.isInDevelopment: Boolean
+    get() = findProperty("development") == true
+            || "dev" in version.toString()
+            || version.toString().endsWith("SNAPSHOT")
+
+/**
+ * Configure KScience extensions
+ */
+@Suppress("UNUSED_VARIABLE")
 public fun Project.configureKScience(
     kotlinVersion: KotlinVersion = resolveKotlinVersion(),
 ) {
@@ -160,19 +173,40 @@ public fun Project.configureKScience(
                 }
 
                 configuration.nativeConfiguration?.let { nativeConfiguration ->
-                    val nativeTargets: List<KotlinNativeTargetWithHostTests> = nativeConfiguration.targets.values.mapNotNull { nativeTarget ->
-                        when (nativeTarget.preset) {
-                            KotlinNativePreset.linuxX64 -> linuxX64(nativeTarget.targetName, nativeTarget.targetConfiguration)
-                            KotlinNativePreset.mingwX64 -> linuxX64(nativeTarget.targetName, nativeTarget.targetConfiguration)
-                            KotlinNativePreset.macosX64 -> linuxX64(nativeTarget.targetName, nativeTarget.targetConfiguration)
-                            KotlinNativePreset.iosX64 -> linuxX64(nativeTarget.targetName, nativeTarget.targetConfiguration)
-                            KotlinNativePreset.iosArm64 -> linuxX64(nativeTarget.targetName, nativeTarget.targetConfiguration)
-                            else -> {
-                                logger.error("Native preset ${nativeTarget.preset} not recognised.")
-                                null
+                    val nativeTargets: List<KotlinNativeTargetWithHostTests> =
+                        nativeConfiguration.targets.values.mapNotNull { nativeTarget ->
+                            when (nativeTarget.preset) {
+                                KotlinNativePreset.linuxX64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.mingwX64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.macosX64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.iosX64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.iosArm64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                else -> {
+                                    logger.error("Native preset ${nativeTarget.preset} not recognised.")
+                                    null
+                                }
                             }
                         }
-                    }
 
                     val nativeMain by creating {
                         dependsOn(commonMain)
