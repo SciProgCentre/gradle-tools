@@ -58,8 +58,8 @@ public class KSciencePublishingExtension(public val project: Project) {
      * @param addToRelease publish packages in the `release` task to the GitHub repository.
      */
     public fun github(
-        githubProject: String,
         githubOrg: String,
+        githubProject: String,
         addToRelease: Boolean = project.requestPropertyOrNull("publishing.github") == "true",
     ) {
 
