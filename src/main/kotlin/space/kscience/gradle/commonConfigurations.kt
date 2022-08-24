@@ -17,7 +17,7 @@ import space.kscience.gradle.internal.fromJsDependencies
 
 
 private val defaultKotlinJvmArgs: List<String> =
-    listOf("-Xjvm-default=all", "-Xlambdas=indy", "-Xjdk-release=${KScienceVersions.JVM_TARGET}")
+    listOf("-Xjvm-default=all", "-Xlambdas=indy"/* "-Xjdk-release=${KScienceVersions.JVM_TARGET}"*/)
 
 private fun resolveKotlinVersion(): KotlinVersion {
     val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
