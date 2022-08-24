@@ -96,7 +96,7 @@ public class KSciencePublishingExtension(public val project: Project) {
     public fun sonatype(
         addToRelease: Boolean = (project.requestPropertyOrNull("publishing.sonatype") != "false"),
     ) {
-        require(isVcsInitialized) { "The project vcs is not set up use 'git' method to do so" }
+        require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
         project.addSonatypePublishing()
 
         if (addToRelease) repositoryNames += "sonatype"

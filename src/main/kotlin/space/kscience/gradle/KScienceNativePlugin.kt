@@ -19,7 +19,7 @@ public class KScienceNativePlugin : Plugin<Project> {
         if (!plugins.hasPlugin(KScienceCommonPlugin::class)) {
             configureKScience()
         } else {
-            error("KScience native plugin must be applied instead of common")
+            project.logger.warn("Use `kscience.native()` configuration block")
         }
     }
 }
