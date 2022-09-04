@@ -1,5 +1,5 @@
 [versions]
-tools = "0.12.1-kotlin-1.7.20-Beta"
+tools = "0.13.0-kotlin-1.7.20-Beta"
 kotlin = "1.7.20-Beta"
 atomicfu = "0.18.2"
 binary-compatibility-validator = "0.10.1"

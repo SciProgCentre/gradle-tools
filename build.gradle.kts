@@ -51,12 +51,6 @@ tasks.test {
 
 gradlePlugin {
     plugins {
-        create("common") {
-            id = "space.kscience.gradle.common"
-            description = "The generalized kscience plugin that works in conjunction with any kotlin plugin"
-            implementationClass = "space.kscience.gradle.KScienceCommonPlugin"
-        }
-
         create("project") {
             id = "space.kscience.gradle.project"
             description = "The root plugin for multi-module project infrastructure"
@@ -80,18 +74,6 @@ gradlePlugin {
             description = "Pre-configured JS project"
             implementationClass = "space.kscience.gradle.KScienceJSPlugin"
         }
-
-        create("native") {
-            id = "space.kscience.gradle.native"
-            description = "Additional native targets to be use alongside mpp"
-            implementationClass = "space.kscience.gradle.KScienceNativePlugin"
-        }
-
-        create("node") {
-            id = "space.kscience.gradle.node"
-            description = "Additional nodejs target to be use alongside mpp"
-            implementationClass = "space.kscience.gradle.KScienceNodePlugin"
-        }
     }
 }
 
@@ -108,7 +90,6 @@ tasks.create("version") {
 
 //publishing version catalog
 
-@Suppress("UnstableApiUsage")
 catalog.versionCatalog {
     from(files("gradle/libs.versions.toml"))
 }

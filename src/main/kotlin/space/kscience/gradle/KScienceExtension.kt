@@ -2,12 +2,12 @@ package space.kscience.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.plugins.ApplicationPlugin
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
@@ -138,6 +138,33 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
+
+    public fun dependencies(sourceSet: String? = null, dependencyBlock: KotlinDependencyHandler.() -> Unit) {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            project.configure<KotlinJvmProjectExtension> {
+                sourceSets.getByName(sourceSet ?: "main") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
+            project.configure<KotlinJsProjectExtension> {
+                sourceSets.getByName(sourceSet ?: "main") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                sourceSets.getByName(sourceSet ?: "commonMain") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+    }
+
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
@@ -212,38 +239,136 @@ public class KScienceNativeConfiguration {
         KScienceNativeTarget.iosArm64,
     ).associateBy { it.preset }.toMutableMap()
 
-    public fun targets(vararg target: KScienceNativeTarget) {
+    /**
+     * Replace all targets
+     */
+    public fun setTargets(vararg target: KScienceNativeTarget) {
         targets = target.associateBy { it.preset }.toMutableMap()
     }
 
+    /**
+     * Add a native target
+     */
     public fun target(target: KScienceNativeTarget) {
         targets[target.preset] = target
     }
+
+    public fun target(
+        preset: KotlinNativePreset,
+        targetName: String = preset.name,
+        targetConfiguration: KotlinNativeTarget.() -> Unit = { },
+    ): Unit = target(KScienceNativeTarget(preset, targetName, targetConfiguration))
 }
 
 public open class KScienceMppExtension(project: Project) : KScienceExtension(project) {
-    internal var jvmConfiguration: ((KotlinJvmTarget) -> Unit)? = { }
-
     /**
      * Custom configuration for JVM target. If null - disable JVM target
      */
     public fun jvm(block: KotlinJvmTarget.() -> Unit) {
-        jvmConfiguration = block
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                jvm(block)
+            }
+        }
     }
 
-    internal var jsConfiguration: ((KotlinJsTargetDsl) -> Unit)? = { }
+    /**
+     * Remove Jvm target
+     */
+    public fun noJvm() {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                targets.removeIf { it is KotlinJvmTarget }
+            }
+        }
+    }
 
     /**
      * Custom configuration for JS target. If null - disable JS target
      */
     public fun js(block: KotlinJsTargetDsl.() -> Unit) {
-        jsConfiguration = block
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                js(block)
+            }
+        }
     }
 
-    internal var nativeConfiguration: KScienceNativeConfiguration? = null
+    public fun noJs() {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                targets.removeIf { it is KotlinJsTargetDsl }
+            }
+        }
+    }
 
-    public fun native(block: KScienceNativeConfiguration.() -> Unit = {}) {
-        nativeConfiguration = KScienceNativeConfiguration().apply(block)
+    public fun native(block: KScienceNativeConfiguration.() -> Unit = {}): Unit = with(project) {
+        val nativeConfiguration = KScienceNativeConfiguration().apply(block)
+        pluginManager.withPlugin("space.kscience.gradle.mpp") {
+            configure<KotlinMultiplatformExtension> {
+                sourceSets {
+                    val nativeTargets: List<KotlinNativeTarget> =
+                        nativeConfiguration.targets.values.mapNotNull { nativeTarget ->
+                            when (nativeTarget.preset) {
+                                KotlinNativePreset.linuxX64 -> linuxX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.mingwX64 -> mingwX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.macosX64 -> macosX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.iosX64 -> iosX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.iosArm64 -> iosArm64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+//                                else -> {
+//                                    logger.error("Native preset ${nativeTarget.preset} not recognised.")
+//                                    null
+//                                }
+                            }
+                        }
+                    val commonMain by getting
+                    val commonTest by getting
+
+                    val nativeMain by creating {
+                        dependsOn(commonMain)
+                    }
+
+                    val nativeTest by creating {
+                        //should NOT depend on nativeMain because automatic dependency by plugin
+                        dependsOn(commonTest)
+                    }
+
+                    configure(nativeTargets) {
+                        compilations["main"]?.apply {
+                            configure(kotlinSourceSets) {
+                                dependsOn(nativeMain)
+                            }
+                        }
+
+                        compilations["test"]?.apply {
+                            configure(kotlinSourceSets) {
+                                dependsOn(nativeTest)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
