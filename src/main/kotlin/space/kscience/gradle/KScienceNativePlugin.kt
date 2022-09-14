@@ -24,7 +24,8 @@ public class KScienceNativePlugin : Plugin<Project> {
                 mingwX64(),
                 macosX64(),
                 iosX64(),
-                iosArm64()
+                iosArm64(),
+                iosSimulatorArm64()
             )
 
             sourceSets {
