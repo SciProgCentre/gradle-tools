@@ -156,7 +156,7 @@ afterEvaluate {
             }
         }
 
-        val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/maven"
+        val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/dev"
         val spaceUser: String? = project.findProperty("publishing.space.user") as? String
         val spaceToken: String? = project.findProperty("publishing.space.token") as? String
 
