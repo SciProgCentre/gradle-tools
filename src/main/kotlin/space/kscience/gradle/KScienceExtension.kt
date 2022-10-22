@@ -212,8 +212,10 @@ public enum class KotlinNativePreset {
     linuxX64,
     mingwX64,
     macosX64,
+    macosArm64,
     iosX64,
-    iosArm64
+    iosArm64,
+    iosSimulatorArm64,
 }
 
 public data class KScienceNativeTarget(
@@ -225,8 +227,10 @@ public data class KScienceNativeTarget(
         public val linuxX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.linuxX64)
         public val mingwX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.mingwX64)
         public val macosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
+        public val macosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
         public val iosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosX64)
         public val iosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosArm64)
+        public val iosSimulatorArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosSimulatorArm64)
     }
 }
 
@@ -235,15 +239,17 @@ public class KScienceNativeConfiguration {
         KScienceNativeTarget.linuxX64,
         KScienceNativeTarget.mingwX64,
         KScienceNativeTarget.macosX64,
+        KScienceNativeTarget.macosArm64,
         KScienceNativeTarget.iosX64,
         KScienceNativeTarget.iosArm64,
-    ).associateBy { it.preset }.toMutableMap()
+        KScienceNativeTarget.iosSimulatorArm64,
+    ).associateByTo(mutableMapOf()) { it.preset }
 
     /**
      * Replace all targets
      */
     public fun setTargets(vararg target: KScienceNativeTarget) {
-        targets = target.associateBy { it.preset }.toMutableMap()
+        targets = target.associateByTo(mutableMapOf()) { it.preset }
     }
 
     /**
@@ -325,12 +331,22 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                                     nativeTarget.targetConfiguration
                                 )
 
+                                KotlinNativePreset.macosArm64 -> macosX64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
                                 KotlinNativePreset.iosX64 -> iosX64(
                                     nativeTarget.targetName,
                                     nativeTarget.targetConfiguration
                                 )
 
                                 KotlinNativePreset.iosArm64 -> iosArm64(
+                                    nativeTarget.targetName,
+                                    nativeTarget.targetConfiguration
+                                )
+
+                                KotlinNativePreset.iosSimulatorArm64 -> iosArm64(
                                     nativeTarget.targetName,
                                     nativeTarget.targetConfiguration
                                 )
