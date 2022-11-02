@@ -254,7 +254,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                     val pattern = "publish(?<publication>.*)PublicationTo${repositoryNameCapitalized}Repository"
                         .toRegex()
 
-                    tasks.withType<PublishToMavenRepository>().toList().forEach forEachPublication@{
+                    tasks.withType<PublishToMavenRepository>().forEach forEachPublication@{
                         val matchResult = pattern.matchEntire(it.name) ?: return@forEachPublication
                         val publicationName = matchResult.groups["publication"]!!.value.capitalize()
                         val releaseTaskName = "release$publicationName"
