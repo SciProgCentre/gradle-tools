@@ -54,7 +54,7 @@ public open class KScienceExtension(public val project: Project) {
         version: String = KScienceVersions.coroutinesVersion,
         sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
         configuration: DependencyConfiguration = DependencyConfiguration.API,
-    ): Unit {
+    ) {
         project.useCommonDependency(
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version",
             dependencySourceSet = sourceSet,
@@ -314,7 +314,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             configure<KotlinMultiplatformExtension> {
                 sourceSets {
                     val nativeTargets: List<KotlinNativeTarget> =
-                        nativeConfiguration.targets.values.mapNotNull { nativeTarget ->
+                        nativeConfiguration.targets.values.map { nativeTarget ->
                             when (nativeTarget.preset) {
                                 KotlinNativePreset.linuxX64 -> linuxX64(
                                     nativeTarget.targetName,
@@ -346,7 +346,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                                     nativeTarget.targetConfiguration
                                 )
 
-                                KotlinNativePreset.iosSimulatorArm64 -> iosArm64(
+                                KotlinNativePreset.iosSimulatorArm64 -> iosSimulatorArm64(
                                     nativeTarget.targetName,
                                     nativeTarget.targetConfiguration
                                 )
