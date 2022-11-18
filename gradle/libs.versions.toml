@@ -1,6 +1,6 @@
 [versions]
-tools = "0.13.3-kotlin-1.7.20"
-kotlin = "1.7.20"
+tools = "0.13.3-kotlin-1.8.0-Beta"
+kotlin = "1.8.0-Beta"
 atomicfu = "0.18.5"
 binary-compatibility-validator = "0.12.1"
 changelog = "2.0.0"

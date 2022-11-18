@@ -85,7 +85,7 @@ public fun Project.configureKScience(
                 browser {
                     commonWebpackConfig {
                         cssSupport {
-                            enabled = true
+                            enabled.set(true)
                         }
                     }
                 }
@@ -133,7 +133,7 @@ public fun Project.configureKScience(
                 browser {
                     commonWebpackConfig {
                         cssSupport {
-                            enabled = true
+                            enabled.set(true)
                         }
                     }
                 }

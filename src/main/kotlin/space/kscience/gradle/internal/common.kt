@@ -55,7 +55,7 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
 }
 
 internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js") {
-    js {
+    js(IR) {
         binaries.executable()
         browser {
             webpackTask {

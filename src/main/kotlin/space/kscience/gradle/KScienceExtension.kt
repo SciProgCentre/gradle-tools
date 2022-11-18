@@ -178,13 +178,13 @@ public open class KScienceExtension(public val project: Project) {
         }
 
         project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
-            js {
+            js(IR) {
                 binaries.executable()
             }
         }
 
         project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            js {
+            js(IR) {
                 binaries.executable()
             }
 
