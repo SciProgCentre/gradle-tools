@@ -81,15 +81,7 @@ public fun Project.configureKScience(
 
         //logger.info("Applying KScience configuration for JS project")
         configure<KotlinJsProjectExtension> {
-            js(IR) {
-                browser {
-                    commonWebpackConfig {
-                        cssSupport {
-                            enabled.set(true)
-                        }
-                    }
-                }
-            }
+            js(IR) { browser { } }
 
             sourceSets.all {
                 languageSettings.applySettings(kotlinVersion)
@@ -129,15 +121,7 @@ public fun Project.configureKScience(
                 }
             }
 
-            js(IR) {
-                browser {
-                    commonWebpackConfig {
-                        cssSupport {
-                            enabled.set(true)
-                        }
-                    }
-                }
-            }
+            js(IR) { browser { } }
 
             sourceSets {
                 val commonMain by getting {

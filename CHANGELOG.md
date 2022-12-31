@@ -1,38 +1,46 @@
 # Changelog
-
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## Unreleased
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## 0.13.4-kotlin-1.8.0 - 2022-12-31
+
 ### Added
 - Public `isInDevelopment` project flag
-- Add `-Xjdk-release` key
 
 ### Changed
 - Require manual pom config for publications
-- Kotlin 1.7.20-Beta
+- Kotlin 1.8.0
 - Versions update
 - Project group changed to `space.kscience`
+- Moved `yarn.lock` to `gradle` directory
 
 ### Deprecated
 - FX configuration
 
 ### Removed
 - Xjdk-release flag because it is broken until https://youtrack.jetbrains.com/issue/KT-52823
+- Use CSS loader in JS by default
 
-### Fixed
-
-### Security
-
-## [0.11.6-kotlin-1.7.0]
-### Added
+## 0.11.6-kotlin-1.7.0
 
 ### Changed
 - Coroutines tests are applied only when explicit `useCoroutines` is used.
-
-### Deprecated
 
 ### Removed
 - Atomicfu support inside the plugin
@@ -40,9 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Rollback coroutines to 1.6.1
 
-### Security
+## 0.11.5-kotlin-1.7.0
 
-## [0.11.5-kotlin-1.7.0]
 ### Added
 - Coroutine tests as default dependency for tests
 - Context receiver flag
@@ -59,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Moved signing out of sonatype block
 
-## [0.11.1-kotlin-1.6.10]
+## 0.11.1-kotlin-1.6.10
+
 ### Added
 - Default templates for README and ARTIFACT
 
@@ -69,36 +77,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - JS publication sources jar
 
-## [0.10.9-kotlin-1.6.10]
+## 0.10.9-kotlin-1.6.10
+
 ### Added
 - html builders for readme
 
 ### Changed
 - Kotlin 1.6.0
-- Use indy lambdas by default #32 
+- Use indy lambdas by default #32
 - Change version scheme to `<version>-kotlin-<kotlin version>`
 
 ### Fixed
 - remove `nativeMain` dependency from `nativeTest`
 
-## [0.10.4]
+## 0.10.4
+
 ### Changed
 - Kotlin 1.6
 
 ### Fixed
 - Some issues with opt-ins
 
-## [0.10.2]
+## 0.10.2
+
 ### Added
 - Experimental automatic JS project bundling in MPP
 
 ### Changed
 - Remove vcs requirement for Space publication
 
-### Fixed
--Release task (#19)
+## 0.10.0
 
-## [0.10.0]
 ### Added
 - Lazy readme properties
 - BOM for kotlin-wrappers on JS
@@ -111,7 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - bson support
 
-## [0.9.5]
+## 0.9.5
+
 ### Added
 - Disable API validation for snapshots
 - `-Xjvm-default=all` on JVM
@@ -128,7 +138,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Removed unnecessary `afterEvaluate` for compatibility with gradle 7.0
 
-## [0.9.0]
+## 0.9.0
+
 ### Added
 - Skip sonatype publishing for dev versions
 
@@ -142,7 +153,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Bintray publishing
 
-## [0.8.4]
+## 0.8.4
+
 ### Added
 - Adaptive support for host OS in native
 - CSS support for JS targets
@@ -156,7 +168,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release task
 - Readme generation for multi-module project
 
-## [0.8.1]
+## 0.8.1
+
 ### Added
 - Ktor version to versions
 - Add sonatype publishing
@@ -176,7 +189,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix publishing load order for sonatype
 - Fix root project readme
 
-## [0.7.4]
+## 0.7.4
+
 ### Added
 - Changelog plugin automatically applied to `project`.
 - Feature matrix and Readme generation task for a `project` plugin.
@@ -202,16 +216,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `useDokka` method. Documentation jar should be added manually if needed.
 
-## [0.6.0]
+## 0.6.0
+
 ### Added
 - Migrate to kotlin 1.4.0
 - Separate Native (current platform) and nodeJs plugins.
 - Add `application()` toggle in plugin configuration to produce binaries on JS and applicaion plugin on jvm.
 - Add `publish` to expose publishing configuration.
 
-### Changed
--Publishing in bintray now is automatic.
+## 0.5.2
 
-## [0.5.2]
 ### Added
 - Copy resources for jvm modules and jvm source sets in mpp.

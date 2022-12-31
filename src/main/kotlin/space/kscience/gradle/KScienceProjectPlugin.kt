@@ -281,6 +281,10 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 logger.warn("API validation is disabled for snapshot or dev version")
             }
         }
+
+        plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
+            rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().lockFileDirectory = rootDir.resolve("gradle")
+        }
     }
 
     public companion object {
