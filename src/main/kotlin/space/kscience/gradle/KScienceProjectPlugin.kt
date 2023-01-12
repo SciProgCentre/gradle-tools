@@ -198,11 +198,10 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
                     val modulesString = buildString {
                         subprojects.forEach { subproject ->
-                            val name = subproject.name
-                            val path = subproject.path.replaceFirst(":", "").replace(":", "/")
-                            val ext = subproject.extensions.findByType<KScienceReadmeExtension>()
-                            appendLine("\n### [$name]($path)")
-                            if (ext != null) {
+//                            val name = subproject.name
+                            subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
+                                val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                                appendLine("\n### [$path]($path)")
                                 appendLine("> ${ext.description}")
                                 appendLine(">\n> **Maturity**: ${ext.maturity}")
                                 val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
@@ -283,7 +282,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
-            rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().lockFileDirectory = rootDir.resolve("gradle")
+            rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().lockFileDirectory =
+                rootDir.resolve("gradle")
         }
     }
 
