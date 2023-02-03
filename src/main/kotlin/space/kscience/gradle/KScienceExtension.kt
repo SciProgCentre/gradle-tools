@@ -1,37 +1,26 @@
 package space.kscience.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
+import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
-import space.kscience.gradle.internal.defaultPlatform
+import space.kscience.gradle.internal.defaultKotlinJvmArgs
+import space.kscience.gradle.internal.fromJsDependencies
 import space.kscience.gradle.internal.useCommonDependency
-import space.kscience.gradle.internal.useFx
-
-public enum class FXModule(public val artifact: String, public vararg val dependencies: FXModule) {
-    BASE("javafx-base"),
-    GRAPHICS("javafx-graphics", BASE),
-    CONTROLS("javafx-controls", GRAPHICS, BASE),
-    FXML("javafx-fxml", BASE),
-    MEDIA("javafx-media", GRAPHICS, BASE),
-    SWING("javafx-swing", GRAPHICS, BASE),
-    WEB("javafx-web", CONTROLS, GRAPHICS, BASE)
-}
-
-public enum class FXPlatform(public val id: String) {
-    WINDOWS("win"),
-    LINUX("linux"),
-    MAC("mac")
-}
 
 public enum class DependencyConfiguration {
     API,
@@ -43,6 +32,15 @@ public enum class DependencySourceSet(public val setName: String, public val suf
     MAIN("main", "Main"),
     TEST("test", "Test")
 }
+
+
+/**
+ * Check if this project version has a development tag (`development` property to true, "dev" in the middle or "SNAPSHOT" in the end).
+ */
+public val Project.isInDevelopment: Boolean
+    get() = findProperty("development") == true
+            || "dev" in version.toString()
+            || version.toString().endsWith("SNAPSHOT")
 
 
 public open class KScienceExtension(public val project: Project) {
@@ -91,43 +89,6 @@ public open class KScienceExtension(public val project: Project) {
     }
 
     /**
-     * Add platform-specific JavaFX dependencies with given list of [FXModule]s
-     */
-    @Deprecated("Use manual FX configuration")
-    public fun useFx(
-        vararg modules: FXModule,
-        configuration: DependencyConfiguration = DependencyConfiguration.COMPILE_ONLY,
-        version: String = "11",
-        platform: FXPlatform = defaultPlatform,
-    ): Unit = project.useFx(modules.toList(), configuration, version, platform)
-
-    /**
-     * Add dependency on kotlinx-html library
-     */
-    public fun useHtml(
-        version: String = KScienceVersions.htmlVersion,
-        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.API,
-    ): Unit = project.useCommonDependency(
-        "org.jetbrains.kotlinx:kotlinx-html:$version",
-        dependencySourceSet = sourceSet,
-        dependencyConfiguration = configuration
-    )
-
-    /**
-     * Use kotlinx-datetime library with default version or [version]
-     */
-    public fun useDateTime(
-        version: String = KScienceVersions.dateTimeVersion,
-        sourceSet: DependencySourceSet = DependencySourceSet.MAIN,
-        configuration: DependencyConfiguration = DependencyConfiguration.API,
-    ): Unit = project.useCommonDependency(
-        "org.jetbrains.kotlinx:kotlinx-datetime:$version",
-        dependencySourceSet = sourceSet,
-        dependencyConfiguration = configuration
-    )
-
-    /**
      * Apply jupyter plugin and add entry point for the jupyter library.
      * If left empty applies a plugin without declaring library producers
      */
@@ -138,7 +99,9 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
-
+    /**
+     * Apply common dependencies for different kind of targets
+     */
     public fun dependencies(sourceSet: String? = null, dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             project.configure<KotlinJvmProjectExtension> {
@@ -268,49 +231,105 @@ public class KScienceNativeConfiguration {
 
 public open class KScienceMppExtension(project: Project) : KScienceExtension(project) {
     /**
-     * Custom configuration for JVM target. If null - disable JVM target
+     * Enable jvm target
      */
     public fun jvm(block: KotlinJvmTarget.() -> Unit) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                jvm(block)
+                jvm {
+                    compilations.all {
+                        kotlinOptions {
+                            freeCompilerArgs = freeCompilerArgs + defaultKotlinJvmArgs
+                        }
+                    }
+                    block()
+                }
+                sourceSets {
+                    getByName("jvmMain") {
+                        dependencies {
+                            implementation(kotlin("test-junit5"))
+                            implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
+                        }
+                    }
+                    getByName("jvmTest") {
+                        dependencies {
+                            implementation(kotlin("test-js"))
+                        }
+                    }
+                }
+                jvmToolchain {
+                    languageVersion.set(KScienceVersions.JVM_TARGET)
+                }
+            }
+            project.tasks.withType<Test> {
+                useJUnitPlatform()
             }
         }
     }
 
     /**
-     * Remove Jvm target
-     */
-    public fun noJvm() {
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            project.configure<KotlinMultiplatformExtension> {
-                targets.removeIf { it is KotlinJvmTarget }
-            }
-        }
-    }
-
-    /**
-     * Custom configuration for JS target. If null - disable JS target
+     * Enable JS-IR (browser) target.
      */
     public fun js(block: KotlinJsTargetDsl.() -> Unit) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                js(block)
+                js(IR) {
+                    browser()
+                    block()
+                }
+            }
+            (project.tasks.findByName("jsProcessResources") as? Copy)?.apply {
+                fromJsDependencies("jsRuntimeClasspath")
             }
         }
     }
 
-    public fun noJs() {
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            project.configure<KotlinMultiplatformExtension> {
-                targets.removeIf { it is KotlinJsTargetDsl }
+    public fun jvmAndJs() {
+        jvm {}
+        js {}
+    }
+
+    /**
+     * Jvm and Js source sets including copy of Js bundle into JVM resources
+     */
+    public fun fullStack(
+        bundleName: String = "js/bundle.js",
+        jvmConfig: KotlinJvmTarget.() -> Unit = {},
+        jsConfig: KotlinJsTargetDsl.() -> Unit = {},
+        browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
+    ) {
+        js {
+            binaries.executable()
+            browser {
+                webpackTask {
+                    outputFileName = bundleName
+                }
+                browserConfig()
             }
+            jsConfig()
+        }
+        jvm {
+            val processResourcesTaskName =
+                compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME]
+                    .processResourcesTaskName
+
+            val jsBrowserDistribution = project.tasks.getByName("jsBrowserDistribution")
+
+            project.tasks.getByName<ProcessResources>(processResourcesTaskName) {
+                duplicatesStrategy = DuplicatesStrategy.WARN
+                dependsOn(jsBrowserDistribution)
+                from(jsBrowserDistribution)
+            }
+            jvmConfig()
         }
     }
 
+    /**
+     * Enable all supported native targets
+     */
     public fun native(block: KScienceNativeConfiguration.() -> Unit = {}): Unit = with(project) {
         val nativeConfiguration = KScienceNativeConfiguration().apply(block)
-        pluginManager.withPlugin("space.kscience.gradle.mpp") {
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
                 sourceSets {
                     val nativeTargets: List<KotlinNativeTarget> =

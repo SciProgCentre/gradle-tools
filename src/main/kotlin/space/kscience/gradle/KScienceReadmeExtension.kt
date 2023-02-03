@@ -90,11 +90,6 @@ public class KScienceReadmeExtension(public val project: Project) {
 
     public val features: MutableList<Feature> = ArrayList()
 
-    @Deprecated("Use lambda builder instead.")
-    public fun feature(id: String, description: String, ref: String? = null, name: String = id) {
-        features += Feature(id, description, ref, name)
-    }
-
     public fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
         features += Feature(id, description(), ref, name)
     }

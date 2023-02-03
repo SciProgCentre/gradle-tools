@@ -2,17 +2,23 @@ package space.kscience.gradle.internal
 
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.RepositoryHandler
-import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.maven
-import org.gradle.language.jvm.tasks.ProcessResources
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
+import space.kscience.gradle.KScienceVersions
+
+
+internal val defaultKotlinJvmArgs: List<String> =
+    listOf("-Xjvm-default=all", "-Xlambdas=indy"/* "-Xjdk-release=${KScienceVersions.JVM_TARGET}"*/)
+
+internal fun resolveKotlinVersion(): KotlinVersion {
+    val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
+    return KotlinVersion(major.toInt(), minor.toInt(), patch.toInt())
+}
 
 internal fun LanguageSettingsBuilder.applySettings(
-    kotlinVersion: KotlinVersion
+    kotlinVersion: KotlinVersion = resolveKotlinVersion(),
 ) {
     val versionString = "${kotlinVersion.major}.${kotlinVersion.minor}"
     languageVersion = versionString
@@ -53,51 +59,3 @@ internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
         }
     }
 }
-
-internal fun KotlinMultiplatformExtension.bundleJsBinaryAsResource(bundleName: String = "js/bundle.js") {
-    js(IR) {
-        binaries.executable()
-        browser {
-            webpackTask {
-                outputFileName = bundleName
-            }
-        }
-    }
-
-    jvm {
-        val processResourcesTaskName =
-            compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME]
-                .processResourcesTaskName
-
-        val jsBrowserDistribution = project.tasks.getByName("jsBrowserDistribution")
-
-        project.tasks.getByName<ProcessResources>(processResourcesTaskName) {
-            duplicatesStrategy = DuplicatesStrategy.WARN
-            dependsOn(jsBrowserDistribution)
-            from(jsBrowserDistribution)
-        }
-    }
-
-}
-
-//
-//internal fun Copy.copyJVMResources(configuration: Configuration): Unit = project.afterEvaluate {
-//    val projectDeps = configuration.allDependencies
-//        .filterIsInstance<ProjectDependency>()
-//        .map { it.dependencyProject }
-//
-//    projectDeps.forEach { dep ->
-//        dep.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-//            dep.tasks.findByName("jvmProcessResources")?.let { task ->
-//                dependsOn(task)
-//                from(task)
-//            }
-//        }
-//        dep.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-//            dep.tasks.findByName("processResources")?.let { task ->
-//                dependsOn(task)
-//                from(task)
-//            }
-//        }
-//    }
-//}

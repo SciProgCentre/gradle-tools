@@ -1,11 +1,11 @@
 plugins {
-    alias(libs.plugins.changelog)
-    alias(libs.plugins.dokka)
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
     signing
     `version-catalog`
+    alias(libs.plugins.changelog)
+    alias(libs.plugins.dokka)
 }
 
 group = "space.kscience"
@@ -21,8 +21,6 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
-java.targetCompatibility = JavaVersion.VERSION_11
-
 kotlin.explicitApiWarning()
 
 dependencies {
@@ -33,7 +31,7 @@ dependencies {
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
-    implementation("org.tomlj:tomlj:1.0.0")
+    implementation("org.tomlj:tomlj:1.1.0")
 //    // nexus publishing plugin
 //    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 
@@ -156,8 +154,8 @@ afterEvaluate {
         }
 
         val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/maven"
-        val spaceUser: String? = project.findProperty("publishing.space.user") as? String
-        val spaceToken: String? = project.findProperty("publishing.space.token") as? String
+        val spaceUser: String? = findProperty("publishing.space.user") as? String
+        val spaceToken: String? = findProperty("publishing.space.token") as? String
 
         if (spaceUser != null && spaceToken != null) {
             project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
@@ -205,8 +203,10 @@ afterEvaluate {
     }
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+kotlin{
+    jvmToolchain{
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 tasks.processResources.configure {

@@ -9,10 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- MPP does not use JVM and JS(IR) targets anymore. They could be turned manually via `js()`, `jvm()` or `fullStack()`
 
 ### Deprecated
 
 ### Removed
+- FX plugins
+- Unnecessary library shortcuts (html and datetime)
 
 ### Fixed
 
