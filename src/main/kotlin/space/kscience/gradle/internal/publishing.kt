@@ -89,21 +89,25 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                 }
             }
 
+            if (requestPropertyOrNull("publishing.signing.id") != null || requestPropertyOrNull("signing.gnupg.keyName") != null) {
 
-            if (!plugins.hasPlugin("signing")) {
-                apply<SigningPlugin>()
-            }
+                if (!plugins.hasPlugin("signing")) {
+                    apply<SigningPlugin>()
+                }
 
-            extensions.configure<SigningExtension>("signing") {
-                val signingId: String? = requestPropertyOrNull("publishing.signing.id")
-                if (!signingId.isNullOrBlank()) {
-                    val signingKey: String = requestProperty("publishing.signing.key")
-                    val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
+                extensions.configure<SigningExtension>("signing") {
+                    val signingId: String? = requestPropertyOrNull("publishing.signing.id")
+                    if (!signingId.isNullOrBlank()) {
+                        val signingKey: String = requestProperty("publishing.signing.key")
+                        val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
 
-                    // if key is provided, use it
-                    useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
-                } // else use file signing
-                sign(publications)
+                        // if key is provided, use it
+                        useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
+                    } // else use agent signing
+                    sign(publications)
+                }
+            } else {
+                logger.warn("Signing information is not provided. Skipping artefact signing.")
             }
         }
     }
