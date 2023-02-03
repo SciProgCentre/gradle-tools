@@ -128,6 +128,42 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
+    public fun jvmDependencies(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            project.configure<KotlinJvmProjectExtension> {
+                sourceSets.getByName("main") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                sourceSets.getByName("jvmMain") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+    }
+
+    public fun jsDependencies(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
+            project.configure<KotlinJsProjectExtension> {
+                sourceSets.getByName("main") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                sourceSets.getByName("jsMain") {
+                    dependencies(dependencyBlock)
+                }
+            }
+        }
+    }
+
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
