@@ -128,28 +128,18 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
-    public fun jvmDependencies(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
+    public fun testDependencies(sourceSet: String? = null, dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
             project.configure<KotlinJvmProjectExtension> {
-                sourceSets.getByName("main") {
+                sourceSets.getByName(sourceSet ?: "test") {
                     dependencies(dependencyBlock)
                 }
             }
         }
 
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            project.configure<KotlinMultiplatformExtension> {
-                sourceSets.getByName("jvmMain") {
-                    dependencies(dependencyBlock)
-                }
-            }
-        }
-    }
-
-    public fun jsDependencies(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
             project.configure<KotlinJsProjectExtension> {
-                sourceSets.getByName("main") {
+                sourceSets.getByName(sourceSet ?: "test") {
                     dependencies(dependencyBlock)
                 }
             }
@@ -157,12 +147,21 @@ public open class KScienceExtension(public val project: Project) {
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                sourceSets.getByName("jsMain") {
+                sourceSets.getByName(sourceSet ?: "commonTest") {
                     dependencies(dependencyBlock)
                 }
             }
         }
     }
+
+
+    public class DefaultSourceSet(public val key: String)
+
+    public fun dependencies(
+        defaultSourceSet: DefaultSourceSet,
+        dependencyBlock: KotlinDependencyHandler.() -> Unit,
+    ): Unit = dependencies(defaultSourceSet.key, dependencyBlock)
+
 
     /**
      * Mark this module as an application module. JVM application should be enabled separately
@@ -196,15 +195,21 @@ public open class KScienceExtension(public val project: Project) {
     /**
      * Add context receivers to this project and all subprojects
      */
-    public fun withContextReceivers() {
-        project.allprojects {
-            tasks.withType<KotlinCompile> {
-                kotlinOptions {
-                    freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
-                }
+    public fun useContextReceivers() {
+        project.tasks.withType<KotlinCompile> {
+            kotlinOptions {
+                freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
             }
         }
     }
+
+    public val jvmMain: DefaultSourceSet get() = DefaultSourceSet("jvmMain")
+    public val jvmTest: DefaultSourceSet get() = DefaultSourceSet("jvmTest")
+    public val jsMain: DefaultSourceSet get() = DefaultSourceSet("jsMain")
+    public val jsTest: DefaultSourceSet get() = DefaultSourceSet("jsTest")
+    public val nativeMain: DefaultSourceSet get() = DefaultSourceSet("nativeMain")
+    public val nativeTest: DefaultSourceSet get() = DefaultSourceSet("nativeTest")
+
 }
 
 public enum class KotlinNativePreset {
@@ -285,11 +290,6 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                         dependencies {
                             implementation(kotlin("test-junit5"))
                             implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
-                        }
-                    }
-                    getByName("jvmTest") {
-                        dependencies {
-                            implementation(kotlin("test-js"))
                         }
                     }
                 }
