@@ -233,7 +233,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
     /**
      * Enable jvm target
      */
-    public fun jvm(block: KotlinJvmTarget.() -> Unit) {
+    public fun jvm(block: KotlinJvmTarget.() -> Unit = {}) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
@@ -270,7 +270,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
     /**
      * Enable JS-IR (browser) target.
      */
-    public fun js(block: KotlinJsTargetDsl.() -> Unit) {
+    public fun js(block: KotlinJsTargetDsl.() -> Unit = {}) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 js(IR) {
