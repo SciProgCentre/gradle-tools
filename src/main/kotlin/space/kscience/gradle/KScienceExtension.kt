@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
@@ -88,6 +89,36 @@ public open class KScienceExtension(public val project: Project) {
         SerializationTargets(sourceSet, configuration).block()
     }
 
+    public fun useKtor(version: String = KScienceVersions.ktorVersion): Unit = with(project) {
+        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            configure<KotlinMultiplatformExtension> {
+                sourceSets.findByName("commonMain")?.apply {
+                    dependencies {
+                        api(platform("io.ktor:ktor-bom:$version"))
+                    }
+                }
+            }
+        }
+        pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+            configure<KotlinJvmProjectExtension> {
+                sourceSets.findByName("main")?.apply {
+                    dependencies {
+                        api(platform("io.ktor:ktor-bom:$version"))
+                    }
+                }
+            }
+        }
+        pluginManager.withPlugin("org.jetbrains.kotlin.js") {
+            configure<KotlinJsProjectExtension> {
+                sourceSets.findByName("main")?.apply {
+                    dependencies {
+                        api(platform("io.ktor:ktor-bom:$version"))
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Apply jupyter plugin and add entry point for the jupyter library.
      * If left empty applies a plugin without declaring library producers
@@ -154,7 +185,6 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
-
     public class DefaultSourceSet(public val key: String)
 
     public fun dependencies(
@@ -182,11 +212,15 @@ public open class KScienceExtension(public val project: Project) {
         }
 
         project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            js(IR) {
+            targets.withType<KotlinJsTargetDsl> {
                 binaries.executable()
             }
 
             targets.withType<KotlinNativeTarget> {
+                binaries.executable()
+            }
+
+            targets.withType<KotlinWasmTargetDsl> {
                 binaries.executable()
             }
         }
@@ -203,12 +237,21 @@ public open class KScienceExtension(public val project: Project) {
         }
     }
 
+    public operator fun DefaultSourceSet.invoke(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
+        dependencies(this, dependencyBlock)
+    }
+
+    public val commonMain: DefaultSourceSet get() = DefaultSourceSet("commonMain")
+    public val commonTest: DefaultSourceSet get() = DefaultSourceSet("commonTest")
+
     public val jvmMain: DefaultSourceSet get() = DefaultSourceSet("jvmMain")
     public val jvmTest: DefaultSourceSet get() = DefaultSourceSet("jvmTest")
     public val jsMain: DefaultSourceSet get() = DefaultSourceSet("jsMain")
     public val jsTest: DefaultSourceSet get() = DefaultSourceSet("jsTest")
     public val nativeMain: DefaultSourceSet get() = DefaultSourceSet("nativeMain")
     public val nativeTest: DefaultSourceSet get() = DefaultSourceSet("nativeTest")
+    public val wasmMain: DefaultSourceSet get() = DefaultSourceSet("wasmMain")
+    public val wasmTest: DefaultSourceSet get() = DefaultSourceSet("wasmTest")
 
 }
 
@@ -286,7 +329,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     block()
                 }
                 sourceSets {
-                    getByName("jvmMain") {
+                    getByName("jvmTest") {
                         dependencies {
                             implementation(kotlin("test-junit5"))
                             implementation("org.junit.jupiter:junit-jupiter:${KScienceVersions.junit}")
@@ -313,6 +356,13 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     browser()
                     block()
                 }
+                sourceSets {
+                    getByName("jsTest") {
+                        dependencies {
+                            implementation(kotlin("test-js"))
+                        }
+                    }
+                }
             }
             (project.tasks.findByName("jsProcessResources") as? Copy)?.apply {
                 fromJsDependencies("jsRuntimeClasspath")
@@ -320,9 +370,20 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         }
     }
 
+    public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                wasm {
+                    browser()
+                    block()
+                }
+            }
+        }
+    }
+
     public fun jvmAndJs() {
-        jvm {}
-        js {}
+        jvm()
+        js()
     }
 
     /**
@@ -386,7 +447,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                                     nativeTarget.targetConfiguration
                                 )
 
-                                KotlinNativePreset.macosArm64 -> macosX64(
+                                KotlinNativePreset.macosArm64 -> macosArm64(
                                     nativeTarget.targetName,
                                     nativeTarget.targetConfiguration
                                 )

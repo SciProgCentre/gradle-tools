@@ -1,6 +1,6 @@
 [versions]
-tools = "0.14.0-kotlin-1.8.10"
-kotlin = "1.8.10"
+tools = "0.14.1-kotlin-1.8.20-Beta"
+kotlin = "1.8.20-Beta"
 atomicfu = "0.19.0"
 binary-compatibility-validator = "0.12.1"
 changelog = "2.0.0"
@@ -20,6 +20,7 @@ yamlkt = "0.12.0"
 jsBom = "1.0.0-pre.491"
 junit = "5.9.2"
 compose = "1.3.0"
+logback = "1.4.5"
 
 [libraries]
 atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
@@ -77,6 +78,8 @@ xmlutil-ktor = { module = "io.github.pdvrieze.xmlutil:ktor", version.ref = "xmlu
 xmlutil-serialization = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xmlutil" }
 
 yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version.ref = "yamlkt" }
+
+logback-classic = {module = "ch.qos.logback:logback-classic", version.ref = "logback"}
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }

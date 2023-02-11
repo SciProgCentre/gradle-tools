@@ -18,8 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - FX plugins
 - Unnecessary library shortcuts (html and datetime)
+- deploy/release tasks
 
 ### Fixed
+- issues with test sourcesets
 
 ### Security
 
