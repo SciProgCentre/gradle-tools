@@ -3,6 +3,7 @@ package space.kscience.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
@@ -20,7 +21,7 @@ public open class KScienceJVMPlugin : Plugin<Project> {
         } else {
             logger.info("Kotlin JVM plugin is already present")
         }
-        registerKScienceExtension(::KScienceExtension)
+        val extension = registerKScienceExtension(::KScienceExtension)
 
         //logger.info("Applying KScience configuration for JVM project")
         configure<KotlinJvmProjectExtension> {
@@ -37,7 +38,7 @@ public open class KScienceJVMPlugin : Plugin<Project> {
 
             if (explicitApi == null) explicitApiWarning()
             jvmToolchain {
-                languageVersion.set(KScienceVersions.JVM_TARGET)
+                languageVersion.set(extension.jdkVersionProperty.map { JavaLanguageVersion.of(it) })
             }
         }
 

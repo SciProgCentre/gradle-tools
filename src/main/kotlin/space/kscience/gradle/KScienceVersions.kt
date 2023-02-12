@@ -1,7 +1,6 @@
 package space.kscience.gradle
 
 
-import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.tomlj.Toml
 
 /**
@@ -23,8 +22,6 @@ public object KScienceVersions {
     public val dateTimeVersion: String get() = toml.getString("versions.kotlinx-datetime")!!
     public val jsBom: String get() = toml.getString("versions.jsBom")!!
     internal val junit: String get() = toml.getString("versions.junit")!!
-
-    public val JVM_TARGET: JavaLanguageVersion = JavaLanguageVersion.of(11)
 
     public object Serialization {
         public val xmlVersion: String get() = toml.getString("versions.xmlutil")!!

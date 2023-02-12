@@ -3,8 +3,10 @@ package space.kscience.gradle
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
@@ -44,7 +46,16 @@ public val Project.isInDevelopment: Boolean
             || version.toString().endsWith("SNAPSHOT")
 
 
+
+private const val defaultJdkVersion = 11
+
 public open class KScienceExtension(public val project: Project) {
+
+    public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
+        set(defaultJdkVersion)
+    }
+
+    public var jdkVersion: Int by jdkVersionProperty
 
     /**
      * Use coroutines-core with default version or [version]
@@ -337,7 +348,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     }
                 }
                 jvmToolchain {
-                    languageVersion.set(KScienceVersions.JVM_TARGET)
+                    languageVersion.set(jdkVersionProperty.map { JavaLanguageVersion.of(it) })
                 }
             }
             project.tasks.withType<Test> {
