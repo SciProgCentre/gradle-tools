@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
@@ -381,6 +382,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         }
     }
 
+    @OptIn(ExperimentalWasmDsl::class)
     public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
