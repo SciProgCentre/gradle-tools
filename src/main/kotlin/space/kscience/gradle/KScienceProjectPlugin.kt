@@ -102,6 +102,14 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 
+        allprojects{
+            repositories{
+                mavenCentral()
+                maven("https://repo.kotlin.link")
+                maven("https://maven.pkg.jetbrains.space/spc/p/sci/dev")
+            }
+        }
+
         afterEvaluate {
             if (isInDevelopment) {
                 configure<ApiValidationExtension> {

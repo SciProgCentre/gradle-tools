@@ -1,10 +1,8 @@
 package space.kscience.gradle.internal
 
 import org.gradle.api.artifacts.ProjectDependency
-import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.maven
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 import space.kscience.gradle.KScienceVersions
 
@@ -31,11 +29,6 @@ internal fun LanguageSettingsBuilder.applySettings(
     optIn("kotlin.time.ExperimentalTime")
     optIn("kotlin.contracts.ExperimentalContracts")
     optIn("kotlin.js.ExperimentalJsExport")
-}
-
-internal fun RepositoryHandler.applyRepos() {
-    mavenCentral()
-    maven("https://repo.kotlin.link")
 }
 
 internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
