@@ -47,7 +47,6 @@ public val Project.isInDevelopment: Boolean
             || version.toString().endsWith("SNAPSHOT")
 
 
-
 private const val defaultJdkVersion = 11
 
 public open class KScienceExtension(public val project: Project) {
@@ -294,28 +293,50 @@ public data class KScienceNativeTarget(
 }
 
 public class KScienceNativeConfiguration {
-    internal var targets: MutableMap<KotlinNativePreset, KScienceNativeTarget> = listOf(
-        KScienceNativeTarget.linuxX64,
-        KScienceNativeTarget.mingwX64,
-        KScienceNativeTarget.macosX64,
-        KScienceNativeTarget.macosArm64,
-        KScienceNativeTarget.iosX64,
-        KScienceNativeTarget.iosArm64,
-        KScienceNativeTarget.iosSimulatorArm64,
-    ).associateByTo(mutableMapOf()) { it.preset }
+
+
+    internal companion object {
+        private fun defaultNativeTargets(): Map<KotlinNativePreset, KScienceNativeTarget> {
+
+            val hostOs = System.getProperty("os.name")
+            return when {
+                hostOs.startsWith("Windows") -> listOf(
+                    KScienceNativeTarget.linuxX64,
+                    KScienceNativeTarget.mingwX64
+                )
+
+                hostOs == "Mac OS X" -> listOf(
+                    KScienceNativeTarget.macosX64,
+                    KScienceNativeTarget.macosArm64,
+                    KScienceNativeTarget.iosX64,
+                    KScienceNativeTarget.iosArm64,
+                    KScienceNativeTarget.iosSimulatorArm64,
+                )
+
+                hostOs == "Linux" -> listOf(KScienceNativeTarget.linuxX64)
+                else -> {
+                    emptyList()
+                }
+            }.associateBy { it.preset }
+        }
+    }
+
+
+    internal var targets: Map<KotlinNativePreset, KScienceNativeTarget> = defaultNativeTargets()
+
 
     /**
      * Replace all targets
      */
     public fun setTargets(vararg target: KScienceNativeTarget) {
-        targets = target.associateByTo(mutableMapOf()) { it.preset }
+        targets = target.associateBy { it.preset }
     }
 
     /**
      * Add a native target
      */
     public fun target(target: KScienceNativeTarget) {
-        targets[target.preset] = target
+        targets += target.preset to target
     }
 
     public fun target(
@@ -441,51 +462,52 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         val nativeConfiguration = KScienceNativeConfiguration().apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
-                sourceSets {
-                    val nativeTargets: List<KotlinNativeTarget> =
-                        nativeConfiguration.targets.values.map { nativeTarget ->
-                            when (nativeTarget.preset) {
-                                KotlinNativePreset.linuxX64 -> linuxX64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                val nativeTargets: List<KotlinNativeTarget> =
+                    nativeConfiguration.targets.values.map { nativeTarget ->
+                        when (nativeTarget.preset) {
+                            KotlinNativePreset.linuxX64 -> linuxX64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.mingwX64 -> mingwX64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.mingwX64 -> mingwX64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.macosX64 -> macosX64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.macosX64 -> macosX64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.macosArm64 -> macosArm64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.macosArm64 -> macosArm64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.iosX64 -> iosX64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.iosX64 -> iosX64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.iosArm64 -> iosArm64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.iosArm64 -> iosArm64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
-                                KotlinNativePreset.iosSimulatorArm64 -> iosSimulatorArm64(
-                                    nativeTarget.targetName,
-                                    nativeTarget.targetConfiguration
-                                )
+                            KotlinNativePreset.iosSimulatorArm64 -> iosSimulatorArm64(
+                                nativeTarget.targetName,
+                                nativeTarget.targetConfiguration
+                            )
 
 //                                else -> {
 //                                    logger.error("Native preset ${nativeTarget.preset} not recognised.")
 //                                    null
 //                                }
-                            }
                         }
+                    }
+
+                sourceSets {
                     val commonMain by getting
                     val commonTest by getting
 
