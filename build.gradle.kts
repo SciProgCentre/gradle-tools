@@ -104,107 +104,116 @@ val javadocsJar by tasks.creating(Jar::class) {
     from(tasks.dokkaHtml)
 }
 
-afterEvaluate {
-    publishing {
-        val vcs = "https://github.com/mipt-npm/gradle-tools"
+val emptyJavadocJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    archiveBaseName.set("empty")
+    archiveClassifier.set("javadoc")
+}
 
-        // Process each publication we have in this project
-        publications {
-            create<MavenPublication>("catalog") {
-                from(components["versionCatalog"])
-                artifactId = "version-catalog"
 
-                pom {
-                    name.set("version-catalog")
-                }
+val emptySourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    archiveBaseName.set("empty")
+}
+
+publishing {
+    val vcs = "https://github.com/mipt-npm/gradle-tools"
+
+    // Process each publication we have in this project
+    publications {
+        create<MavenPublication>("catalog") {
+            from(components["versionCatalog"])
+            artifactId = "version-catalog"
+
+            pom {
+                name.set("version-catalog")
             }
+        }
 
-            withType<MavenPublication> {
-                artifact(sourcesJar)
-                artifact(javadocsJar)
+        withType<MavenPublication> {
+            // thanks @vladimirsitnikv for the fix
+            artifact(if (name == "catalog") emptySourcesJar else sourcesJar)
+            artifact(if (name == "catalog") emptyJavadocJar else javadocsJar)
 
-                pom {
-                    name.set(project.name)
-                    description.set(project.description)
+
+            pom {
+                name.set(project.name)
+                description.set(project.description)
+                url.set(vcs)
+
+                licenses {
+                    license {
+                        name.set("The Apache Software License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("MIPT-NPM")
+                        name.set("MIPT nuclear physics methods laboratory")
+                        organization.set("MIPT")
+                        organizationUrl.set("https://npm.mipt.ru")
+                    }
+                }
+
+                scm {
                     url.set(vcs)
-
-                    licenses {
-                        license {
-                            name.set("The Apache Software License, Version 2.0")
-                            url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                            distribution.set("repo")
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id.set("MIPT-NPM")
-                            name.set("MIPT nuclear physics methods laboratory")
-                            organization.set("MIPT")
-                            organizationUrl.set("https://npm.mipt.ru")
-                        }
-                    }
-
-                    scm {
-                        url.set(vcs)
-                        tag.set(project.version.toString())
-                    }
+                    tag.set(project.version.toString())
                 }
             }
         }
+    }
 
-        val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/maven"
-        val spaceUser: String? = findProperty("publishing.space.user") as? String
-        val spaceToken: String? = findProperty("publishing.space.token") as? String
+    val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/maven"
+    val spaceUser: String? = findProperty("publishing.space.user") as? String
+    val spaceToken: String? = findProperty("publishing.space.token") as? String
 
-        if (spaceUser != null && spaceToken != null) {
-            project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
+    if (spaceUser != null && spaceToken != null) {
+        project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
 
-            repositories.maven {
-                name = "space"
-                url = uri(spaceRepo)
+        repositories.maven {
+            name = "space"
+            url = uri(spaceRepo)
 
-                credentials {
-                    username = spaceUser
-                    password = spaceToken
-                }
+            credentials {
+                username = spaceUser
+                password = spaceToken
+            }
+        }
+    }
+
+    val sonatypeUser: String? = project.findProperty("publishing.sonatype.user") as? String
+    val sonatypePassword: String? = project.findProperty("publishing.sonatype.password") as? String
+
+    if (sonatypeUser != null && sonatypePassword != null) {
+        val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
+            "https://oss.sonatype.org/content/repositories/snapshots"
+        } else {
+            "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+        }
+
+        repositories.maven {
+            name = "sonatype"
+            url = uri(sonatypeRepo)
+
+            credentials {
+                username = sonatypeUser
+                password = sonatypePassword
             }
         }
 
-        val sonatypeUser: String? = project.findProperty("publishing.sonatype.user") as? String
-        val sonatypePassword: String? = project.findProperty("publishing.sonatype.password") as? String
-
-        if (sonatypeUser != null && sonatypePassword != null) {
-            val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
-                "https://oss.sonatype.org/content/repositories/snapshots"
-            } else {
-                "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            }
-
-            repositories.maven {
-                name = "sonatype"
-                url = uri(sonatypeRepo)
-
-                credentials {
-                    username = sonatypeUser
-                    password = sonatypePassword
-                }
-            }
-
-            if (plugins.findPlugin("signing") == null) {
-                apply<SigningPlugin>()
-            }
-
-            signing {
-                //useGpgCmd()
-                sign(publications)
-            }
+        signing {
+            //useGpgCmd()
+            sign(publications)
         }
     }
 }
 
-kotlin{
-    jvmToolchain{
+
+kotlin {
+    jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
 }
@@ -212,4 +221,9 @@ kotlin{
 tasks.processResources.configure {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from("gradle/libs.versions.toml")
+}
+
+// Workaround for https://github.com/gradle/gradle/issues/15568
+tasks.withType<AbstractPublishToMaven>().configureEach {
+    mustRunAfter(tasks.withType<Sign>())
 }

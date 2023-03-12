@@ -34,14 +34,12 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                     }
                 }
 
-                afterEvaluate {
-                    publications.create<MavenPublication>("js") {
-                        kotlin.targets.flatMap { it.components }.forEach {
-                            from(it)
-                        }
-
-                        artifact(sourcesJar)
+                publications.create<MavenPublication>("js") {
+                    kotlin.targets.flatMap { it.components }.forEach {
+                        from(it)
                     }
+
+                    artifact(sourcesJar)
                 }
 
             }
@@ -56,14 +54,12 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                     }
                 }
 
-                afterEvaluate {
-                    publications.create<MavenPublication>("jvm") {
-                        kotlin.target.components.forEach {
-                            from(it)
-                        }
-
-                        artifact(sourcesJar)
+                publications.create<MavenPublication>("jvm") {
+                    kotlin.target.components.forEach {
+                        from(it)
                     }
+
+                    artifact(sourcesJar)
                 }
             }
 

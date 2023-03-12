@@ -5,7 +5,9 @@ import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPom
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.kotlin.dsl.*
+import org.gradle.plugins.signing.Sign
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
@@ -107,6 +109,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 mavenCentral()
                 maven("https://repo.kotlin.link")
                 maven("https://maven.pkg.jetbrains.space/spc/p/sci/dev")
+            }
+
+            // Workaround for https://github.com/gradle/gradle/issues/15568
+            tasks.withType<AbstractPublishToMaven>().configureEach {
+                mustRunAfter(tasks.withType<Sign>())
             }
         }
 
