@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## 0.14.4-kotlin-1.8.20-RC - 2023-03-12
+
+### Added
 - Easier dependency handling in `kscience` block
 - Customizable base jdk version
 
@@ -14,17 +28,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MPP does not use JVM and JS(IR) targets anymore. They could be turned manually via `js()`, `jvm()` or `fullStack()`
 - Signing is not applied if signingId is not provided
 
-### Deprecated
-
 ### Removed
 - FX plugins
 - Unnecessary library shortcuts (html and datetime)
 - deploy/release tasks
 
 ### Fixed
+- Gradle 8 compatibility
+- Dokka publication
 - issues with test sourcesets
-
-### Security
 
 ## 0.13.4-kotlin-1.8.0 - 2022-12-31
 
