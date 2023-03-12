@@ -63,16 +63,8 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                 }
             }
 
-            val dokkaJar by tasks.creating(Jar::class) {
-                group = "documentation"
-                archiveClassifier.set("javadoc")
-                from(tasks.findByName("dokkaHtml"))
-            }
-
             // Process each publication we have in this project
             publications.withType<MavenPublication> {
-                artifact(dokkaJar)
-
                 pom {
                     name.set(project.name)
                     description.set(project.description ?: project.name)
@@ -82,6 +74,17 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                     }
 
                     mavenPomConfiguration()
+                }
+            }
+
+            plugins.withId("org.jetbrains.dokka") {
+                val dokkaJar by tasks.creating(Jar::class) {
+                    group = "documentation"
+                    archiveClassifier.set("javadoc")
+                    from(tasks.findByName("dokkaHtml"))
+                }
+                publications.withType<MavenPublication> {
+                    artifact(dokkaJar)
                 }
             }
 
