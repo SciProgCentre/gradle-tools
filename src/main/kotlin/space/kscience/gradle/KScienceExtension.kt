@@ -286,7 +286,7 @@ public data class KScienceNativeTarget(
         public val linuxX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.linuxX64)
         public val mingwX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.mingwX64)
         public val macosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
-        public val macosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
+        public val macosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosArm64)
         public val iosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosX64)
         public val iosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosArm64)
         public val iosSimulatorArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosSimulatorArm64)
