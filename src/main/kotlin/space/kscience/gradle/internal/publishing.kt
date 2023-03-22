@@ -116,22 +116,18 @@ internal fun Project.addGithubPublishing(
     githubOrg: String,
     githubProject: String,
 ) {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping github publishing because publishing is disabled")
-        return
-    }
-    if (requestPropertyOrNull("publishing.github") != "false") {
-        logger.info("Skipping github publishing  because `publishing.github != true`")
-        return
-    }
+    val githubUser: String? = requestPropertyOrNull("publishing.github.user")
+    val githubToken: String? = requestPropertyOrNull("publishing.github.token")
 
-    val githubUser: String = requestProperty("publishing.github.user")
-    val githubToken: String = requestProperty("publishing.github.token")
+    if (githubUser == null || githubToken == null) {
+        logger.info("Skipping Github publishing because Github credentials are not defined")
+        return
+    }
 
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                logger.info("Adding github publishing to project [${project.name}]")
+                logger.info("Adding Github publishing to project [${project.name}]")
 
                 repositories.maven {
                     name = "github"
@@ -148,23 +144,18 @@ internal fun Project.addGithubPublishing(
 }
 
 internal fun Project.addSpacePublishing(spaceRepo: String) {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping space publishing because publishing is disabled")
+    val spaceUser: String? = requestPropertyOrNull("publishing.space.user")
+    val spaceToken: String? = requestPropertyOrNull("publishing.space.token")
+
+    if (spaceUser == null || spaceToken == null) {
+        logger.info("Skipping Space publishing because Space credentials are not defined")
         return
     }
-
-    if (requestPropertyOrNull("publishing.space") == "false") {
-        logger.info("Skipping space publishing because `publishing.space == false`")
-        return
-    }
-
-    val spaceUser: String = requestProperty("publishing.space.user")
-    val spaceToken: String = requestProperty("publishing.space.token")
 
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
+                project.logger.info("Adding SPC Space publishing to project [${project.name}]")
 
                 repositories.maven {
                     name = "space"
@@ -181,23 +172,18 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
 }
 
 internal fun Project.addSonatypePublishing() {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping sonatype publishing because publishing is disabled")
-        return
-    }
-
     if (isInDevelopment) {
         logger.info("Sonatype publishing skipped for development version")
         return
     }
 
-    if (requestPropertyOrNull("publishing.sonatype") == "false") {
-        logger.info("Skipping sonatype publishing because `publishing.sonatype == false`")
+    val sonatypeUser: String? = requestPropertyOrNull("publishing.sonatype.user")
+    val sonatypePassword: String? = requestPropertyOrNull("publishing.sonatype.password")
+
+    if (sonatypeUser == null || sonatypePassword == null) {
+        logger.info("Skipping Sonatype publishing because Sonatype credentials are not defined")
         return
     }
-
-    val sonatypeUser: String = requestProperty("publishing.sonatype.user")
-    val sonatypePassword: String = requestProperty("publishing.sonatype.password")
 
     allprojects {
         plugins.withId("maven-publish") {

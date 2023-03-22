@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+- All publishing is enabled by default. Introduce `publishing.targets` variable to regulate what is added to the module.
 
 ### Deprecated
 

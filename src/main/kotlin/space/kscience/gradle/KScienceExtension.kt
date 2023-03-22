@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
 import space.kscience.gradle.internal.defaultKotlinJvmArgs
 import space.kscience.gradle.internal.fromJsDependencies
+import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
 
 public enum class DependencyConfiguration {
@@ -292,14 +293,30 @@ public data class KScienceNativeTarget(
     }
 }
 
-public class KScienceNativeConfiguration {
+public class KScienceNativeConfiguration(private val project: Project) {
 
 
     internal companion object {
-        private fun defaultNativeTargets(): Map<KotlinNativePreset, KScienceNativeTarget> {
-
+        private fun defaultNativeTargets(project: Project): Map<KotlinNativePreset, KScienceNativeTarget> {
             val hostOs = System.getProperty("os.name")
+
+            val targets = project.requestPropertyOrNull("publishing.targets")
+
             return when {
+                targets == "all" -> listOf(
+                    KScienceNativeTarget.linuxX64,
+                    KScienceNativeTarget.mingwX64,
+                    KScienceNativeTarget.macosX64,
+                    KScienceNativeTarget.macosArm64,
+                    KScienceNativeTarget.iosX64,
+                    KScienceNativeTarget.iosArm64,
+                    KScienceNativeTarget.iosSimulatorArm64,
+                )
+
+                targets != null -> {
+                    targets.split(",").map { KScienceNativeTarget(KotlinNativePreset.valueOf(it)) }
+                }
+
                 hostOs.startsWith("Windows") -> listOf(
                     KScienceNativeTarget.linuxX64,
                     KScienceNativeTarget.mingwX64
@@ -314,6 +331,7 @@ public class KScienceNativeConfiguration {
                 )
 
                 hostOs == "Linux" -> listOf(KScienceNativeTarget.linuxX64)
+
                 else -> {
                     emptyList()
                 }
@@ -322,7 +340,7 @@ public class KScienceNativeConfiguration {
     }
 
 
-    internal var targets: Map<KotlinNativePreset, KScienceNativeTarget> = defaultNativeTargets()
+    internal var targets: Map<KotlinNativePreset, KScienceNativeTarget> = defaultNativeTargets(project)
 
 
     /**
@@ -459,7 +477,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
      * Enable all supported native targets
      */
     public fun native(block: KScienceNativeConfiguration.() -> Unit = {}): Unit = with(project) {
-        val nativeConfiguration = KScienceNativeConfiguration().apply(block)
+        val nativeConfiguration = KScienceNativeConfiguration(this).apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
                 val nativeTargets: List<KotlinNativeTarget> =
