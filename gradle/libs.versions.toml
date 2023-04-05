@@ -38,7 +38,7 @@ kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", v
 
 kotlin-jupyter-gradle = { module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin", version.ref = "kotlin-jupyter" }
 
-kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:", version.ref = "jsBom" }
+kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "jsBom" }
 
 kotlinx-benchmark-runtime = { module = "org.jetbrains.kotlinx:kotlinx-benchmark-runtime", version.ref = "kotlinx-benchmark" }
 
