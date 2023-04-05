@@ -88,9 +88,9 @@ public class KSciencePublishingExtension(public val project: Project) {
      *
      * @param addToRelease  publish packages in the `release` task to the Sonatype repository.
      */
-    public fun sonatype() {
+    public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org") {
         require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
-        project.addSonatypePublishing()
+        project.addSonatypePublishing(sonatypeRoot)
     }
 }
 

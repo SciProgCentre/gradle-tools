@@ -171,7 +171,7 @@ internal fun Project.addSpacePublishing(spaceRepo: String) {
     }
 }
 
-internal fun Project.addSonatypePublishing() {
+internal fun Project.addSonatypePublishing(sonatypeRoot: String) {
     if (isInDevelopment) {
         logger.info("Sonatype publishing skipped for development version")
         return
@@ -189,7 +189,7 @@ internal fun Project.addSonatypePublishing() {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
                 repositories.maven {
-                    val sonatypeRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
+                    val sonatypeRepo = "$sonatypeRoot/service/local/staging/deploy/maven2"
                     name = "sonatype"
                     url = uri(sonatypeRepo)
 
