@@ -426,8 +426,23 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 wasm {
-                    browser()
+                    browser {
+                        testTask {
+                            useKarma {
+                                this.webpackConfig.experiments.add("topLevelAwait")
+                                useChromeHeadless()
+                                useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
+                            }
+                        }
+                    }
                     block()
+                }
+                sourceSets {
+                    getByName("wasmTest") {
+                        dependencies {
+                            implementation(kotlin("test"))
+                        }
+                    }
                 }
             }
         }
