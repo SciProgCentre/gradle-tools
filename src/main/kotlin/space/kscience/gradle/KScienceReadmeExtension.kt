@@ -88,12 +88,18 @@ public class KScienceReadmeExtension(public val project: Project) {
 
     public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
-    public val features: MutableList<Feature> = ArrayList()
+    public val features: MutableList<Feature> = mutableListOf()
 
+    /**
+     * A plain readme feature with description
+     */
     public fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
         features += Feature(id, description(), ref, name)
     }
 
+    /**
+     * A readme feature with HTML description
+     */
     public fun featureWithHtml(
         id: String,
         ref: String? = null,
