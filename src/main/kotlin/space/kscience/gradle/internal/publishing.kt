@@ -27,19 +27,10 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             plugins.withId("org.jetbrains.kotlin.js") {
                 val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
 
-                val sourcesJar by tasks.creating(Jar::class) {
-                    archiveClassifier.set("sources")
-                    kotlin.sourceSets.forEach {
-                        from(it.kotlin)
-                    }
-                }
-
                 publications.create<MavenPublication>("js") {
                     kotlin.targets.flatMap { it.components }.forEach {
                         from(it)
                     }
-
-                    artifact(sourcesJar)
                 }
 
             }

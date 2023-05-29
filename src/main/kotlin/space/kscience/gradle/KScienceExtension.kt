@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
@@ -208,6 +209,7 @@ public open class KScienceExtension(public val project: Project) {
     /**
      * Mark this module as an application module. JVM application should be enabled separately
      */
+    @Deprecated("Use platform-specific applications")
     public fun application() {
         project.extensions.findByType<KotlinProjectExtension>()?.apply {
             explicitApi = null
@@ -423,6 +425,11 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
 
     @OptIn(ExperimentalWasmDsl::class)
     public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
+        if(project.requestPropertyOrNull("kscience.wasm.disabled") == "true"){
+            project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
+            return
+        }
+
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 wasm {
@@ -474,8 +481,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         }
         jvm {
             val processResourcesTaskName =
-                compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME]
-                    .processResourcesTaskName
+                compilations[KotlinCompilation.MAIN_COMPILATION_NAME].processResourcesTaskName
 
             val jsBrowserDistribution = project.tasks.getByName("jsBrowserDistribution")
 
