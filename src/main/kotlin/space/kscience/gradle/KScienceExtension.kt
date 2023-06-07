@@ -437,7 +437,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                         testTask {
                             useKarma {
                                 this.webpackConfig.experiments.add("topLevelAwait")
-                                useChromeHeadless()
+                                useChromeHeadlessWasmGc()
                                 useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
                             }
                         }
