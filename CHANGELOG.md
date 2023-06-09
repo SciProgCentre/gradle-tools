@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Add development mode for fullstack.
 
 ### Changed
-- All publishing is enabled by default. Introduce `publishing.targets` variable to regulate what is added to the module.
+- All publishing targets are enabled by default. Introduce `publishing.targets` variable to regulate what is added to the module.
 
 ### Deprecated
 

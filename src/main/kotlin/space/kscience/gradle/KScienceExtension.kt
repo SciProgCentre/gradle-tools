@@ -425,7 +425,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
 
     @OptIn(ExperimentalWasmDsl::class)
     public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
-        if(project.requestPropertyOrNull("kscience.wasm.disabled") == "true"){
+        if (project.requestPropertyOrNull("kscience.wasm.disabled") == "true") {
             project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
             return
         }
@@ -465,6 +465,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
      */
     public fun fullStack(
         bundleName: String = "js/bundle.js",
+        development: Boolean = false,
         jvmConfig: KotlinJvmTarget.() -> Unit = {},
         jsConfig: KotlinJsTargetDsl.() -> Unit = {},
         browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
@@ -483,7 +484,10 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             val processResourcesTaskName =
                 compilations[KotlinCompilation.MAIN_COMPILATION_NAME].processResourcesTaskName
 
-            val jsBrowserDistribution = project.tasks.getByName("jsBrowserDistribution")
+
+            val jsBrowserDistribution = project.tasks.getByName(
+                if (development) "jsBrowserDevelopmentExecutableDistribution" else "jsBrowserDistribution"
+            )
 
             project.tasks.getByName<ProcessResources>(processResourcesTaskName) {
                 duplicatesStrategy = DuplicatesStrategy.WARN
