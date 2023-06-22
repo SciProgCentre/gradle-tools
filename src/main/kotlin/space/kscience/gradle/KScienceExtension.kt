@@ -561,13 +561,6 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
 
                     configure(nativeTargets) {
 
-                        //TODO remove after https://youtrack.jetbrains.com/issue/KT-58837
-                        compilations.configureEach {
-                            compilerOptions.configure {
-                                freeCompilerArgs.add("-Xpartial-linkage=disable")
-                            }
-                        }
-
                         compilations["main"]?.apply {
                             configure(kotlinSourceSets) {
                                 dependsOn(nativeMain)
