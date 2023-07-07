@@ -12,6 +12,9 @@ import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
+import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import space.kscience.gradle.internal.*
 
 /**
@@ -104,8 +107,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
 
-        allprojects{
-            repositories{
+        allprojects {
+            repositories {
                 mavenCentral()
                 maven("https://repo.kotlin.link")
                 maven("https://maven.pkg.jetbrains.space/spc/p/sci/dev")
@@ -250,9 +253,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        plugins.withType(org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin::class.java) {
-            rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().lockFileDirectory =
-                rootDir.resolve("gradle")
+        plugins.withType<YarnPlugin>() {
+            rootProject.configure<YarnRootExtension> {
+                lockFileDirectory = rootDir.resolve("gradle")
+                yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+            }
         }
     }
 
