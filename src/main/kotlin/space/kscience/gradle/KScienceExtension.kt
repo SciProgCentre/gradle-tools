@@ -1,5 +1,6 @@
 package space.kscience.gradle
 
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ApplicationPlugin
@@ -434,13 +435,13 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             project.configure<KotlinMultiplatformExtension> {
                 wasm {
                     browser {
-                        testTask {
+                        testTask(Action {
                             useKarma {
                                 this.webpackConfig.experiments.add("topLevelAwait")
                                 useChromeHeadlessWasmGc()
                                 useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
                             }
-                        }
+                        })
                     }
                     block()
                 }
@@ -473,9 +474,9 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         js {
             binaries.executable()
             browser {
-                webpackTask {
+                webpackTask(Action {
                     mainOutputFileName.set(bundleName)
-                }
+                })
                 browserConfig()
             }
             jsConfig()

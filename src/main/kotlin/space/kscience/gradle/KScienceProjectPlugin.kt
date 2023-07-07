@@ -142,7 +142,6 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
 
-            @Suppress("UNUSED_VARIABLE")
             val generateReadme by tasks.creating {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
