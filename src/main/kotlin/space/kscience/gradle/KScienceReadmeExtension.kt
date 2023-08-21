@@ -10,6 +10,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
+import org.intellij.lang.annotations.Language
 import java.io.File
 import java.io.StringWriter
 import kotlin.collections.component1
@@ -32,7 +33,8 @@ private fun Template.processToString(args: Map<String, Any?>): String {
 
 
 public class KScienceReadmeExtension(public val project: Project) {
-    public var description: String = project.description ?: ""
+    public var description: String? = null
+        get() = field ?: project.description
 
     public var maturity: Maturity = Maturity.EXPERIMENTAL
         set(value) {
@@ -93,7 +95,12 @@ public class KScienceReadmeExtension(public val project: Project) {
     /**
      * A plain readme feature with description
      */
-    public fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
+    public fun feature(
+        id: String,
+        @Language("File") ref: String? = null,
+        name: String = id,
+        description: () -> String,
+    ) {
         features += Feature(id, description(), ref, name)
     }
 
