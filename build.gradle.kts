@@ -117,7 +117,7 @@ val emptySourcesJar by tasks.creating(Jar::class) {
 }
 
 publishing {
-    val vcs = "https://github.com/mipt-npm/gradle-tools"
+    val vcs = "https://github.com/SciProgCentre/gradle-tools"
 
     // Process each publication we have in this project
     publications {
@@ -151,10 +151,10 @@ publishing {
 
                 developers {
                     developer {
-                        id.set("MIPT-NPM")
-                        name.set("MIPT nuclear physics methods laboratory")
-                        organization.set("MIPT")
-                        organizationUrl.set("https://npm.mipt.ru")
+                        id.set("SPC")
+                        name.set("Scientific Programming Centre")
+                        organization.set("SPC")
+                        organizationUrl.set("https://sciprog.center/")
                     }
                 }
 
@@ -166,20 +166,18 @@ publishing {
         }
     }
 
-    val spaceRepo = "https://maven.pkg.jetbrains.space/spc/p/sci/maven"
-    val spaceUser: String? = findProperty("publishing.space.user") as? String
-    val spaceToken: String? = findProperty("publishing.space.token") as? String
+    val spaceRepo = "https://maven.sciprog.center/kscience"
+    val spcUser: String? = findProperty("publishing.spc.user") as? String
+    val spcToken: String? = findProperty("publishing.spc.token") as? String
 
-    if (spaceUser != null && spaceToken != null) {
-        project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
-
+    if (spcUser != null && spcToken != null) {
         repositories.maven {
-            name = "space"
+            name = "spc"
             url = uri(spaceRepo)
 
             credentials {
-                username = spaceUser
-                password = spaceToken
+                username = spcUser
+                password = spcToken
             }
         }
     }
