@@ -46,7 +46,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                 }
 
                 publications.create<MavenPublication>("jvm") {
-                    kotlin.target.components.forEach {
+                    project.components.forEach {
                         from(it)
                     }
 
@@ -91,7 +91,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                         val signingKey: String = requestProperty("publishing.signing.key")
                         val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
 
-                        // if key is provided, use it
+                        // if a key is provided, use it
                         useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
                     } // else use agent signing
                     sign(publications)
@@ -103,30 +103,31 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
     }
 }
 
-internal fun Project.addGithubPublishing(
-    githubOrg: String,
-    githubProject: String,
-) {
-    val githubUser: String? = requestPropertyOrNull("publishing.github.user")
-    val githubToken: String? = requestPropertyOrNull("publishing.github.token")
+internal fun Project.addPublishing(
+    repositoryName: String,
+    urlString:String
+){
+    require(repositoryName.matches("\\w*".toRegex())){"Repository name must contain only letters or numbers"}
+    val user: String? = requestPropertyOrNull("publishing.$repositoryName.user")
+    val token: String? = requestPropertyOrNull("publishing.$repositoryName.token")
 
-    if (githubUser == null || githubToken == null) {
-        logger.info("Skipping Github publishing because Github credentials are not defined")
+    if (user == null || token == null) {
+        logger.info("Skipping $repositoryName publishing because $repositoryName credentials are not defined")
         return
     }
 
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                logger.info("Adding Github publishing to project [${project.name}]")
+                logger.info("Adding $repositoryName publishing to project [${project.name}]")
 
                 repositories.maven {
-                    name = "github"
-                    url = uri("https://maven.pkg.github.com/$githubOrg/$githubProject/")
+                    name = repositoryName
+                    url = uri(urlString)
 
                     credentials {
-                        username = githubUser
-                        password = githubToken
+                        username = user
+                        password = token
                     }
                 }
             }
@@ -134,62 +135,11 @@ internal fun Project.addGithubPublishing(
     }
 }
 
-internal fun Project.addSpacePublishing(spaceRepo: String) {
-    val spaceUser: String? = requestPropertyOrNull("publishing.space.user")
-    val spaceToken: String? = requestPropertyOrNull("publishing.space.token")
-
-    if (spaceUser == null || spaceToken == null) {
-        logger.info("Skipping Space publishing because Space credentials are not defined")
-        return
-    }
-
-    allprojects {
-        plugins.withId("maven-publish") {
-            configure<PublishingExtension> {
-                project.logger.info("Adding SPC Space publishing to project [${project.name}]")
-
-                repositories.maven {
-                    name = "space"
-                    url = uri(spaceRepo)
-
-                    credentials {
-                        username = spaceUser
-                        password = spaceToken
-                    }
-                }
-            }
-        }
-    }
-}
 
 internal fun Project.addSonatypePublishing(sonatypeRoot: String) {
     if (isInDevelopment) {
         logger.info("Sonatype publishing skipped for development version")
-        return
-    }
-
-    val sonatypeUser: String? = requestPropertyOrNull("publishing.sonatype.user")
-    val sonatypePassword: String? = requestPropertyOrNull("publishing.sonatype.password")
-
-    if (sonatypeUser == null || sonatypePassword == null) {
-        logger.info("Skipping Sonatype publishing because Sonatype credentials are not defined")
-        return
-    }
-
-    allprojects {
-        plugins.withId("maven-publish") {
-            configure<PublishingExtension> {
-                repositories.maven {
-                    val sonatypeRepo = "$sonatypeRoot/service/local/staging/deploy/maven2"
-                    name = "sonatype"
-                    url = uri(sonatypeRepo)
-
-                    credentials {
-                        username = sonatypeUser
-                        password = sonatypePassword
-                    }
-                }
-            }
-        }
+    } else {
+        addPublishing("sonatype", "$sonatypeRoot/service/local/staging/deploy/maven2")
     }
 }

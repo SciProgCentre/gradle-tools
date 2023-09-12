@@ -17,10 +17,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
-import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.*
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
@@ -108,7 +105,7 @@ public open class KScienceExtension(public val project: Project) {
             configure<KotlinMultiplatformExtension> {
                 sourceSets.findByName("commonMain")?.apply {
                     dependencies {
-                        api(platform("io.ktor:ktor-bom:$version"))
+                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
                     }
                 }
             }
@@ -117,7 +114,7 @@ public open class KScienceExtension(public val project: Project) {
             configure<KotlinJvmProjectExtension> {
                 sourceSets.findByName("main")?.apply {
                     dependencies {
-                        api(platform("io.ktor:ktor-bom:$version"))
+                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
                     }
                 }
             }
@@ -126,7 +123,7 @@ public open class KScienceExtension(public val project: Project) {
             configure<KotlinJsProjectExtension> {
                 sourceSets.findByName("main")?.apply {
                     dependencies {
-                        api(platform("io.ktor:ktor-bom:$version"))
+                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
                     }
                 }
             }
@@ -235,7 +232,7 @@ public open class KScienceExtension(public val project: Project) {
                 binaries.executable()
             }
 
-            targets.withType<KotlinWasmTargetDsl> {
+            targets.withType<KotlinWasmJsTargetDsl> {
                 binaries.executable()
             }
         }
@@ -265,8 +262,8 @@ public open class KScienceExtension(public val project: Project) {
     public val jsTest: DefaultSourceSet get() = DefaultSourceSet("jsTest")
     public val nativeMain: DefaultSourceSet get() = DefaultSourceSet("nativeMain")
     public val nativeTest: DefaultSourceSet get() = DefaultSourceSet("nativeTest")
-    public val wasmMain: DefaultSourceSet get() = DefaultSourceSet("wasmMain")
-    public val wasmTest: DefaultSourceSet get() = DefaultSourceSet("wasmTest")
+    public val wasmJsMain: DefaultSourceSet get() = DefaultSourceSet("wasmJsMain")
+    public val wasmJsTest: DefaultSourceSet get() = DefaultSourceSet("wasmJsTest")
 
 }
 
@@ -426,27 +423,27 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
 
     @OptIn(ExperimentalWasmDsl::class)
     public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
-        if (project.requestPropertyOrNull("kscience.wasm.disabled") == "true") {
-            project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
-            return
-        }
+//        if (project.requestPropertyOrNull("kscience.wasm.disabled") == "true") {
+//            project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
+//            return
+//        }
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                wasm {
+                wasmJs {
                     browser {
-                        testTask(Action {
+                        testTask {
                             useKarma {
                                 this.webpackConfig.experiments.add("topLevelAwait")
                                 useChromeHeadlessWasmGc()
                                 useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
                             }
-                        })
+                        }
                     }
                     block()
                 }
                 sourceSets {
-                    getByName("wasmTest") {
+                    getByName("wasmJsTest") {
                         dependencies {
                             implementation(kotlin("test"))
                         }

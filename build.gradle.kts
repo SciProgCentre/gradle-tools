@@ -76,12 +76,12 @@ gradlePlugin {
 
 tasks.create("version") {
     group = "publishing"
-    val versionFile = project.buildDir.resolve("project-version.txt")
-    outputs.file(versionFile)
+    val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
+    outputs.file(versionFileProvider)
     doLast {
+        val versionFile = versionFileProvider.get().asFile
         versionFile.createNewFile()
         versionFile.writeText(project.version.toString())
-        println(project.version)
     }
 }
 

@@ -15,7 +15,9 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
-import space.kscience.gradle.internal.*
+import space.kscience.gradle.internal.addPublishing
+import space.kscience.gradle.internal.addSonatypePublishing
+import space.kscience.gradle.internal.setupPublication
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
@@ -54,42 +56,20 @@ public class KSciencePublishingExtension(public val project: Project) {
     }
 
     /**
-     * Adds GitHub as VCS and adds GitHub Packages Maven repository to publishing.
-     *
-     * @param githubProject the GitHub project.
-     * @param githubOrg the GitHub user or organization.
-     * @param deploy publish packages in the `deploy` task to the GitHub repository.
+     * Add a repository with [repositoryName]. Uses "publishing.$repositoryName.user" and "publishing.$repositoryName.token"
+     * properties pattern to store user and token
      */
-    public fun github(
-        githubOrg: String,
-        githubProject: String,
-        deploy: Boolean = project.requestPropertyOrNull("publishing.github") == "true",
+    public fun repository(
+        repositoryName: String,
+        url: String,
     ) {
-        if (deploy) {
-            try {
-                project.addGithubPublishing(githubOrg, githubProject)
-            } catch (t: Throwable) {
-                project.logger.error("Failed to set up github publication", t)
-            }
-        }
-    }
-
-    /**
-     * Adds Space Packages Maven repository to publishing.
-     *
-     * @param spaceRepo the repository URL.
-     * @param deploy publish packages in the `deploy` task to the Space repository.
-     */
-    public fun space(
-        spaceRepo: String,
-    ) {
-        project.addSpacePublishing(spaceRepo)
+        require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
+        project.addPublishing(repositoryName, url)
     }
 
     /**
      * Adds Sonatype Maven repository to publishing.
-     *
-     * @param addToRelease  publish packages in the `release` task to the Sonatype repository.
+
      */
     public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org") {
         require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
@@ -142,7 +122,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
 
-            val generateReadme by tasks.creating {
+            tasks.create("generateReadme") {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
@@ -236,12 +216,12 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
         tasks.create("version") {
             group = "publishing"
-            val versionFile = project.buildDir.resolve("project-version.txt")
-            outputs.file(versionFile)
+            val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
+            outputs.file(versionFileProvider)
             doLast {
+                val versionFile = versionFileProvider.get().asFile
                 versionFile.createNewFile()
                 versionFile.writeText(project.version.toString())
-                println(project.version)
             }
         }
 
