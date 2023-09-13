@@ -373,8 +373,8 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
                     compilations.all {
-                        kotlinOptions {
-                            freeCompilerArgs = freeCompilerArgs + defaultKotlinJvmArgs
+                        compilerOptions {
+                            freeCompilerArgs.addAll(defaultKotlinJvmArgs)
                         }
                     }
                     block()
@@ -503,44 +503,44 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         val nativeConfiguration = KScienceNativeConfiguration(this).apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
-                    nativeConfiguration.targets.values.forEach { nativeTarget ->
-                        when (nativeTarget.preset) {
-                            KotlinNativePreset.linuxX64 -> linuxX64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                nativeConfiguration.targets.values.forEach { nativeTarget ->
+                    when (nativeTarget.preset) {
+                        KotlinNativePreset.linuxX64 -> linuxX64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.mingwX64 -> mingwX64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                        KotlinNativePreset.mingwX64 -> mingwX64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.macosX64 -> macosX64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                        KotlinNativePreset.macosX64 -> macosX64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.macosArm64 -> macosArm64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                        KotlinNativePreset.macosArm64 -> macosArm64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.iosX64 -> iosX64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                        KotlinNativePreset.iosX64 -> iosX64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.iosArm64 -> iosArm64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
+                        KotlinNativePreset.iosArm64 -> iosArm64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
 
-                            KotlinNativePreset.iosSimulatorArm64 -> iosSimulatorArm64(
-                                nativeTarget.targetName,
-                                nativeTarget.targetConfiguration
-                            )
-                        }
+                        KotlinNativePreset.iosSimulatorArm64 -> iosSimulatorArm64(
+                            nativeTarget.targetName,
+                            nativeTarget.targetConfiguration
+                        )
                     }
+                }
 
             }
         }

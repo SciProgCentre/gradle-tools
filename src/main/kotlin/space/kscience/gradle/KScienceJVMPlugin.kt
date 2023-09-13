@@ -10,12 +10,13 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import space.kscience.gradle.internal.applySettings
 import space.kscience.gradle.internal.defaultKotlinJvmArgs
 
 public open class KScienceJVMPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
+
+        logger.warn("KSCience JVM plugin is deprecated. Use MPP.")
         if (!plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
             plugins.apply("org.jetbrains.kotlin.jvm")
         } else {
@@ -27,6 +28,9 @@ public open class KScienceJVMPlugin : Plugin<Project> {
         configure<KotlinJvmProjectExtension> {
             sourceSets.all {
                 languageSettings.applySettings()
+                compilerOptions{
+                    freeCompilerArgs.addAll(defaultKotlinJvmArgs)
+                }
             }
 
             sourceSets["test"].apply {
@@ -39,12 +43,6 @@ public open class KScienceJVMPlugin : Plugin<Project> {
             if (explicitApi == null) explicitApiWarning()
             jvmToolchain {
                 languageVersion.set(extension.jdkVersionProperty.map { JavaLanguageVersion.of(it) })
-            }
-        }
-
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                freeCompilerArgs = freeCompilerArgs + defaultKotlinJvmArgs
             }
         }
 

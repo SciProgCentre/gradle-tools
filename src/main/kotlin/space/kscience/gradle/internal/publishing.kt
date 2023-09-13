@@ -8,9 +8,7 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import space.kscience.gradle.isInDevelopment
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
@@ -24,17 +22,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
     plugins.withId("maven-publish") {
         configure<PublishingExtension> {
 
-            plugins.withId("org.jetbrains.kotlin.js") {
-                val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
-
-                publications.create<MavenPublication>("js") {
-                    kotlin.targets.flatMap { it.components }.forEach {
-                        from(it)
-                    }
-                }
-
-            }
-
             plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
@@ -46,9 +33,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                 }
 
                 publications.create<MavenPublication>("jvm") {
-                    project.components.forEach {
-                        from(it)
-                    }
+                    from(project.components["java"])
 
                     artifact(sourcesJar)
                 }

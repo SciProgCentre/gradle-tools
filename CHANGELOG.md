@@ -15,8 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All publishing targets are enabled by default. Introduce `publishing.targets` variable to regulate what is added to the module.
 
 ### Deprecated
+- JVM plugin in favor of Mpp.
 
 ### Removed
+- JS plugin. It is deprecated in favor of MPP.
 - Unnecessary `dependsOn` for native dependencies. 
 - Groovy gradle dependency notation.
 

@@ -65,12 +65,6 @@ gradlePlugin {
             description = "Pre-configured JVM project"
             implementationClass = "space.kscience.gradle.KScienceJVMPlugin"
         }
-
-        create("js") {
-            id = "space.kscience.gradle.js"
-            description = "Pre-configured JS project"
-            implementationClass = "space.kscience.gradle.KScienceJSPlugin"
-        }
     }
 }
 
