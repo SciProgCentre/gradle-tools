@@ -503,8 +503,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         val nativeConfiguration = KScienceNativeConfiguration(this).apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
-                val nativeTargets: List<KotlinNativeTarget> =
-                    nativeConfiguration.targets.values.map { nativeTarget ->
+                    nativeConfiguration.targets.values.forEach { nativeTarget ->
                         when (nativeTarget.preset) {
                             KotlinNativePreset.linuxX64 -> linuxX64(
                                 nativeTarget.targetName,
@@ -540,42 +539,9 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                                 nativeTarget.targetName,
                                 nativeTarget.targetConfiguration
                             )
-
-//                                else -> {
-//                                    logger.error("Native preset ${nativeTarget.preset} not recognised.")
-//                                    null
-//                                }
                         }
                     }
 
-                sourceSets {
-                    val commonMain by getting
-                    val commonTest by getting
-
-                    val nativeMain by creating {
-                        dependsOn(commonMain)
-                    }
-
-                    val nativeTest by creating {
-                        //should NOT depend on nativeMain because automatic dependency by plugin
-                        dependsOn(commonTest)
-                    }
-
-                    configure(nativeTargets) {
-
-                        compilations["main"]?.apply {
-                            configure(kotlinSourceSets) {
-                                dependsOn(nativeMain)
-                            }
-                        }
-
-                        compilations["test"]?.apply {
-                            configure(kotlinSourceSets) {
-                                dependsOn(nativeTest)
-                            }
-                        }
-                    }
-                }
             }
         }
     }

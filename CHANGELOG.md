@@ -10,11 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add development mode for fullstack.
 
 ### Changed
+- Kotlin 1.9.20
+- Remove publishing defaults for Space and GitHub. Now publishing repositories is configured quasi-manually. Property keys for username and tokens are generated automatically.
 - All publishing targets are enabled by default. Introduce `publishing.targets` variable to regulate what is added to the module.
 
 ### Deprecated
 
 ### Removed
+- Unnecessary `dependsOn` for native dependencies. 
 - Groovy gradle dependency notation.
 
 ### Fixed
