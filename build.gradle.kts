@@ -25,6 +25,7 @@ kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
+    api("org.gradle.toolchains:foojay-resolver:0.7.0")
     implementation(libs.binary.compatibility.validator)
     implementation(libs.changelog.gradle)
     implementation(libs.dokka.gradle)

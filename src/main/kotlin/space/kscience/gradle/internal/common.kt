@@ -13,6 +13,10 @@ internal val defaultKotlinJvmArgs: List<String> = listOf(
     /* "-Xjdk-release=${KScienceVersions.JVM_TARGET}"*/
 )
 
+internal val defaultKotlinCommonArgs: List<String> = listOf(
+    "-Xexpect-actual-classes"
+)
+
 internal fun resolveKotlinVersion(): KotlinVersion {
     val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
     return KotlinVersion(major.toInt(), minor.toInt(), patch.toInt())

@@ -1,6 +1,5 @@
 package space.kscience.gradle
 
-import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ApplicationPlugin
@@ -17,7 +16,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-import org.jetbrains.kotlin.gradle.targets.js.dsl.*
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
@@ -179,13 +181,6 @@ public open class KScienceExtension(public val project: Project) {
             }
         }
 
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            project.configure<KotlinJsProjectExtension> {
-                sourceSets.getByName(sourceSet ?: "test") {
-                    dependencies(dependencyBlock)
-                }
-            }
-        }
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
@@ -373,7 +368,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
                     compilations.all {
-                        compilerOptions {
+                        compilerOptions.configure {
                             freeCompilerArgs.addAll(defaultKotlinJvmArgs)
                         }
                     }
@@ -421,8 +416,11 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         }
     }
 
+    /**
+     * Add Wasm/Js target
+     */
     @OptIn(ExperimentalWasmDsl::class)
-    public fun wasm(block: KotlinWasmTargetDsl.() -> Unit = {}) {
+    public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
 //        if (project.requestPropertyOrNull("kscience.wasm.disabled") == "true") {
 //            project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
 //            return
@@ -434,7 +432,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     browser {
                         testTask {
                             useKarma {
-                                this.webpackConfig.experiments.add("topLevelAwait")
+                                webpackConfig.experiments.add("topLevelAwait")
                                 useChromeHeadlessWasmGc()
                                 useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
                             }
@@ -469,14 +467,14 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
     ) {
         js {
-            binaries.executable()
             browser {
-                webpackTask(Action {
+                webpackTask {
                     mainOutputFileName.set(bundleName)
-                })
+                }
                 browserConfig()
             }
             jsConfig()
+            binaries.executable()
         }
         jvm {
             val processResourcesTaskName =

@@ -10,6 +10,7 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 import space.kscience.gradle.internal.applySettings
+import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
 public open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
@@ -23,23 +24,29 @@ public open class KScienceMPPlugin : Plugin<Project> {
         registerKScienceExtension(::KScienceMppExtension)
 
         configure<KotlinMultiplatformExtension> {
-
             sourceSets {
-                getByName("commonMain"){
+                getByName("commonMain") {
                     dependencies {
                         api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
                     }
                 }
-                getByName("commonTest"){
+                getByName("commonTest") {
                     dependencies {
                         implementation(kotlin("test-common"))
                         implementation(kotlin("test-annotations-common"))
                     }
                 }
+                all {
+                    languageSettings.applySettings()
+                }
             }
 
-            sourceSets.all {
-                languageSettings.applySettings()
+            targets.all {
+                compilations.all {
+                    kotlinOptions{
+                        freeCompilerArgs += defaultKotlinCommonArgs
+                    }
+                }
             }
 
             if (explicitApi == null) explicitApiWarning()
