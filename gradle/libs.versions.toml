@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.0-kotlin-1.9.20-RC"
-kotlin = "1.9.20-RC"
+tools = "0.15.0-kotlin-1.9.20-RC2"
+kotlin = "1.9.20-RC2"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.22.0"
 # https://github.com/Kotlin/binary-compatibility-validator
@@ -8,9 +8,9 @@ binary-compatibility-validator = "0.13.2"
 # https://github.com/JetBrains/gradle-changelog-plugin
 changelog = "2.2.0"
 # https://github.com/Kotlin/dokka
-dokka = "1.9.0"
+dokka = "1.9.10"
 # https://github.com/Kotlin/kotlin-jupyter
-kotlin-jupyter = "0.12.0-56"
+kotlin-jupyter = "0.12.0-78"
 # https://github.com/Kotlin/kotlinx-benchmark
 kotlinx-benchmark = "0.4.9"
 # https://github.com/Kotlin/kotlinx-cli
@@ -28,7 +28,7 @@ kotlinx-nodejs = "0.0.7"
 # https://github.com/Kotlin/kotlinx.serialization
 kotlinx-serialization = "1.6.0"
 # https://ktor.io/
-ktor = "2.3.4"
+ktor = "2.3.5"
 # https://github.com/pdvrieze/xmlutil
 xmlutil = "0.86.1"
 # https://github.com/Him188/yamlkt
@@ -37,7 +37,7 @@ yamlkt = "0.13.0"
 jsBom = "1.0.0-pre.624"
 junit = "5.9.3"
 # https://github.com/JetBrains/compose-multiplatform
-compose = "1.5.1"
+compose = "1.5.3"
 # https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "2.0.9"
 # https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
