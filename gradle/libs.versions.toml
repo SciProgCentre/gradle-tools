@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.0-kotlin-1.9.20-RC2"
-kotlin = "1.9.20-RC2"
+tools = "0.15.0-kotlin-1.9.20"
+kotlin = "1.9.20"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.22.0"
 # https://github.com/Kotlin/binary-compatibility-validator
@@ -10,7 +10,7 @@ changelog = "2.2.0"
 # https://github.com/Kotlin/dokka
 dokka = "1.9.10"
 # https://github.com/Kotlin/kotlin-jupyter
-kotlin-jupyter = "0.12.0-78"
+kotlin-jupyter = "0.12.0-81"
 # https://github.com/Kotlin/kotlinx-benchmark
 kotlinx-benchmark = "0.4.9"
 # https://github.com/Kotlin/kotlinx-cli

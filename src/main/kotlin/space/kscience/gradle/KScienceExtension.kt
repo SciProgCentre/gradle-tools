@@ -432,9 +432,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     browser {
                         testTask {
                             useKarma {
-                                webpackConfig.experiments.add("topLevelAwait")
-                                useChromeHeadlessWasmGc()
-                                useConfigDirectory(project.projectDir.resolve("karma.config.d").resolve("wasm"))
+                                useChromeCanaryHeadless()
                             }
                         }
                     }
@@ -443,7 +441,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                 sourceSets {
                     getByName("wasmJsTest") {
                         dependencies {
-                            implementation(kotlin("test"))
+                            implementation(kotlin("test-wasm-js"))
                         }
                     }
                 }
