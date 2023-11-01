@@ -432,7 +432,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                     browser {
                         testTask {
                             useKarma {
-                                useChromeCanaryHeadless()
+                                useChromeHeadless()
                             }
                         }
                     }
