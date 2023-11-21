@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.0-kotlin-1.9.20"
-kotlin = "1.9.20"
+tools = "0.15.0-kotlin-2.0.0-Beta1"
+kotlin = "2.0.0-Beta1"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.22.0"
 # https://github.com/Kotlin/binary-compatibility-validator
@@ -37,7 +37,7 @@ yamlkt = "0.13.0"
 jsBom = "1.0.0-pre.624"
 junit = "5.9.3"
 # https://github.com/JetBrains/compose-multiplatform
-compose = "1.5.3"
+compose = "1.5.10"
 # https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "2.0.9"
 # https://mvnrepository.com/artifact/ch.qos.logback/logback-classic

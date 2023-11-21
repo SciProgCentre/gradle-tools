@@ -4,17 +4,15 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.hasPlugin
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinMultiplatformPlugin
 import space.kscience.gradle.internal.applySettings
 import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
 public open class KScienceMPPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
-        if (!plugins.hasPlugin(KotlinMultiplatformPlugin::class)) {
+        if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
             //apply<KotlinMultiplatformPlugin>() for some reason it does not work
             plugins.apply("org.jetbrains.kotlin.multiplatform")
         } else {
