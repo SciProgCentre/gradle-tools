@@ -155,14 +155,6 @@ public open class KScienceExtension(public val project: Project) {
             }
         }
 
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            project.configure<KotlinJsProjectExtension> {
-                sourceSets.getByName(sourceSet ?: "main") {
-                    dependencies(dependencyBlock)
-                }
-            }
-        }
-
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 sourceSets.getByName(sourceSet ?: "commonMain") {
@@ -537,7 +529,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                         )
                     }
                 }
-
+                applyDefaultHierarchyTemplate()
             }
         }
     }

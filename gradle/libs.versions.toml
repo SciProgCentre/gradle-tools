@@ -1,8 +1,8 @@
 [versions]
-tools = "0.15.1-kotlin-1.9.21"
+tools = "0.15.2-kotlin-1.9.21"
 kotlin = "1.9.21"
 # https://github.com/Kotlin/kotlinx-atomicfu
-atomicfu = "0.22.0"
+atomicfu = "0.23.1"
 # https://github.com/Kotlin/binary-compatibility-validator
 binary-compatibility-validator = "0.13.2"
 # https://github.com/JetBrains/gradle-changelog-plugin
@@ -16,7 +16,7 @@ kotlinx-benchmark = "0.4.9"
 # https://github.com/Kotlin/kotlinx-cli
 kotlinx-cli = "0.3.6"
 # https://github.com/Kotlin/kotlinx.coroutines
-kotlinx-coroutines = "1.7.3"
+kotlinx-coroutines = "1.8.0-RC"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.4.1"
 # https://github.com/Kotlin/kotlinx.html
@@ -26,7 +26,7 @@ kotlinx-knit = "0.4.0"
 # https://github.com/Kotlin/kotlinx-nodejs
 kotlinx-nodejs = "0.0.7"
 # https://github.com/Kotlin/kotlinx.serialization
-kotlinx-serialization = "1.6.1"
+kotlinx-serialization = "1.6.2"
 # https://ktor.io/
 ktor = "2.3.6"
 # https://github.com/pdvrieze/xmlutil
@@ -110,7 +110,10 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+
+ktor = {id = "io.ktor.plugin", version.ref = "ktor"}
 
 gradle-common = { id = "space.kscience.gradle.common", version.ref = "tools" }
 gradle-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
