@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.2-kotlin-2.0.0-Beta1"
-kotlin = "2.0.0-Beta1"
+tools = "0.15.2-kotlin-2.0.0-Beta2"
+kotlin = "2.0.0-Beta2"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.23.1"
 # https://github.com/Kotlin/binary-compatibility-validator
