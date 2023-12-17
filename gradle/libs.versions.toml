@@ -1,8 +1,8 @@
 [versions]
-tools = "0.15.0-kotlin-2.0.0-Beta1"
+tools = "0.15.2-kotlin-2.0.0-Beta1"
 kotlin = "2.0.0-Beta1"
 # https://github.com/Kotlin/kotlinx-atomicfu
-atomicfu = "0.22.0"
+atomicfu = "0.23.1"
 # https://github.com/Kotlin/binary-compatibility-validator
 binary-compatibility-validator = "0.13.2"
 # https://github.com/JetBrains/gradle-changelog-plugin
@@ -10,13 +10,13 @@ changelog = "2.2.0"
 # https://github.com/Kotlin/dokka
 dokka = "1.9.10"
 # https://github.com/Kotlin/kotlin-jupyter
-kotlin-jupyter = "0.12.0-81"
+kotlin-jupyter = "0.12.0-93"
 # https://github.com/Kotlin/kotlinx-benchmark
 kotlinx-benchmark = "0.4.9"
 # https://github.com/Kotlin/kotlinx-cli
 kotlinx-cli = "0.3.6"
 # https://github.com/Kotlin/kotlinx.coroutines
-kotlinx-coroutines = "1.7.3"
+kotlinx-coroutines = "1.8.0-RC"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.4.1"
 # https://github.com/Kotlin/kotlinx.html
@@ -26,18 +26,18 @@ kotlinx-knit = "0.4.0"
 # https://github.com/Kotlin/kotlinx-nodejs
 kotlinx-nodejs = "0.0.7"
 # https://github.com/Kotlin/kotlinx.serialization
-kotlinx-serialization = "1.6.0"
+kotlinx-serialization = "1.6.2"
 # https://ktor.io/
-ktor = "2.3.5"
+ktor = "2.3.6"
 # https://github.com/pdvrieze/xmlutil
-xmlutil = "0.86.1"
+xmlutil = "0.86.2"
 # https://github.com/Him188/yamlkt
 yamlkt = "0.13.0"
 # https://github.com/JetBrains/kotlin-wrappers
-jsBom = "1.0.0-pre.624"
+jsBom = "1.0.0-pre.648"
 junit = "5.9.3"
 # https://github.com/JetBrains/compose-multiplatform
-compose = "1.5.10"
+compose = "1.5.11"
 # https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "2.0.9"
 # https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
@@ -110,7 +110,10 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+
+ktor = {id = "io.ktor.plugin", version.ref = "ktor"}
 
 gradle-common = { id = "space.kscience.gradle.common", version.ref = "tools" }
 gradle-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
