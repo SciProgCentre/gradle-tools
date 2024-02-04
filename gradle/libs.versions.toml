@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.2-kotlin-1.9.21"
-kotlin = "1.9.21"
+tools = "0.15.2-kotlin-1.9.22"
+kotlin = "1.9.22"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.23.1"
 # https://github.com/Kotlin/binary-compatibility-validator
@@ -12,15 +12,15 @@ dokka = "1.9.10"
 # https://github.com/Kotlin/kotlin-jupyter
 kotlin-jupyter = "0.12.0-93"
 # https://github.com/Kotlin/kotlinx-benchmark
-kotlinx-benchmark = "0.4.9"
+kotlinx-benchmark = "0.4.10"
 # https://github.com/Kotlin/kotlinx-cli
 kotlinx-cli = "0.3.6"
 # https://github.com/Kotlin/kotlinx.coroutines
-kotlinx-coroutines = "1.8.0-RC"
+kotlinx-coroutines = "1.8.0-RC2"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.4.1"
 # https://github.com/Kotlin/kotlinx.html
-kotlinx-html = "0.9.1"
+kotlinx-html = "0.11.0"
 # https://github.com/Kotlin/kotlinx-knit
 kotlinx-knit = "0.4.0"
 # https://github.com/Kotlin/kotlinx-nodejs
@@ -28,16 +28,16 @@ kotlinx-nodejs = "0.0.7"
 # https://github.com/Kotlin/kotlinx.serialization
 kotlinx-serialization = "1.6.2"
 # https://ktor.io/
-ktor = "2.3.6"
+ktor = "2.3.8"
 # https://github.com/pdvrieze/xmlutil
 xmlutil = "0.86.2"
 # https://github.com/Him188/yamlkt
 yamlkt = "0.13.0"
 # https://github.com/JetBrains/kotlin-wrappers
-jsBom = "1.0.0-pre.648"
+jsBom = "1.0.0-pre.693"
 junit = "5.9.3"
 # https://github.com/JetBrains/compose-multiplatform
-compose = "1.5.11"
+compose = "1.5.12"
 # https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "2.0.9"
 # https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
