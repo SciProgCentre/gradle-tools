@@ -392,6 +392,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
             project.configure<KotlinMultiplatformExtension> {
                 js(IR) {
                     browser()
+                    useEsModules()
                     block()
                 }
                 sourceSets {
@@ -463,6 +464,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
                 }
                 browserConfig()
             }
+            useEsModules()
             jsConfig()
             binaries.executable()
         }

@@ -1,5 +1,5 @@
 [versions]
-tools = "0.15.2-kotlin-1.9.22"
+tools = "0.16.0-kotlin-1.9.22"
 kotlin = "1.9.22"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.23.1"
