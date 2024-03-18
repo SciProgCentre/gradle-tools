@@ -1,6 +1,6 @@
 [versions]
-tools = "0.15.2-kotlin-2.0.0-Beta2"
-kotlin = "2.0.0-Beta2"
+tools = "0.15.2-kotlin-2.0.0-Beta4"
+kotlin = "2.0.0-Beta4"
 # https://github.com/Kotlin/kotlinx-atomicfu
 atomicfu = "0.23.1"
 # https://github.com/Kotlin/binary-compatibility-validator
@@ -16,7 +16,7 @@ kotlinx-benchmark = "0.4.9"
 # https://github.com/Kotlin/kotlinx-cli
 kotlinx-cli = "0.3.6"
 # https://github.com/Kotlin/kotlinx.coroutines
-kotlinx-coroutines = "1.8.0-RC"
+kotlinx-coroutines = "1.8.0"
 # https://github.com/Kotlin/kotlinx-datetime
 kotlinx-datetime = "0.4.1"
 # https://github.com/Kotlin/kotlinx.html
