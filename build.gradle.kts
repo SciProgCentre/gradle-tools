@@ -25,18 +25,18 @@ kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
-    api("org.gradle.toolchains:foojay-resolver:0.7.0")
+    api("org.gradle.toolchains:foojay-resolver:0.8.0")
     implementation(libs.binary.compatibility.validator)
     implementation(libs.changelog.gradle)
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
-    implementation("org.tomlj:tomlj:1.1.0")
+    implementation("org.tomlj:tomlj:1.1.1")
 //    // nexus publishing plugin
 //    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 
-    implementation("org.freemarker:freemarker:2.3.31")
+    implementation("org.freemarker:freemarker:2.3.32")
 
     testImplementation(kotlin("test"))
 }

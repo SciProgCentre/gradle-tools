@@ -39,12 +39,8 @@ public open class KScienceMPPlugin : Plugin<Project> {
                 }
             }
 
-            targets.all {
-                compilations.all {
-                    kotlinOptions{
-                        freeCompilerArgs += defaultKotlinCommonArgs
-                    }
-                }
+            compilerOptions{
+                freeCompilerArgs.addAll(defaultKotlinCommonArgs)
             }
 
             if (explicitApi == null) explicitApiWarning()
