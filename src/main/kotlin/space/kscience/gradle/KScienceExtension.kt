@@ -9,6 +9,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -359,6 +360,7 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
+                    @OptIn(ExperimentalKotlinGradlePluginApi::class)
                     compilerOptions{
                         freeCompilerArgs.addAll(defaultKotlinJvmArgs)
                     }

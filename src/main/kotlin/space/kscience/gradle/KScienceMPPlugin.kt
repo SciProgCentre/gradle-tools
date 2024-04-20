@@ -6,11 +6,13 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.internal.applySettings
 import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
 public open class KScienceMPPlugin : Plugin<Project> {
+
     override fun apply(project: Project): Unit = project.run {
         if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
             //apply<KotlinMultiplatformPlugin>() for some reason it does not work
@@ -38,7 +40,7 @@ public open class KScienceMPPlugin : Plugin<Project> {
                     languageSettings.applySettings()
                 }
             }
-
+            @OptIn(ExperimentalKotlinGradlePluginApi::class)
             compilerOptions{
                 freeCompilerArgs.addAll(defaultKotlinCommonArgs)
             }

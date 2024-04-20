@@ -72,10 +72,10 @@ xmlutil = "0.86.2"
 # https://github.com/Him188/yamlkt
 yamlkt = "0.13.0"
 # https://github.com/JetBrains/kotlin-wrappers
-jsBom = "1.0.0-pre.648"
+jsBom = "1.0.0-pre.732"
 junit = "5.9.3"
 # https://github.com/JetBrains/compose-multiplatform
-compose = "1.6.10-beta01"
+compose = "1.6.2"
 # https://mvnrepository.com/artifact/org.slf4j/slf4j-api
 slf4j = "2.0.9"
 # https://mvnrepository.com/artifact/ch.qos.logback/logback-classic

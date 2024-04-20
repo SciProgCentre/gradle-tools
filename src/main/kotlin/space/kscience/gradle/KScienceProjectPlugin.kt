@@ -91,7 +91,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             repositories {
                 mavenCentral()
                 maven("https://repo.kotlin.link")
-                maven("https://maven.pkg.jetbrains.space/spc/p/sci/dev")
+                google()
             }
 
             // Workaround for https://github.com/gradle/gradle/issues/15568
