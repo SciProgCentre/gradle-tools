@@ -4,8 +4,10 @@ plugins {
     `maven-publish`
     signing
     `version-catalog`
-    alias(libs.plugins.changelog)
-    alias(libs.plugins.dokka)
+    alias(libs.plugins.org.jetbrains.changelog)
+    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.com.github.ben.manes.versions)
+    alias(libs.plugins.nl.littlerobots.version.catalog.update)
 }
 
 group = "space.kscience"
@@ -25,18 +27,18 @@ kotlin.explicitApiWarning()
 
 dependencies {
     api(libs.kotlin.gradle)
-    api("org.gradle.toolchains:foojay-resolver:0.8.0")
+    api(libs.foojay.resolver)
     implementation(libs.binary.compatibility.validator)
     implementation(libs.changelog.gradle)
     implementation(libs.dokka.gradle)
     implementation(libs.kotlin.jupyter.gradle)
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
-    implementation("org.tomlj:tomlj:1.1.1")
+    implementation(libs.tomlj)
 //    // nexus publishing plugin
-//    implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
+//    implementation("io.github.gradle-nexus:publish-plugin:_")
 
-    implementation("org.freemarker:freemarker:2.3.32")
+    implementation(libs.freemarker)
 
     testImplementation(kotlin("test"))
 }
@@ -219,3 +221,12 @@ tasks.processResources.configure {
 tasks.withType<AbstractPublishToMaven>().configureEach {
     mustRunAfter(tasks.withType<Sign>())
 }
+
+versionCatalogUpdate {
+    keep {
+        keepUnusedVersions = true
+        keepUnusedPlugins = true
+        keepUnusedLibraries = true
+    }
+}
+ 
