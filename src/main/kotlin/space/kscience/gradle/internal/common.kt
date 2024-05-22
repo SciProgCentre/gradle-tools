@@ -8,9 +8,7 @@ import space.kscience.gradle.KScienceVersions
 
 
 internal val defaultKotlinJvmArgs: List<String> = listOf(
-    "-Xjvm-default=all",
-    "-Xlambdas=indy",
-    /* "-Xjdk-release=${KScienceVersions.JVM_TARGET}"*/
+    "-Xjvm-default=all"
 )
 
 internal val defaultKotlinCommonArgs: List<String> = listOf(

@@ -9,6 +9,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -230,8 +231,8 @@ public open class KScienceExtension(public val project: Project) {
      */
     public fun useContextReceivers() {
         project.tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+            compilerOptions{
+              freeCompilerArgs.add("-Xcontext-receivers")
             }
         }
     }
@@ -359,10 +360,9 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
-                    compilations.all {
-                        compilerOptions.configure {
-                            freeCompilerArgs.addAll(defaultKotlinJvmArgs)
-                        }
+                    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+                    compilerOptions{
+                        freeCompilerArgs.addAll(defaultKotlinJvmArgs)
                     }
                     block()
                 }
@@ -459,8 +459,8 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
     ) {
         js {
             browser {
-                webpackTask {
-                    mainOutputFileName.set(bundleName)
+                commonWebpackConfig{
+                    outputFileName = bundleName
                 }
                 browserConfig()
             }
