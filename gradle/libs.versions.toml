@@ -22,14 +22,15 @@ slf4j = "2.0.13"
 tools = "0.15.3-kotlin-2.0.0"
 xmlutil = "0.86.3"
 yamlkt = "0.13.0"
+kover = "0.8.0"
+junit = "5.10.2"
 
 [plugins]
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
-gradle-common = { id = "space.kscience.gradle.common", version.ref = "tools" }
-gradle-jvm = { id = "space.kscience.gradle.jvm", version.ref = "tools" }
-gradle-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
-gradle-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
+compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
+kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
@@ -48,13 +49,14 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-nl-littlerobots-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
-org-gradle-kotlin-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:4.4.0"
-org-jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
-org-jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
+version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:4.4.0"
+jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
+jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+
 
 [libraries]
-analysis-kotlin-descriptors = { module = "org.jetbrains.dokka:analysis-kotlin-descriptors", version.ref = "dokka" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
 binary-compatibility-validator = "org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.2"

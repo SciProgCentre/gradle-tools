@@ -4,10 +4,10 @@ plugins {
     `maven-publish`
     signing
     `version-catalog`
-    alias(libs.plugins.org.jetbrains.changelog)
-    alias(libs.plugins.org.jetbrains.dokka)
+    alias(libs.plugins.jetbrains.changelog)
+    alias(libs.plugins.jetbrains.dokka)
     alias(libs.plugins.com.github.ben.manes.versions)
-    alias(libs.plugins.nl.littlerobots.version.catalog.update)
+    alias(libs.plugins.version.catalog.update)
 }
 
 group = "space.kscience"
