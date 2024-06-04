@@ -1,12 +1,13 @@
 [versions]
 atomicfu = "0.24.0"
 changelog = "2.2.0"
-compose = "1.6.10"
+compose = "1.6.11"
 dokka = "1.9.20"
-jsBom = "1.0.0-pre.751"
+jsBom = "1.0.0-pre.754"
+junit = "5.10.2"
 # @pin
 kotlin = "2.0.0"
-kotlin-jupyter = "0.12.0-227"
+kotlin-jupyter = "0.12.0-230"
 kotlinx-benchmark = "0.4.10"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.8.1"
@@ -15,6 +16,7 @@ kotlinx-html = "0.11.0"
 kotlinx-knit = "0.5.0"
 kotlinx-nodejs = "0.0.7"
 kotlinx-serialization = "1.6.3"
+kover = "0.8.0"
 ktor = "2.3.11"
 logback = "1.5.6"
 slf4j = "2.0.13"
@@ -22,17 +24,16 @@ slf4j = "2.0.13"
 tools = "0.15.4-kotlin-2.0.0"
 xmlutil = "0.86.3"
 yamlkt = "0.13.0"
-kover = "0.8.0"
-junit = "5.10.2"
 
 [plugins]
 com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
-compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
-kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
+compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
+jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
+jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:4.4.0"
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
 kotlin-jupyter-api = { id = "org.jetbrains.kotlin.jupyter.api", version.ref = "kotlin-jupyter" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -48,13 +49,11 @@ kotlin-plugin-scripting = { id = "org.jetbrains.kotlin.plugin.scripting", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
+kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
+kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:4.4.0"
-jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
-jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
-kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
@@ -65,7 +64,7 @@ dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" 
 dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 foojay-resolver = "org.gradle.toolchains:foojay-resolver:0.8.0"
-freemarker = "org.freemarker:freemarker:2.3.32"
+freemarker = "org.freemarker:freemarker:2.3.33"
 gradle-changelog-plugin = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
 kotlin-assignment-compiler-plugin-embeddable = { module = "org.jetbrains.kotlin:kotlin-assignment-compiler-plugin-embeddable", version.ref = "kotlin" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

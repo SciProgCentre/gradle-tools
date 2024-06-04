@@ -7,10 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- Pass `compose` extension to the kscience extension so compose dependencies could be called directly from kscience block
 
 ### Changed
-- Use ES6 modules by default in JS
 
 ### Deprecated
 
@@ -19,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## 0.15.4-kotlin-2.0.0 - 2024-06-04
+
+### Added
+
+- Pass `compose` extension to the kscience extension so compose dependencies could be called directly from kscience block
+
+### Changed
+
+- Use ES6 modules by default in JS
+- Kotlin 2.0
 
 ## 0.15.2-kotlin-1.9.22 - 2024-02-09
 
