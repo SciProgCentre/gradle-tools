@@ -22,7 +22,7 @@ public open class KScienceJVMPlugin : Plugin<Project> {
         } else {
             logger.info("Kotlin JVM plugin is already present")
         }
-        val extension = registerKScienceExtension(::KScienceExtension)
+        val extension = registerKScienceExtension<KScienceExtension>()
 
         //logger.info("Applying KScience configuration for JVM project")
         configure<KotlinJvmProjectExtension> {

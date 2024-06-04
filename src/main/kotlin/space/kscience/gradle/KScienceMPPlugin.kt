@@ -21,7 +21,7 @@ public open class KScienceMPPlugin : Plugin<Project> {
             logger.info("Kotlin MPP plugin is already present")
         }
 
-        registerKScienceExtension(::KScienceMppExtension)
+        val kscience = registerKScienceExtension<KScienceMppExtension>()
 
         configure<KotlinMultiplatformExtension> {
             sourceSets {
@@ -46,6 +46,12 @@ public open class KScienceMPPlugin : Plugin<Project> {
             }
 
             if (explicitApi == null) explicitApiWarning()
+
+            //pass compose extension inside kscience extensions to make it available inside kscience block
+            plugins.withId("org.jetbrains.compose"){
+                kscience.extensions.add("compose", (this@configure as org.gradle.api.plugins.ExtensionAware).extensions.getByName("compose"))
+            }
+
         }
 
 

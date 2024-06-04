@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Pass `compose` extension to the kscience extension so compose dependencies could be called directly from kscience block
 
 ### Changed
 - Use ES6 modules by default in JS

@@ -3,6 +3,7 @@ package space.kscience.gradle
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ApplicationPlugin
+import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
@@ -28,6 +29,7 @@ import space.kscience.gradle.internal.defaultKotlinJvmArgs
 import space.kscience.gradle.internal.fromJsDependencies
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
+import javax.inject.Inject
 
 public enum class DependencyConfiguration {
     API,
@@ -52,7 +54,7 @@ public val Project.isInDevelopment: Boolean
 
 private const val defaultJdkVersion = 11
 
-public open class KScienceExtension(public val project: Project) {
+public abstract class KScienceExtension @Inject constructor(public val project: Project): ExtensionAware {
 
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
         set(defaultJdkVersion)
@@ -352,7 +354,8 @@ public class KScienceNativeConfiguration(private val project: Project) {
     ): Unit = target(KScienceNativeTarget(preset, targetName, targetConfiguration))
 }
 
-public open class KScienceMppExtension(project: Project) : KScienceExtension(project) {
+public abstract class KScienceMppExtension @Inject constructor(project: Project) : KScienceExtension(project) {
+
     /**
      * Enable jvm target
      */
@@ -414,10 +417,6 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
      */
     @OptIn(ExperimentalWasmDsl::class)
     public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
-//        if (project.requestPropertyOrNull("kscience.wasm.disabled") == "true") {
-//            project.logger.warn("Wasm target is disabled with 'kscience.wasm.disabled' property")
-//            return
-//        }
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
@@ -538,9 +537,11 @@ public open class KScienceMppExtension(project: Project) : KScienceExtension(pro
 }
 
 
-internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension(constructor: (Project) -> T): T {
-    extensions.findByType<T>()?.let { return it }
-    return constructor(this).also {
-        extensions.add("kscience", it)
-    }
+internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension():T {
+//    extensions.findByType<T>()?.let { return it }
+//    return constructor(this).also {
+//        extensions.add("kscience", it)
+//    }
+
+    return extensions.create("kscience", T::class.java)
 }
