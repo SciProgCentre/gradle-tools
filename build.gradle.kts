@@ -6,8 +6,8 @@ plugins {
     `version-catalog`
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
-    alias(libs.plugins.com.github.ben.manes.versions)
-    alias(libs.plugins.version.catalog.update)
+    alias(libs.plugins.versions)
+    alias(libs.plugins.versions.update)
 }
 
 group = "space.kscience"
@@ -223,6 +223,7 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
 }
 
 versionCatalogUpdate {
+    sortByKey.set(false)
     keep {
         keepUnusedVersions = true
         keepUnusedPlugins = true

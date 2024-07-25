@@ -30,11 +30,9 @@ internal fun LanguageSettingsBuilder.applySettings(
 
 
     optIn("kotlin.RequiresOptIn")
-    optIn("kotlin.ExperimentalUnsignedTypes")
     optIn("kotlin.ExperimentalStdlibApi")
     optIn("kotlin.time.ExperimentalTime")
     optIn("kotlin.contracts.ExperimentalContracts")
-    optIn("kotlin.js.ExperimentalJsExport")
 }
 
 internal fun Copy.fromJsDependencies(configurationName: String) = project.run {

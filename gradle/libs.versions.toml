@@ -1,12 +1,15 @@
 [versions]
+# @pin
+kotlin = "2.0.20-Beta2"
+# @pin
+tools = "0.15.4-kotlin-2.0.20-Beta2"
+
 atomicfu = "0.24.0"
 changelog = "2.2.0"
 compose = "1.6.11"
 dokka = "1.9.20"
 jsBom = "1.0.0-pre.754"
 junit = "5.10.2"
-# @pin
-kotlin = "2.0.0"
 kotlin-jupyter = "0.12.0-230"
 kotlinx-benchmark = "0.4.10"
 kotlinx-cli = "0.3.6"
@@ -18,15 +21,13 @@ kotlinx-nodejs = "0.0.7"
 kotlinx-serialization = "1.6.3"
 kover = "0.8.0"
 ktor = "2.3.11"
+ksp = "2.0.0-1.0.23"
 logback = "1.5.6"
 slf4j = "2.0.13"
-# @pin
-tools = "0.15.4-kotlin-2.0.0"
 xmlutil = "0.86.3"
 yamlkt = "0.13.0"
 
 [plugins]
-com-github-ben-manes-versions = "com.github.ben-manes.versions:0.51.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
@@ -52,8 +53,10 @@ kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kot
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
 kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-version-catalog-update = "nl.littlerobots.version-catalog-update:0.8.4"
+versions = "com.github.ben-manes.versions:0.51.0"
+versions-update = "nl.littlerobots.version-catalog-update:0.8.4"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
@@ -104,6 +107,7 @@ kotlinx-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serializ
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-properties = { module = "org.jetbrains.kotlinx:kotlinx-serialization-properties", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
+ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 slf4j = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
@@ -112,3 +116,4 @@ xmlutil-core = { module = "io.github.pdvrieze.xmlutil:core", version.ref = "xmlu
 xmlutil-ktor = { module = "io.github.pdvrieze.xmlutil:ktor", version.ref = "xmlutil" }
 xmlutil-serialization = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xmlutil" }
 yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version.ref = "yamlkt" }
+
