@@ -23,8 +23,6 @@ repositories {
     maven("https://repo.kotlin.link")
 }
 
-kotlin.explicitApiWarning()
-
 dependencies {
     api(libs.kotlin.gradle)
     api(libs.foojay.resolver)
@@ -207,9 +205,8 @@ publishing {
 }
 
 kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
+    explicitApiWarning()
+    jvmToolchain(17)
 }
 
 tasks.processResources.configure {

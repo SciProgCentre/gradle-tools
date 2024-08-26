@@ -52,7 +52,7 @@ public val Project.isInDevelopment: Boolean
             || version.toString().endsWith("SNAPSHOT")
 
 
-private const val defaultJdkVersion = 11
+private const val defaultJdkVersion = 17
 
 public abstract class KScienceExtension @Inject constructor(public val project: Project): ExtensionAware {
 

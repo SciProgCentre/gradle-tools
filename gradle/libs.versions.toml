@@ -1,40 +1,39 @@
 [versions]
 # @pin
-kotlin = "2.0.20-Beta2"
+kotlin = "2.0.20"
 # @pin
-tools = "0.15.5-kotlin-2.0.20-Beta2"
-
-atomicfu = "0.24.0"
-changelog = "2.2.0"
+tools = "0.15.6-kotlin-2.0.20"
+atomicfu = "0.25.0"
+changelog = "2.2.1"
 compose = "1.6.11"
 dokka = "1.9.20"
-jsBom = "1.0.0-pre.754"
+jsBom = "1.0.0-pre.798"
 junit = "5.10.2"
-kotlin-jupyter = "0.12.0-230"
-kotlinx-benchmark = "0.4.10"
+kotlin-jupyter = "0.12.0-275"
+kotlinx-benchmark = "0.4.12"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.8.1"
-kotlinx-datetime = "0.6.0"
+kotlinx-datetime = "0.6.1"
 kotlinx-html = "0.11.0"
 kotlinx-knit = "0.5.0"
 kotlinx-nodejs = "0.0.7"
-kotlinx-serialization = "1.6.3"
-kover = "0.8.0"
-ktor = "2.3.11"
-ksp = "2.0.0-1.0.23"
-logback = "1.5.6"
-slf4j = "2.0.13"
-xmlutil = "0.86.3"
+kotlinx-serialization = "1.7.1"
+kover = "0.8.3"
+ktor = "2.3.12"
+ksp = "2.0.20-1.0.24"
+logback = "1.5.7"
+slf4j = "2.0.16"
+xmlutil = "0.90.1"
 yamlkt = "0.13.0"
 
 [plugins]
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
-jetbrains-changelog = "org.jetbrains.changelog:2.2.0"
+jetbrains-changelog = "org.jetbrains.changelog:2.2.1"
 jetbrains-dokka = "org.jetbrains.dokka:1.9.20"
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:4.4.0"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:5.1.0"
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
 kotlin-jupyter-api = { id = "org.jetbrains.kotlin.jupyter.api", version.ref = "kotlin-jupyter" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -61,7 +60,7 @@ versions-update = "nl.littlerobots.version-catalog-update:0.8.4"
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
-binary-compatibility-validator = "org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.2"
+binary-compatibility-validator = "org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.3"
 changelog-gradle = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
 dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
@@ -116,4 +115,3 @@ xmlutil-core = { module = "io.github.pdvrieze.xmlutil:core", version.ref = "xmlu
 xmlutil-ktor = { module = "io.github.pdvrieze.xmlutil:ktor", version.ref = "xmlutil" }
 xmlutil-serialization = { module = "io.github.pdvrieze.xmlutil:serialization", version.ref = "xmlutil" }
 yamlkt = { module = "net.mamoe.yamlkt:yamlkt", version.ref = "yamlkt" }
-
