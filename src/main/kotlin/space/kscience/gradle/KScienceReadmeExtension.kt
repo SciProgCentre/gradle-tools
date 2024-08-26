@@ -190,4 +190,38 @@ public class KScienceReadmeExtension(public val project: Project) {
         project.logger.warn("Template with name ${ex.templateName} not found in ${project.name}")
         null
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as KScienceReadmeExtension
+
+        if (project != other.project) return false
+        if (maturity != other.maturity) return false
+        if (useDefaultReadmeTemplate != other.useDefaultReadmeTemplate) return false
+        if (readmeTemplate != other.readmeTemplate) return false
+        if (fmLoader != other.fmLoader) return false
+        if (fmCfg != other.fmCfg) return false
+        if (features != other.features) return false
+        if (properties != other.properties) return false
+        if (inputFiles != other.inputFiles) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = project.hashCode()
+        result = 31 * result + maturity.hashCode()
+        result = 31 * result + useDefaultReadmeTemplate.hashCode()
+        result = 31 * result + readmeTemplate.hashCode()
+        result = 31 * result + fmLoader.hashCode()
+        result = 31 * result + fmCfg.hashCode()
+        result = 31 * result + features.hashCode()
+        result = 31 * result + properties.hashCode()
+        result = 31 * result + inputFiles.hashCode()
+        return result
+    }
+
+
 }

@@ -126,6 +126,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
+                inputs.property("extension", readmeExtension)
+
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
@@ -161,6 +163,8 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
+            inputs.property("extension", rootReadmeExtension)
+
             if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)
             }
@@ -185,18 +189,17 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                     val modulesString = buildString {
                         subprojects.forEach { subproject ->
 //                            val name = subproject.name
-                            subproject.extensions.findByType<KScienceReadmeExtension>()
-                                ?.let { ext: KScienceReadmeExtension ->
-                                    val path = subproject.path.replaceFirst(":", "").replace(":", "/")
-                                    appendLine("\n### [$path]($path)")
-                                    ext.description?.let { appendLine("> ${ext.description}") }
-                                    appendLine(">\n> **Maturity**: ${ext.maturity}")
-                                    val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
-                                    if (featureString.isNotBlank()) {
-                                        appendLine(">\n> **Features:**")
-                                        appendLine(featureString)
-                                    }
+                            subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
+                                val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                                appendLine("\n### [$path]($path)")
+                                ext.description?.let { appendLine("> ${ext.description}") }
+                                appendLine(">\n> **Maturity**: ${ext.maturity}")
+                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
+                                if (featureString.isNotBlank()) {
+                                    appendLine(">\n> **Features:**")
+                                    appendLine(featureString)
                                 }
+                            }
                         }
                     }
 

@@ -2,7 +2,7 @@
 # @pin
 kotlin = "2.0.20"
 # @pin
-tools = "0.15.6-kotlin-2.0.20"
+tools = "0.15.7-kotlin-2.0.20"
 atomicfu = "0.25.0"
 changelog = "2.2.1"
 compose = "1.6.11"
