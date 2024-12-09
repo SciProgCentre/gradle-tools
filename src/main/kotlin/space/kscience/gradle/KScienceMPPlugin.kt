@@ -41,15 +41,18 @@ public open class KScienceMPPlugin : Plugin<Project> {
                 }
             }
             @OptIn(ExperimentalKotlinGradlePluginApi::class)
-            compilerOptions{
+            compilerOptions {
                 freeCompilerArgs.addAll(defaultKotlinCommonArgs)
             }
 
             if (explicitApi == null) explicitApiWarning()
 
             //pass compose extension inside kscience extensions to make it available inside kscience block
-            plugins.withId("org.jetbrains.compose"){
-                kscience.extensions.add("compose", (this@configure as org.gradle.api.plugins.ExtensionAware).extensions.getByName("compose"))
+            plugins.withId("org.jetbrains.compose") {
+                kscience.extensions.add(
+                    "compose",
+                    (this@configure as org.gradle.api.plugins.ExtensionAware).extensions.getByName("compose")
+                )
             }
 
         }
