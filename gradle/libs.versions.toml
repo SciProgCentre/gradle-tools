@@ -30,7 +30,7 @@ yamlkt = "0.13.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = "org.jetbrains.changelog:2.2.1"
-jetbrains-dokka = { module = "org.jetbrains.dokka", version.ref = "dokka" }
+jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
 kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:5.1.2"
