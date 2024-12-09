@@ -17,7 +17,7 @@ public fun MavenPom.useSPCTeam(){
         developer {
             id.set("SPC")
             name.set("Scientific programming centre")
-            organization.set("MIPT")
+            organization.set("SPC")
             organizationUrl.set("https://sciprog.center/")
         }
     }

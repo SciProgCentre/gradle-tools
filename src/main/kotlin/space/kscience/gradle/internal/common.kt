@@ -7,8 +7,13 @@ import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 import space.kscience.gradle.KScienceVersions
 
 
-internal val defaultKotlinJvmArgs: List<String> =
-    listOf("-Xjvm-default=all", "-Xlambdas=indy"/* "-Xjdk-release=${KScienceVersions.JVM_TARGET}"*/)
+internal val defaultKotlinJvmArgs: List<String> = listOf(
+    "-Xjvm-default=all"
+)
+
+internal val defaultKotlinCommonArgs: List<String> = listOf(
+    "-Xexpect-actual-classes"
+)
 
 internal fun resolveKotlinVersion(): KotlinVersion {
     val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
@@ -22,6 +27,7 @@ internal fun LanguageSettingsBuilder.applySettings(
     languageVersion = versionString
     apiVersion = versionString
     progressiveMode = true
+
 
     optIn("kotlin.RequiresOptIn")
     optIn("kotlin.ExperimentalUnsignedTypes")

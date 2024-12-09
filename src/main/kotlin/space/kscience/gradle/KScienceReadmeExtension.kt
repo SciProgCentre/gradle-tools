@@ -10,6 +10,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
+import org.intellij.lang.annotations.Language
 import java.io.File
 import java.io.StringWriter
 import kotlin.collections.component1
@@ -32,7 +33,8 @@ private fun Template.processToString(args: Map<String, Any?>): String {
 
 
 public class KScienceReadmeExtension(public val project: Project) {
-    public var description: String = project.description ?: ""
+    public var description: String? = null
+        get() = field ?: project.description
 
     public var maturity: Maturity = Maturity.EXPERIMENTAL
         set(value) {
@@ -88,12 +90,23 @@ public class KScienceReadmeExtension(public val project: Project) {
 
     public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
-    public val features: MutableList<Feature> = ArrayList()
+    public val features: MutableList<Feature> = mutableListOf()
 
-    public fun feature(id: String, ref: String? = null, name: String = id, description: () -> String) {
+    /**
+     * A plain readme feature with description
+     */
+    public fun feature(
+        id: String,
+        @Language("File") ref: String? = null,
+        name: String = id,
+        description: () -> String,
+    ) {
         features += Feature(id, description(), ref, name)
     }
 
+    /**
+     * A readme feature with HTML description
+     */
     public fun featureWithHtml(
         id: String,
         ref: String? = null,
@@ -177,4 +190,38 @@ public class KScienceReadmeExtension(public val project: Project) {
         project.logger.warn("Template with name ${ex.templateName} not found in ${project.name}")
         null
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as KScienceReadmeExtension
+
+        if (project != other.project) return false
+        if (maturity != other.maturity) return false
+        if (useDefaultReadmeTemplate != other.useDefaultReadmeTemplate) return false
+        if (readmeTemplate != other.readmeTemplate) return false
+        if (fmLoader != other.fmLoader) return false
+        if (fmCfg != other.fmCfg) return false
+        if (features != other.features) return false
+        if (properties != other.properties) return false
+        if (inputFiles != other.inputFiles) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = project.hashCode()
+        result = 31 * result + maturity.hashCode()
+        result = 31 * result + useDefaultReadmeTemplate.hashCode()
+        result = 31 * result + readmeTemplate.hashCode()
+        result = 31 * result + fmLoader.hashCode()
+        result = 31 * result + fmCfg.hashCode()
+        result = 31 * result + features.hashCode()
+        result = 31 * result + properties.hashCode()
+        result = 31 * result + inputFiles.hashCode()
+        return result
+    }
+
+
 }

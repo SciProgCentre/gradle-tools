@@ -8,9 +8,7 @@ import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.plugin.mpp.pm20.util.targets
 import space.kscience.gradle.isInDevelopment
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
@@ -24,26 +22,6 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
     plugins.withId("maven-publish") {
         configure<PublishingExtension> {
 
-            plugins.withId("org.jetbrains.kotlin.js") {
-                val kotlin: KotlinJsProjectExtension = extensions.findByType()!!
-
-                val sourcesJar by tasks.creating(Jar::class) {
-                    archiveClassifier.set("sources")
-                    kotlin.sourceSets.forEach {
-                        from(it.kotlin)
-                    }
-                }
-
-                publications.create<MavenPublication>("js") {
-                    kotlin.targets.flatMap { it.components }.forEach {
-                        from(it)
-                    }
-
-                    artifact(sourcesJar)
-                }
-
-            }
-
             plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
@@ -55,9 +33,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                 }
 
                 publications.create<MavenPublication>("jvm") {
-                    kotlin.target.components.forEach {
-                        from(it)
-                    }
+                    from(project.components["java"])
 
                     artifact(sourcesJar)
                 }
@@ -100,7 +76,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
                         val signingKey: String = requestProperty("publishing.signing.key")
                         val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
 
-                        // if key is provided, use it
+                        // if a key is provided, use it
                         useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
                     } // else use agent signing
                     sign(publications)
@@ -112,34 +88,31 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
     }
 }
 
-internal fun Project.addGithubPublishing(
-    githubOrg: String,
-    githubProject: String,
-) {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping github publishing because publishing is disabled")
-        return
-    }
-    if (requestPropertyOrNull("publishing.github") != "false") {
-        logger.info("Skipping github publishing  because `publishing.github != true`")
-        return
-    }
+internal fun Project.addPublishing(
+    repositoryName: String,
+    urlString:String
+){
+    require(repositoryName.matches("\\w*".toRegex())){"Repository name must contain only letters or numbers"}
+    val user: String? = requestPropertyOrNull("publishing.$repositoryName.user")
+    val token: String? = requestPropertyOrNull("publishing.$repositoryName.token")
 
-    val githubUser: String = requestProperty("publishing.github.user")
-    val githubToken: String = requestProperty("publishing.github.token")
+    if (user == null || token == null) {
+        logger.info("Skipping $repositoryName publishing because $repositoryName credentials are not defined")
+        return
+    }
 
     allprojects {
         plugins.withId("maven-publish") {
             configure<PublishingExtension> {
-                logger.info("Adding github publishing to project [${project.name}]")
+                logger.info("Adding $repositoryName publishing to project [${project.name}]")
 
                 repositories.maven {
-                    name = "github"
-                    url = uri("https://maven.pkg.github.com/$githubOrg/$githubProject/")
+                    name = repositoryName
+                    url = uri(urlString)
 
                     credentials {
-                        username = githubUser
-                        password = githubToken
+                        username = user
+                        password = token
                     }
                 }
             }
@@ -147,72 +120,11 @@ internal fun Project.addGithubPublishing(
     }
 }
 
-internal fun Project.addSpacePublishing(spaceRepo: String) {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping space publishing because publishing is disabled")
-        return
-    }
 
-    if (requestPropertyOrNull("publishing.space") == "false") {
-        logger.info("Skipping space publishing because `publishing.space == false`")
-        return
-    }
-
-    val spaceUser: String = requestProperty("publishing.space.user")
-    val spaceToken: String = requestProperty("publishing.space.token")
-
-    allprojects {
-        plugins.withId("maven-publish") {
-            configure<PublishingExtension> {
-                project.logger.info("Adding mipt-npm Space publishing to project [${project.name}]")
-
-                repositories.maven {
-                    name = "space"
-                    url = uri(spaceRepo)
-
-                    credentials {
-                        username = spaceUser
-                        password = spaceToken
-                    }
-                }
-            }
-        }
-    }
-}
-
-internal fun Project.addSonatypePublishing() {
-    if (requestPropertyOrNull("publishing.enabled") != "true") {
-        logger.info("Skipping sonatype publishing because publishing is disabled")
-        return
-    }
-
+internal fun Project.addSonatypePublishing(sonatypeRoot: String) {
     if (isInDevelopment) {
         logger.info("Sonatype publishing skipped for development version")
-        return
-    }
-
-    if (requestPropertyOrNull("publishing.sonatype") == "false") {
-        logger.info("Skipping sonatype publishing because `publishing.sonatype == false`")
-        return
-    }
-
-    val sonatypeUser: String = requestProperty("publishing.sonatype.user")
-    val sonatypePassword: String = requestProperty("publishing.sonatype.password")
-
-    allprojects {
-        plugins.withId("maven-publish") {
-            configure<PublishingExtension> {
-                repositories.maven {
-                    val sonatypeRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2"
-                    name = "sonatype"
-                    url = uri(sonatypeRepo)
-
-                    credentials {
-                        username = sonatypeUser
-                        password = sonatypePassword
-                    }
-                }
-            }
-        }
+    } else {
+        addPublishing("sonatype", "$sonatypeRoot/service/local/staging/deploy/maven2")
     }
 }
