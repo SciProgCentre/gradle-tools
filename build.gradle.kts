@@ -1,3 +1,4 @@
+
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
@@ -112,8 +113,18 @@ val emptySourcesJar by tasks.creating(Jar::class) {
     archiveBaseName.set("empty")
 }
 
-
 mavenPublishing {
+    configure(
+        com.vanniktech.maven.publish.GradlePlugin(
+            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaHtml"),
+            sourcesJar = true,
+        )
+    )
+
+    project.publishing.publications.create("maven", MavenPublication::class.java) {
+        from(project.components.getByName("versionCatalog"))
+    }
+
     val vcs = "https://git.sciprog.center/kscience/gradle-tools"
 
     pom {
@@ -167,8 +178,6 @@ mavenPublishing {
         publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
         signAllPublications()
     }
-
-    configure(com.vanniktech.maven.publish.VersionCatalog())
 }
 
 kotlin {
