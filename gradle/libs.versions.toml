@@ -27,6 +27,7 @@ xmlutil = "0.90.3"
 yamlkt = "0.13.0"
 
 [plugins]
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = "org.jetbrains.changelog:2.2.1"

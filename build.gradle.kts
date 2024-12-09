@@ -2,8 +2,9 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-    signing
+//    signing
     `version-catalog`
+    alias(libs.plugins.maven.publish)
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
     alias(libs.plugins.versions)
@@ -111,53 +112,35 @@ val emptySourcesJar by tasks.creating(Jar::class) {
     archiveBaseName.set("empty")
 }
 
-publishing {
-    val vcs = "https://github.com/SciProgCentre/gradle-tools"
 
-    // Process each publication we have in this project
-    publications {
-        create<MavenPublication>("catalog") {
-            from(components["versionCatalog"])
-            artifactId = "version-catalog"
+mavenPublishing {
+    val vcs = "https://git.sciprog.center/kscience/gradle-tools"
 
-            pom {
-                name.set("version-catalog")
+    pom {
+        name.set(project.name)
+        description.set(project.description)
+        url.set(vcs)
+
+        licenses {
+            license {
+                name.set("The Apache Software License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
             }
         }
 
-        withType<MavenPublication> {
-            // thanks @vladimirsitnikv for the fix
-            artifact(if (name == "catalog") emptySourcesJar else sourcesJar)
-            artifact(if (name == "catalog") emptyJavadocJar else javadocsJar)
-
-
-            pom {
-                name.set(project.name)
-                description.set(project.description)
-                url.set(vcs)
-
-                licenses {
-                    license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
-                    }
-                }
-
-                developers {
-                    developer {
-                        id.set("SPC")
-                        name.set("Scientific Programming Centre")
-                        organization.set("SPC")
-                        organizationUrl.set("https://sciprog.center/")
-                    }
-                }
-
-                scm {
-                    url.set(vcs)
-                    tag.set(project.version.toString())
-                }
+        developers {
+            developer {
+                id.set("SPC")
+                name.set("Scientific Programming Centre")
+                organization.set("SPC")
+                organizationUrl.set("https://sciprog.center/")
             }
+        }
+
+        scm {
+            url.set(vcs)
+            tag.set(project.version.toString())
         }
     }
 
@@ -166,7 +149,7 @@ publishing {
     val spcToken: String? = findProperty("publishing.spc.token") as? String
 
     if (spcUser != null && spcToken != null) {
-        repositories.maven {
+        publishing.repositories.maven {
             name = "spc"
             url = uri(spaceRepo)
 
@@ -177,31 +160,15 @@ publishing {
         }
     }
 
-    val sonatypeUser: String? = project.findProperty("publishing.sonatype.user") as? String
-    val sonatypePassword: String? = project.findProperty("publishing.sonatype.password") as? String
+    val centralUser: String? = project.findProperty("mavenCentralUsername") as? String
+    val centralPassword: String? = project.findProperty("mavenCentralPassword") as? String
 
-    if (sonatypeUser != null && sonatypePassword != null) {
-        val sonatypeRepo: String = if (project.version.toString().contains("dev")) {
-            "https://oss.sonatype.org/content/repositories/snapshots"
-        } else {
-            "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-        }
-
-        repositories.maven {
-            name = "sonatype"
-            url = uri(sonatypeRepo)
-
-            credentials {
-                username = sonatypeUser
-                password = sonatypePassword
-            }
-        }
-
-        signing {
-            //useGpgCmd()
-            sign(publications)
-        }
+    if (centralUser != null && centralPassword != null) {
+        publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+        signAllPublications()
     }
+
+    configure(com.vanniktech.maven.publish.VersionCatalog())
 }
 
 kotlin {
