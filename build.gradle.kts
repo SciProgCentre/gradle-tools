@@ -1,15 +1,14 @@
-
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-//    signing
     `version-catalog`
     alias(libs.plugins.maven.publish)
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
     alias(libs.plugins.versions)
     alias(libs.plugins.versions.update)
+    alias(libs.plugins.maven.publish.base)
 }
 
 group = "space.kscience"
@@ -26,12 +25,13 @@ repositories {
 }
 
 dependencies {
-    api(libs.kotlin.gradle)
-    api(libs.foojay.resolver)
-    implementation(libs.binary.compatibility.validator)
-    implementation(libs.changelog.gradle)
-    implementation(libs.dokka.gradle)
-    implementation(libs.kotlin.jupyter.gradle)
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
+    api("org.gradle.toolchains:foojay-resolver:0.9.0")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.3")
+    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
+    implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:${libs.versions.kotlin.jupyter.get()}")
+    implementation("com.vanniktech:gradle-maven-publish-plugin:0.30.0")
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
@@ -89,30 +89,6 @@ catalog.versionCatalog {
 }
 
 //publishing the artifact
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.named("main").get().allSource)
-}
-
-val javadocsJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    archiveClassifier.set("javadoc")
-    from(tasks.dokkaHtml)
-}
-
-val emptyJavadocJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    archiveBaseName.set("empty")
-    archiveClassifier.set("javadoc")
-}
-
-
-val emptySourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    archiveBaseName.set("empty")
-}
-
 mavenPublishing {
     configure(
         com.vanniktech.maven.publish.GradlePlugin(
@@ -121,8 +97,13 @@ mavenPublishing {
         )
     )
 
-    project.publishing.publications.create("maven", MavenPublication::class.java) {
-        from(project.components.getByName("versionCatalog"))
+    publishing.publications.create<MavenPublication>("version-catalog") {
+        from(components["versionCatalog"])
+        artifactId = "version-catalog"
+
+        pom {
+            name.set("version-catalog")
+        }
     }
 
     val vcs = "https://git.sciprog.center/kscience/gradle-tools"

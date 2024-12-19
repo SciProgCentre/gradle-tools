@@ -1,5 +1,7 @@
 package space.kscience.gradle
 
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.MavenPublishBasePlugin
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
@@ -16,7 +18,6 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import space.kscience.gradle.internal.addPublishing
-import space.kscience.gradle.internal.addSonatypePublishing
 import space.kscience.gradle.internal.setupPublication
 
 /**
@@ -69,11 +70,32 @@ public class KSciencePublishingExtension(public val project: Project) {
 
     /**
      * Adds Sonatype Maven repository to publishing.
-
      */
-    public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org") {
+    public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org"): Unit = with(project) {
         require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
-        project.addSonatypePublishing(sonatypeRoot)
+        if (isInDevelopment) {
+            logger.info("Sonatype publishing skipped for development version")
+        } else {
+            addPublishing("sonatype", "$sonatypeRoot/service/local/staging/deploy/maven2")
+        }
+    }
+
+    /**
+     * Add publishing to maven central "new" API
+     */
+    public fun central(): Unit = with(project) {
+        require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
+        if (isInDevelopment) {
+            logger.info("Maven central publishing skipped for development version")
+        } else {
+            allprojects {
+                plugins.withType<MavenPublishBasePlugin> {
+                    extensions.configure<MavenPublishBaseExtension> {
+                        publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -86,6 +108,9 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         apply<ChangelogPlugin>()
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
+
+        val ksciencePublish = KSciencePublishingExtension(this)
+        extensions.add("ksciencePublish", ksciencePublish)
 
         allprojects {
             repositories {
@@ -113,8 +138,6 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         }
 
         val rootReadmeExtension = KScienceReadmeExtension(this)
-        val ksciencePublish = KSciencePublishingExtension(this)
-        extensions.add("ksciencePublish", ksciencePublish)
         extensions.add("readme", rootReadmeExtension)
 
         //Add readme generators to individual subprojects

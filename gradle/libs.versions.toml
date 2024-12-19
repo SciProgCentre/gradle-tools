@@ -2,7 +2,7 @@
 # @pin
 kotlin = "2.1.0"
 # @pin
-tools = "0.15.8-kotlin-2.1.0"
+tools = "0.16.0-kotlin-2.1.0"
 atomicfu = "0.26.1"
 changelog = "2.2.1"
 compose = "1.7.1"
@@ -28,9 +28,10 @@ yamlkt = "0.13.0"
 
 [plugins]
 maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
+maven-publish-base = { id = "com.vanniktech.maven.publish.base", version = "0.30.0" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
-jetbrains-changelog = "org.jetbrains.changelog:2.2.1"
+jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
@@ -60,21 +61,8 @@ versions-update = "nl.littlerobots.version-catalog-update:0.8.5"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
-atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
-binary-compatibility-validator = "org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.3"
-changelog-gradle = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
-dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-foojay-resolver = "org.gradle.toolchains:foojay-resolver:0.9.0"
 freemarker = "org.freemarker:freemarker:2.3.33"
-gradle-changelog-plugin = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
-kotlin-assignment-compiler-plugin-embeddable = { module = "org.jetbrains.kotlin:kotlin-assignment-compiler-plugin-embeddable", version.ref = "kotlin" }
-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "jsBom" }
-kotlin-jupyter-api-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin", version.ref = "kotlin" }
-kotlin-jupyter-gradle = { module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin", version.ref = "kotlin-jupyter" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-sam-with-receiver-compiler-plugin-embeddable = { module = "org.jetbrains.kotlin:kotlin-sam-with-receiver-compiler-plugin-embeddable", version.ref = "kotlin" }
 kotlin-scripting-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
