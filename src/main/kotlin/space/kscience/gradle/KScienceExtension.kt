@@ -288,9 +288,7 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
     internal companion object {
         private fun defaultNativeTargets(project: Project): Set<KScienceNativeTarget> =
-            if (project.isInDevelopment) {
-                setOf(KScienceNativeTarget.linuxX64)
-            } else when (val targets = project.requestPropertyOrNull("publishing.targets")) {
+            when (val targets = project.requestPropertyOrNull("publishing.targets")) {
                 null -> setOf(
                     KScienceNativeTarget.linuxX64,
                     KScienceNativeTarget.mingwX64,
@@ -303,7 +301,7 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
                 else -> targets.split(",").mapTo(HashSet()) {
                     KScienceNativeTarget(KotlinNativePreset.valueOf(it))
-                 }
+                }
             }
     }
 
