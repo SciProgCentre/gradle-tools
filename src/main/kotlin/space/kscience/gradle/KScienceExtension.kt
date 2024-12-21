@@ -54,7 +54,7 @@ public val Project.isInDevelopment: Boolean
 
 private const val defaultJdkVersion = 17
 
-public abstract class KScienceExtension @Inject constructor(public val project: Project): ExtensionAware {
+public abstract class KScienceExtension @Inject constructor(public val project: Project) : ExtensionAware {
 
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
         set(defaultJdkVersion)
@@ -233,8 +233,8 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
      */
     public fun useContextReceivers() {
         project.tasks.withType<KotlinCompile> {
-            compilerOptions{
-              freeCompilerArgs.add("-Xcontext-receivers")
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-receivers")
             }
         }
     }
@@ -287,46 +287,23 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
 
     internal companion object {
-        private fun defaultNativeTargets(project: Project): Map<KotlinNativePreset, KScienceNativeTarget> {
-            val hostOs = System.getProperty("os.name")
-
-            val targets = project.requestPropertyOrNull("publishing.targets")
-
-            return when {
-                targets == "all" -> listOf(
-                    KScienceNativeTarget.linuxX64,
-                    KScienceNativeTarget.mingwX64,
-                    KScienceNativeTarget.macosX64,
-                    KScienceNativeTarget.macosArm64,
-                    KScienceNativeTarget.iosX64,
-                    KScienceNativeTarget.iosArm64,
-                    KScienceNativeTarget.iosSimulatorArm64,
-                )
-
-                targets != null -> {
+        private fun defaultNativeTargets(project: Project): Map<KotlinNativePreset, KScienceNativeTarget> =
+            when (val targets = project.requestPropertyOrNull("publishing.targets")) {
+                null -> {
+                    listOf(
+                        KScienceNativeTarget.linuxX64,
+                        KScienceNativeTarget.mingwX64,
+                        KScienceNativeTarget.macosX64,
+                        KScienceNativeTarget.macosArm64,
+                        KScienceNativeTarget.iosX64,
+                        KScienceNativeTarget.iosArm64,
+                        KScienceNativeTarget.iosSimulatorArm64,
+                    )
+                }
+                else -> {
                     targets.split(",").map { KScienceNativeTarget(KotlinNativePreset.valueOf(it)) }
                 }
-
-                hostOs.startsWith("Windows") -> listOf(
-                    KScienceNativeTarget.linuxX64,
-                    KScienceNativeTarget.mingwX64
-                )
-
-                hostOs == "Mac OS X" -> listOf(
-                    KScienceNativeTarget.macosX64,
-                    KScienceNativeTarget.macosArm64,
-                    KScienceNativeTarget.iosX64,
-                    KScienceNativeTarget.iosArm64,
-                    KScienceNativeTarget.iosSimulatorArm64,
-                )
-
-                hostOs == "Linux" -> listOf(KScienceNativeTarget.linuxX64)
-
-                else -> {
-                    emptyList()
-                }
             }.associateBy { it.preset }
-        }
     }
 
 
@@ -364,7 +341,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
                     @OptIn(ExperimentalKotlinGradlePluginApi::class)
-                    compilerOptions{
+                    compilerOptions {
                         freeCompilerArgs.addAll(defaultKotlinJvmArgs)
                     }
                     block()
@@ -458,7 +435,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
     ) {
         js {
             browser {
-                commonWebpackConfig{
+                commonWebpackConfig {
                     outputFileName = bundleName
                 }
                 browserConfig()
@@ -537,7 +514,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
 }
 
 
-internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension():T {
+internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension(): T {
 //    extensions.findByType<T>()?.let { return it }
 //    return constructor(this).also {
 //        extensions.add("kscience", it)
