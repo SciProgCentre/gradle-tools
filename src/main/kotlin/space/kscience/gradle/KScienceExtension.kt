@@ -287,41 +287,40 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
 
     internal companion object {
-        private fun defaultNativeTargets(project: Project): Map<KotlinNativePreset, KScienceNativeTarget> =
+        private fun defaultNativeTargets(project: Project): Set<KScienceNativeTarget> =
             when (val targets = project.requestPropertyOrNull("publishing.targets")) {
-                null -> {
-                    listOf(
-                        KScienceNativeTarget.linuxX64,
-                        KScienceNativeTarget.mingwX64,
-                        KScienceNativeTarget.macosX64,
-                        KScienceNativeTarget.macosArm64,
-                        KScienceNativeTarget.iosX64,
-                        KScienceNativeTarget.iosArm64,
-                        KScienceNativeTarget.iosSimulatorArm64,
-                    )
+                null -> setOf(
+                    KScienceNativeTarget.linuxX64,
+                    KScienceNativeTarget.mingwX64,
+                    KScienceNativeTarget.macosX64,
+                    KScienceNativeTarget.macosArm64,
+                    KScienceNativeTarget.iosX64,
+                    KScienceNativeTarget.iosArm64,
+                    KScienceNativeTarget.iosSimulatorArm64,
+                )
+
+                else -> targets.split(",").mapTo(HashSet()) {
+                    KScienceNativeTarget(KotlinNativePreset.valueOf(it))
                 }
-                else -> {
-                    targets.split(",").map { KScienceNativeTarget(KotlinNativePreset.valueOf(it)) }
-                }
-            }.associateBy { it.preset }
+            }
     }
 
 
-    internal var targets: Map<KotlinNativePreset, KScienceNativeTarget> = defaultNativeTargets(project)
+    internal var targets: Set<KScienceNativeTarget> = defaultNativeTargets(project)
 
 
     /**
      * Replace all targets
      */
     public fun setTargets(vararg target: KScienceNativeTarget) {
-        targets = target.associateBy { it.preset }
+        targets = target.toSet()
     }
 
     /**
      * Add a native target
      */
     public fun target(target: KScienceNativeTarget) {
-        targets += target.preset to target
+        targets += target
     }
 
     public fun target(
@@ -469,7 +468,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         val nativeConfiguration = KScienceNativeConfiguration(this).apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
-                nativeConfiguration.targets.values.forEach { nativeTarget ->
+                nativeConfiguration.targets.forEach { nativeTarget ->
                     when (nativeTarget.preset) {
                         KotlinNativePreset.linuxX64 -> linuxX64(
                             nativeTarget.targetName,
