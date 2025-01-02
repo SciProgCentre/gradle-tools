@@ -27,7 +27,7 @@ repositories {
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
     api("org.gradle.toolchains:foojay-resolver:0.9.0")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.3")
+    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.17.0")
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
     implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:${libs.versions.kotlin.jupyter.get()}")
