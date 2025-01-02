@@ -188,6 +188,12 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
             inputs.property("features", rootReadmeExtension.features)
 
+            subprojects.forEach { subproject->
+                subproject.extensions.findByType<KScienceReadmeExtension>()?.let {
+                    inputs.property("features-${subproject.name}", it.features)
+                }
+            }
+
             if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)
             }

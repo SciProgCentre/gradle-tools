@@ -97,7 +97,7 @@ public class KScienceReadmeExtension(public val project: Project) {
         id: String,
         @Language("File") ref: String? = null,
         name: String = id,
-        description: () -> String,
+        @Language("markdown") description: () -> String,
     ) {
         features += Feature(id, description(), ref, name)
     }
@@ -175,7 +175,7 @@ public class KScienceReadmeExtension(public val project: Project) {
      */
     internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
-            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
+            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description.lines().firstOrNull() ?: ""}")
         }
     }
 
