@@ -149,7 +149,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
-                inputs.property("extension", readmeExtension)
+                inputs.property("features", readmeExtension.features)
 
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
@@ -186,7 +186,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
-            inputs.property("extension", rootReadmeExtension)
+            inputs.property("features", rootReadmeExtension.features)
 
             if (rootReadmeExtension.readmeTemplate.exists()) {
                 inputs.file(rootReadmeExtension.readmeTemplate)

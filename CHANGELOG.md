@@ -9,16 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
-- Kotlin 2.1.0
-- Publication to central via `com.vanniktech.maven.publish.base`
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Fix readme generation
 
 ### Security
+
+## 0.16.0-kotlin-2.1.0 - 2025-01-02
+
+### Changed
+
+- Kotlin 2.1.0
+- Publication to central via `com.vanniktech.maven.publish.base`
 
 ## 0.15.4-kotlin-2.0.0 - 2024-06-04
 

@@ -12,10 +12,8 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.io.Serializable
 import java.io.StringWriter
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 public enum class Maturity {
     PROTOTYPE,
@@ -71,14 +69,14 @@ public class KScienceReadmeExtension(public val project: Project) {
     private val fmLoader = StringTemplateLoader().apply {
         putTemplate(
             "artifact",
-            this@KScienceReadmeExtension.javaClass.getResource("/templates/ARTIFACT-TEMPLATE.md")!!.readText()
+            KScienceReadmeExtension::class.java.getResource("/templates/ARTIFACT-TEMPLATE.md")!!.readText()
         )
         if (readmeTemplate.exists()) {
             putTemplate("readme", readmeTemplate.readText())
         } else if (useDefaultReadmeTemplate) {
             putTemplate(
                 "readme",
-                this@KScienceReadmeExtension.javaClass.getResource("/templates/README-TEMPLATE.md")!!.readText()
+                KScienceReadmeExtension::class.java.getResource("/templates/README-TEMPLATE.md")!!.readText()
             )
         }
     }
@@ -88,7 +86,7 @@ public class KScienceReadmeExtension(public val project: Project) {
         templateLoader = fmLoader
     }
 
-    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
+    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id): Serializable
 
     public val features: MutableList<Feature> = mutableListOf()
 
