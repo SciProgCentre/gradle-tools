@@ -2,7 +2,6 @@ package space.kscience.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
-import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
@@ -12,10 +11,8 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -105,36 +102,6 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
         SerializationTargets(sourceSet, configuration).block()
     }
 
-    public fun useKtor(version: String = KScienceVersions.ktorVersion): Unit = with(project) {
-        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            configure<KotlinMultiplatformExtension> {
-                sourceSets.findByName("commonMain")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-        pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            configure<KotlinJvmProjectExtension> {
-                sourceSets.findByName("main")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-        pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            configure<KotlinJsProjectExtension> {
-                sourceSets.findByName("main")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-    }
-
     /**
      * Apply jupyter plugin and add entry point for the jupyter library.
      * If left empty applies a plugin without declaring library producers
@@ -195,46 +162,12 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
 
 
     /**
-     * Mark this module as an application module. JVM application should be enabled separately
-     */
-    @Deprecated("Use platform-specific applications")
-    public fun application() {
-        project.extensions.findByType<KotlinProjectExtension>()?.apply {
-            explicitApi = null
-        }
-
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            project.apply<ApplicationPlugin>()
-        }
-
-        project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
-            js(IR) {
-                binaries.executable()
-            }
-        }
-
-        project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            targets.withType<KotlinJsTargetDsl> {
-                binaries.executable()
-            }
-
-            targets.withType<KotlinNativeTarget> {
-                binaries.executable()
-            }
-
-            targets.withType<KotlinWasmJsTargetDsl> {
-                binaries.executable()
-            }
-        }
-    }
-
-    /**
      * Add context receivers to this project and all subprojects
      */
     public fun useContextReceivers() {
         project.tasks.withType<KotlinCompile> {
             compilerOptions {
-                freeCompilerArgs.add("-Xcontext-receivers")
+                freeCompilerArgs.addAll("-Xcontext-parameters")
             }
         }
     }
@@ -460,6 +393,32 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
             jvmConfig()
         }
     }
+
+    /**
+     * Executable fullstack application
+     */
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    public fun fullStackApplication(
+        mainClassName: String,
+        bundleName: String = "js/bundle.js",
+        development: Boolean = false,
+        jvmConfig: KotlinJvmTarget.() -> Unit = {},
+        jsConfig: KotlinJsTargetDsl.() -> Unit = {},
+        browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
+    ): Unit = fullStack(
+        bundleName = bundleName,
+        development = development,
+        jvmConfig = {
+            binaries {
+                executable {
+                    mainClass.set(mainClassName)
+                }
+            }
+            jvmConfig()
+        },
+        jsConfig = jsConfig,
+        browserConfig = browserConfig
+    )
 
     /**
      * Enable all supported native targets

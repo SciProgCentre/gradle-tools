@@ -10,10 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - kotlinx-io dependency in version catalog
 
 ### Changed
+- Use the new jvm executable option for full-stack instead of gradle application plugin.
 
 ### Deprecated
 
 ### Removed
+- `application` option
 
 ### Fixed
 - Fix readme generation
