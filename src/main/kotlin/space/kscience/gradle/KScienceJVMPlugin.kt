@@ -16,7 +16,7 @@ import space.kscience.gradle.internal.defaultKotlinJvmArgs
 public open class KScienceJVMPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
 
-        logger.warn("KSCience JVM plugin is deprecated. Use MPP.")
+        logger.warn("KScience JVM plugin is deprecated. Use MPP.")
         if (!plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
             plugins.apply("org.jetbrains.kotlin.jvm")
         } else {

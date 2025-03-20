@@ -145,7 +145,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
 
-            tasks.create("generateReadme") {
+            tasks.register("generateReadme") {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
@@ -176,7 +176,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 //            }
         }
 
-        val generateReadme by tasks.creating {
+        val generateReadme by tasks.registering{
             group = "documentation"
             description = "Generate a README file and a feature matrix if stub is present"
 
@@ -246,7 +246,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             dependsOn(generateReadme)
         }
 
-        tasks.create("version") {
+        tasks.register("version") {
             group = "publishing"
             val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
             outputs.file(versionFileProvider)

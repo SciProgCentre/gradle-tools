@@ -71,7 +71,7 @@ gradlePlugin {
     }
 }
 
-tasks.create("version") {
+tasks.register("version") {
     group = "publishing"
     val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
     outputs.file(versionFileProvider)
@@ -92,7 +92,7 @@ catalog.versionCatalog {
 mavenPublishing {
     configure(
         com.vanniktech.maven.publish.GradlePlugin(
-            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaHtml"),
+            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
             sourcesJar = true,
         )
     )
