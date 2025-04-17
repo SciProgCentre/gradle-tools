@@ -1,8 +1,8 @@
 [versions]
 # @pin
-kotlin = "2.1.20"
+kotlin = "2.2.0-Beta1"
 # @pin
-tools = "0.17.1-kotlin-2.1.20"
+tools = "0.17.1-kotlin-2.2.0-Beta1"
 atomicfu = "0.27.0"
 changelog = "2.2.1"
 compose = "1.7.3"
@@ -26,6 +26,7 @@ logback = "1.5.18"
 slf4j = "2.0.17"
 xmlutil = "0.90.3"
 yamlkt = "0.13.0"
+opensavvy-resources = "0.4.0"
 
 [plugins]
 maven-publish = "com.vanniktech.maven.publish:0.31.0"
@@ -34,6 +35,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+kotlin-gradle = { id = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
 kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:5.2.0"
@@ -57,6 +59,8 @@ kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
 kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer:dev.opensavvy.resources.producer.gradle.plugin", version.ref = "opensavvy-resources" }
+opensavvy-resources-consumer = { id = "dev.opensavvy.resources.producer:dev.opensavvy.resources.consumer.gradle.plugin", version.ref = "opensavvy-resources" }
 versions = "com.github.ben-manes.versions:0.52.0"
 versions-update = "nl.littlerobots.version-catalog-update:0.8.5"
 
