@@ -31,7 +31,7 @@ dependencies {
     implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
     implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:${libs.versions.kotlin.jupyter.get()}")
-    implementation("com.vanniktech:gradle-maven-publish-plugin:0.30.0")
+    implementation("com.vanniktech:gradle-maven-publish-plugin:0.31.0")
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
@@ -178,10 +178,9 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
 
 versionCatalogUpdate {
     sortByKey.set(false)
+
     keep {
         keepUnusedVersions = true
-        keepUnusedPlugins = true
-        keepUnusedLibraries = true
     }
 }
  
