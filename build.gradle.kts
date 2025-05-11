@@ -179,8 +179,6 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
 versionCatalogUpdate {
     sortByKey.set(false)
 
-    keep {
-        keepUnusedVersions = true
-    }
+    keep.keepUnusedVersions = true
 }
  
