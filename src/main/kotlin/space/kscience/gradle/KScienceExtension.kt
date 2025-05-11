@@ -162,15 +162,18 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
 
 
     /**
-     * Add context receivers to this project and all subprojects
+     * Add context parameters to the project
      */
-    public fun useContextReceivers() {
+    public fun useContextParameters() {
         project.tasks.withType<KotlinCompile> {
             compilerOptions {
                 freeCompilerArgs.addAll("-Xcontext-parameters")
             }
         }
     }
+
+    @Deprecated("Use useContextParameters", ReplaceWith("useContextParameters()"))
+    public fun useContextReceivers(): Unit = useContextParameters()
 
     public operator fun DefaultSourceSet.invoke(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         dependencies(this, dependencyBlock)
