@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import space.kscience.gradle.internal.addPublishing
 import space.kscience.gradle.internal.setupPublication
+import space.kscience.gradle.internal.withKScience
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
@@ -112,6 +113,10 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         val ksciencePublish = KSciencePublishingExtension(this)
         extensions.add("ksciencePublish", ksciencePublish)
 
+        withKScience {
+            extensions.add("publish", ksciencePublish)
+        }
+
         allprojects {
             repositories {
                 mavenCentral()
@@ -137,15 +142,16 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        val rootReadmeExtension = KScienceReadmeExtension(this)
-        extensions.add("readme", rootReadmeExtension)
-
-        //Add readme generators to individual subprojects
-        subprojects {
+        //Add readme generators to individual subprojects and root project
+        allprojects {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
 
-            tasks.register("generateReadme") {
+            withKScience {
+                extensions.add("readme", readmeExtension)
+            }
+
+            val generateReadme by tasks.registering {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
@@ -154,13 +160,23 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
+
                 readmeExtension.inputFiles.forEach {
                     if (it.exists()) {
                         inputs.file(it)
                     }
                 }
 
-                val readmeFile = this@subprojects.file("README.md")
+                subprojects {
+                    extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
+                        tasks.findByName("generateReadme")?.let { readmeTask ->
+                            dependsOn(readmeTask)
+                        }
+                        inputs.property("features-${name}", subProjectReadmeExtension.features)
+                    }
+                }
+
+                val readmeFile = this@allprojects.file("README.md")
                 outputs.file(readmeFile)
 
                 doLast {
@@ -171,80 +187,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
-//            tasks.withType<AbstractDokkaTask> {
-//                dependsOn(generateReadme)
-//            }
-        }
-
-        val generateReadme by tasks.registering{
-            group = "documentation"
-            description = "Generate a README file and a feature matrix if stub is present"
-
-            subprojects {
-                tasks.findByName("generateReadme")?.let {
-                    dependsOn(it)
-                }
-            }
-
-            inputs.property("features", rootReadmeExtension.features)
-
-            subprojects.forEach { subproject->
-                subproject.extensions.findByType<KScienceReadmeExtension>()?.let {
-                    inputs.property("features-${subproject.name}", it.features)
-                }
-            }
-
-            if (rootReadmeExtension.readmeTemplate.exists()) {
-                inputs.file(rootReadmeExtension.readmeTemplate)
-            }
-
-            rootReadmeExtension.inputFiles.forEach {
-                if (it.exists()) {
-                    inputs.file(it)
-                }
-            }
-
-            val readmeFile = project.file("README.md")
-            outputs.file(readmeFile)
-
-            doLast {
-//                val projects = subprojects.associate {
-//                    val normalizedPath = it.path.replaceFirst(":","").replace(":","/")
-//                    it.path.replace(":","/") to it.extensions.findByType<KScienceReadmeExtension>()
-//                }
-
-                if (rootReadmeExtension.readmeTemplate.exists()) {
-
-                    val modulesString = buildString {
-                        subprojects.forEach { subproject ->
-//                            val name = subproject.name
-                            subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
-                                val path = subproject.path.replaceFirst(":", "").replace(":", "/")
-                                appendLine("\n### [$path]($path)")
-                                ext.description?.let { appendLine("> ${ext.description}") }
-                                appendLine(">\n> **Maturity**: ${ext.maturity}")
-                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
-                                if (featureString.isNotBlank()) {
-                                    appendLine(">\n> **Features:**")
-                                    appendLine(featureString)
-                                }
-                            }
-                        }
-                    }
-
-                    rootReadmeExtension.property("modules", modulesString)
-
-                    rootReadmeExtension.readmeString()?.let {
-                        readmeFile.writeText(it)
-                    }
-                }
-
+            tasks.withType<AbstractDokkaTask> {
+                dependsOn(generateReadme)
             }
         }
 
-        tasks.withType<AbstractDokkaTask> {
-            dependsOn(generateReadme)
-        }
 
         tasks.register("version") {
             group = "publishing"

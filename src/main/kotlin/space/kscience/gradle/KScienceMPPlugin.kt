@@ -11,7 +11,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.internal.applySettings
 import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
-public open class KScienceMPPlugin : Plugin<Project> {
+public interface KSciencePlugin: Plugin<Project>
+
+public open class KScienceMPPlugin : KSciencePlugin {
 
     override fun apply(project: Project): Unit = project.run {
         if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {

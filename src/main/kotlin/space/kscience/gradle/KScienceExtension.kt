@@ -4,7 +4,6 @@ import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
@@ -21,9 +20,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
-import space.kscience.gradle.internal.defaultKotlinJvmArgs
-import space.kscience.gradle.internal.fromJsDependencies
+import space.kscience.gradle.internal.defaultKotlinJvmOpts
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
 import javax.inject.Inject
@@ -100,17 +97,6 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
             dependencyConfiguration = configuration
         )
         SerializationTargets(sourceSet, configuration).block()
-    }
-
-    /**
-     * Apply jupyter plugin and add entry point for the jupyter library.
-     * If left empty applies a plugin without declaring library producers
-     */
-    public fun jupyterLibrary(vararg pluginClasses: String) {
-        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
-        project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
-            libraryProducers = pluginClasses.toList()
-        }
     }
 
     /**
@@ -268,6 +254,28 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
 public abstract class KScienceMppExtension @Inject constructor(project: Project) : KScienceExtension(project) {
 
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    public fun KotlinJvmTarget.application(
+        mainClassName: String
+    ) {
+        binaries {
+            executable {
+                mainClass.set(mainClassName)
+            }
+        }
+    }
+
+    public fun KotlinJsTargetDsl.application(
+        moduleName: String? = null,
+    ) {
+        binaries.executable()
+        this.project.plugins.apply("dev.opensavvy.resources.consumer")
+        moduleName?.let {
+            outputModuleName.set(moduleName)
+        }
+    }
+
     /**
      * Enable jvm target
      */
@@ -275,9 +283,8 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
-                    @OptIn(ExperimentalKotlinGradlePluginApi::class)
                     compilerOptions {
-                        freeCompilerArgs.addAll(defaultKotlinJvmArgs)
+                        defaultKotlinJvmOpts()
                     }
                     block()
                 }
@@ -318,17 +325,15 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                     }
                 }
             }
-            (project.tasks.findByName("jsProcessResources") as? Copy)?.apply {
-                fromJsDependencies("jsRuntimeClasspath")
-            }
         }
+//        project.plugins.apply("dev.opensavvy.resources.producer")
     }
 
     /**
      * Add Wasm/Js target
      */
     @OptIn(ExperimentalWasmDsl::class)
-    public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
+    public fun wasmJs(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
@@ -353,6 +358,9 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         }
     }
 
+    @Deprecated("Use wasmJs", ReplaceWith("wasmJs(block)"))
+    public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}): Unit = wasmJs(block)
+
     public fun jvmAndJs() {
         jvm()
         js()
@@ -360,9 +368,12 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
 
     /**
      * Jvm and Js source sets including copy of Js bundle into JVM resources
+     *
+     * @param mainClassName if present, create a jvm application with it as an entry point
      */
     public fun fullStack(
         bundleName: String = "js/bundle.js",
+        mainClassName: String? = null,
         development: Boolean = false,
         jvmConfig: KotlinJvmTarget.() -> Unit = {},
         jsConfig: KotlinJsTargetDsl.() -> Unit = {},
@@ -377,7 +388,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
             }
             useEsModules()
             jsConfig()
-            binaries.executable()
+            application()
         }
         jvm {
             val processResourcesTaskName =
@@ -393,6 +404,10 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                 dependsOn(jsBrowserDistribution)
                 from(jsBrowserDistribution)
             }
+            mainClassName?.let {
+                application(it)
+            }
+
             jvmConfig()
         }
     }
@@ -400,7 +415,10 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
     /**
      * Executable fullstack application
      */
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    @Deprecated(
+        "Use fullStack",
+        ReplaceWith("fullStack(bundleName, mainClassName, development, jvmConfig, jsConfig, browserConfig)")
+    )
     public fun fullStackApplication(
         mainClassName: String,
         bundleName: String = "js/bundle.js",
@@ -410,15 +428,9 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
     ): Unit = fullStack(
         bundleName = bundleName,
+        mainClassName = mainClassName,
         development = development,
-        jvmConfig = {
-            binaries {
-                executable {
-                    mainClass.set(mainClassName)
-                }
-            }
-            jvmConfig()
-        },
+        jvmConfig = jvmConfig,
         jsConfig = jsConfig,
         browserConfig = browserConfig
     )
