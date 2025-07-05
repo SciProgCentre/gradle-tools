@@ -119,30 +119,47 @@ public class KScienceReadmeExtension(public val project: Project) {
         features += Feature(id, text, ref, name)
     }
 
-    private val properties: MutableMap<String, () -> Any?> = mutableMapOf(
-        "name" to { project.name },
-        "group" to { project.group },
-        "version" to { project.version },
-        "description" to { project.description ?: "" },
+    private val properties: MutableMap<String, Project.() -> Any?> = mutableMapOf(
+        "name" to { name },
+        "group" to { group },
+        "version" to { version },
+        "description" to { description ?: "" },
         "features" to { featuresString() },
-        "published" to { project.plugins.findPlugin("maven-publish") != null },
+        "published" to { plugins.findPlugin("maven-publish") != null },
         "artifact" to {
             val projectProperties = mapOf(
-                "name" to project.name,
-                "group" to project.group,
-                "version" to project.version
+                "name" to name,
+                "group" to group,
+                "version" to version
             )
             fmCfg.getTemplate("artifact").processToString(projectProperties)
+        },
+        "modules" to {
+            buildString {
+                subprojects.forEach { subproject ->
+                    subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
+                        val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                        appendLine("\n### [$path]($path)")
+                        ext.description?.let { appendLine("> ${ext.description}") }
+                        appendLine(">\n> **Maturity**: ${ext.maturity}")
+                        val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
+                        if (featureString.isNotBlank()) {
+                            appendLine(">\n> **Features:**")
+                            appendLine(featureString)
+                        }
+                    }
+                }
+            }
         }
     )
 
-    public fun getPropertyValues(): Map<String, Any?> = properties.mapValues { (_, value) -> value() }
+    public fun getPropertyValues(): Map<String, Any?> = properties.mapValues { (_, value) -> project.value() }
 
     public fun property(key: String, value: Any?) {
         properties[key] = { value }
     }
 
-    public fun property(key: String, value: () -> Any?) {
+    public fun property(key: String, value: Project.() -> Any?) {
         properties[key] = value
     }
 

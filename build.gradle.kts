@@ -3,10 +3,8 @@ plugins {
     `kotlin-dsl`
     `maven-publish`
     `version-catalog`
-    alias(libs.plugins.maven.publish)
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
-    alias(libs.plugins.versions)
     alias(libs.plugins.versions.update)
     alias(libs.plugins.maven.publish.base)
 }
@@ -26,12 +24,15 @@ repositories {
 
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
-    api("org.gradle.toolchains:foojay-resolver:0.9.0")
-    implementation("org.jetbrains.kotlinx:binary-compatibility-validator:0.17.0")
-    implementation("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
-    implementation("org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin:${libs.versions.kotlin.jupyter.get()}")
-    implementation("com.vanniktech:gradle-maven-publish-plugin:0.31.0")
+    api("org.gradle.toolchains:foojay-resolver:1.0.0")
+    api("com.vanniktech:gradle-maven-publish-plugin:0.33.0")
+    api("org.jetbrains.kotlinx:binary-compatibility-validator:0.18.0")
+    api("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
+    api("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
+
+    implementation("dev.opensavvy.resources.producer:dev.opensavvy.resources.producer.gradle.plugin:${libs.versions.opensavvy.resources.get()}")
+    implementation("dev.opensavvy.resources.consumer:dev.opensavvy.resources.consumer.gradle.plugin:${libs.versions.opensavvy.resources.get()}")
+
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
@@ -90,12 +91,12 @@ catalog.versionCatalog {
 
 //publishing the artifact
 mavenPublishing {
-    configure(
-        com.vanniktech.maven.publish.GradlePlugin(
-            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
-            sourcesJar = true,
-        )
-    )
+//    configure(
+//        com.vanniktech.maven.publish.GradlePlugin(
+//            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
+//            sourcesJar = true,
+//        )
+//    )
 
     publishing.publications.create<MavenPublication>("version-catalog") {
         from(components["versionCatalog"])
@@ -156,7 +157,7 @@ mavenPublishing {
     val centralPassword: String? = project.findProperty("mavenCentralPassword") as? String
 
     if (centralUser != null && centralPassword != null) {
-        publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+        publishToMavenCentral()
         signAllPublications()
     }
 }

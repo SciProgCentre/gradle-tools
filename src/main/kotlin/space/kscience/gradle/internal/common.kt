@@ -1,15 +1,19 @@
 package space.kscience.gradle.internal
 
-import org.gradle.api.artifacts.ProjectDependency
-import org.gradle.api.tasks.Copy
-import org.gradle.kotlin.dsl.get
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
+import space.kscience.gradle.KScienceExtension
+import space.kscience.gradle.KSciencePlugin
 import space.kscience.gradle.KScienceVersions
 
 
-internal val defaultKotlinJvmArgs: List<String> = listOf(
-    "-Xjvm-default=all"
-)
+internal fun KotlinJvmCompilerOptions.defaultKotlinJvmOpts() {
+    jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
+}
 
 internal val defaultKotlinCommonArgs: List<String> = listOf(
     "-Xexpect-actual-classes"
@@ -28,33 +32,23 @@ internal fun LanguageSettingsBuilder.applySettings(
     apiVersion = versionString
     progressiveMode = true
 
-
-    optIn("kotlin.RequiresOptIn")
-    optIn("kotlin.ExperimentalUnsignedTypes")
     optIn("kotlin.ExperimentalStdlibApi")
     optIn("kotlin.time.ExperimentalTime")
     optIn("kotlin.contracts.ExperimentalContracts")
     optIn("kotlin.js.ExperimentalJsExport")
 }
 
-internal fun Copy.fromJsDependencies(configurationName: String) = project.run {
-    val configuration = configurations[configurationName]
-        ?: error("Configuration with name $configurationName could not be resolved.")
-    val projectDeps = configuration.allDependencies.filterIsInstance<ProjectDependency>().map {
-        it.dependencyProject
-    }
-    projectDeps.forEach { dep ->
-        dep.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            dep.tasks.findByName("jsProcessResources")?.let { task ->
-                dependsOn(task)
-                from(task)
-            }
-        }
-        dep.pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            dep.tasks.findByName("processResources")?.let { task ->
-                dependsOn(task)
-                from(task)
-            }
-        }
+/**
+ * Configures the project using the `KScienceExtension` provided by the `KSciencePlugin`.
+ *
+ * This function locates the `KSciencePlugin` in the project, and if found, applies the given
+ * configuration block to the `KScienceExtension` associated with the plugin.
+ *
+ * @param block a configuration block that is applied to the `KScienceExtension` instance, allowing
+ *              users to customize the project according to the extension's capabilities.
+ */
+internal fun Project.withKScience(block: KScienceExtension.() -> Unit) {
+    plugins.withType<KSciencePlugin>().configureEach {
+        extensions.findByType<KScienceExtension>()?.apply(block)
     }
 }
