@@ -70,18 +70,6 @@ public class KSciencePublishingExtension(public val project: Project) {
     }
 
     /**
-     * Adds Sonatype Maven repository to publishing.
-     */
-    public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org"): Unit = with(project) {
-        require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
-        if (isInDevelopment) {
-            logger.info("Sonatype publishing skipped for development version")
-        } else {
-            addPublishing("sonatype", "$sonatypeRoot/service/local/staging/deploy/maven2")
-        }
-    }
-
-    /**
      * Add publishing to maven central "new" API
      */
     public fun central(): Unit = with(project) {
@@ -92,7 +80,7 @@ public class KSciencePublishingExtension(public val project: Project) {
             allprojects {
                 plugins.withType<MavenPublishBasePlugin> {
                     extensions.configure<MavenPublishBaseExtension> {
-                        publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+                        publishToMavenCentral()
                     }
                 }
             }
