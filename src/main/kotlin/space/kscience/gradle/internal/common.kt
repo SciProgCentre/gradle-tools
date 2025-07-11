@@ -15,10 +15,6 @@ internal fun KotlinJvmCompilerOptions.defaultKotlinJvmOpts() {
     jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
 }
 
-internal val defaultKotlinCommonArgs: List<String> = listOf(
-    "-Xexpect-actual-classes"
-)
-
 internal fun resolveKotlinVersion(): KotlinVersion {
     val (major, minor, patch) = KScienceVersions.kotlinVersion.split(".", "-")
     return KotlinVersion(major.toInt(), minor.toInt(), patch.toInt())
@@ -33,7 +29,6 @@ internal fun LanguageSettingsBuilder.applySettings(
     progressiveMode = true
 
     optIn("kotlin.ExperimentalStdlibApi")
-    optIn("kotlin.time.ExperimentalTime")
     optIn("kotlin.contracts.ExperimentalContracts")
     optIn("kotlin.js.ExperimentalJsExport")
 }

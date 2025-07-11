@@ -312,7 +312,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
     public fun js(block: KotlinJsTargetDsl.() -> Unit = {}) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                js(IR) {
+                js {
                     browser()
                     useEsModules()
                     block()
@@ -345,6 +345,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                             }
                         }
                     }
+                    useEsModules()
                     block()
                 }
                 sourceSets {
