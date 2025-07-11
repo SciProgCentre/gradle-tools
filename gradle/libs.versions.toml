@@ -1,15 +1,15 @@
 [versions]
 # @pin
-kotlin = "2.2.0"
+kotlin = "2.2.20-Beta1"
 # @pin
-tools = "0.19.0-kotlin-2.2.0"
+tools = "0.19.0-kotlin-2.2.20-Beta1"
 atomicfu = "0.29.0"
 changelog = "2.2.1"
 compose = "1.8.2"
 dokka = "2.0.0"
 jsBom = "2025.7.1"
 junit = "5.10.2"
-kotlin-jupyter = "0.14.1-504"
+kotlin-jupyter = "0.13.0-481-1"
 kotlinx-benchmark = "0.4.14"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.10.2"
