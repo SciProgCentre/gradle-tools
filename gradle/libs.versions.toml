@@ -26,7 +26,7 @@ logback = "1.5.18"
 slf4j = "2.0.17"
 xmlutil = "0.91.1"
 yamlkt = "0.13.0"
-opensavvy-resources = "0.4.0"
+opensavvy-resources = "0.5.1"
 
 [plugins]
 maven-publish = "com.vanniktech.maven.publish:0.33.0"

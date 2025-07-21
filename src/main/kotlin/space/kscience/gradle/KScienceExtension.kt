@@ -326,7 +326,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                 }
             }
         }
-//        project.plugins.apply("dev.opensavvy.resources.producer")
+        project.plugins.apply("dev.opensavvy.resources.producer")
     }
 
     /**
