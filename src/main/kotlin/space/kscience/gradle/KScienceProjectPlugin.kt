@@ -1,5 +1,7 @@
 package space.kscience.gradle
 
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.MavenPublishBasePlugin
 import kotlinx.validation.ApiValidationExtension
 import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
@@ -16,8 +18,8 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
 import space.kscience.gradle.internal.addPublishing
-import space.kscience.gradle.internal.addSonatypePublishing
 import space.kscience.gradle.internal.setupPublication
+import space.kscience.gradle.internal.withKScience
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
@@ -68,12 +70,21 @@ public class KSciencePublishingExtension(public val project: Project) {
     }
 
     /**
-     * Adds Sonatype Maven repository to publishing.
-
+     * Add publishing to maven central "new" API
      */
-    public fun sonatype(sonatypeRoot: String = "https://s01.oss.sonatype.org") {
+    public fun central(): Unit = with(project) {
         require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
-        project.addSonatypePublishing(sonatypeRoot)
+        if (isInDevelopment) {
+            logger.info("Maven central publishing skipped for development version")
+        } else {
+            allprojects {
+                plugins.withType<MavenPublishBasePlugin> {
+                    extensions.configure<MavenPublishBaseExtension> {
+                        publishToMavenCentral()
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -86,6 +97,13 @@ public open class KScienceProjectPlugin : Plugin<Project> {
         apply<ChangelogPlugin>()
         apply<DokkaPlugin>()
         apply<BinaryCompatibilityValidatorPlugin>()
+
+        val ksciencePublish = KSciencePublishingExtension(this)
+        extensions.add("ksciencePublish", ksciencePublish)
+
+        withKScience {
+            extensions.add("publish", ksciencePublish)
+        }
 
         allprojects {
             repositories {
@@ -112,32 +130,41 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        val rootReadmeExtension = KScienceReadmeExtension(this)
-        val ksciencePublish = KSciencePublishingExtension(this)
-        extensions.add("ksciencePublish", ksciencePublish)
-        extensions.add("readme", rootReadmeExtension)
-
-        //Add readme generators to individual subprojects
-        subprojects {
+        //Add readme generators to individual subprojects and root project
+        allprojects {
             val readmeExtension = KScienceReadmeExtension(this)
             extensions.add("readme", readmeExtension)
 
-            tasks.create("generateReadme") {
+            withKScience {
+                extensions.add("readme", readmeExtension)
+            }
+
+            val generateReadme by tasks.registering {
                 group = "documentation"
                 description = "Generate a README file if stub is present"
 
-                inputs.property("extension", readmeExtension)
+                inputs.property("features", readmeExtension.features)
 
                 if (readmeExtension.readmeTemplate.exists()) {
                     inputs.file(readmeExtension.readmeTemplate)
                 }
+
                 readmeExtension.inputFiles.forEach {
                     if (it.exists()) {
                         inputs.file(it)
                     }
                 }
 
-                val readmeFile = this@subprojects.file("README.md")
+                subprojects {
+                    extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
+                        tasks.findByName("generateReadme")?.let { readmeTask ->
+                            dependsOn(readmeTask)
+                        }
+                        inputs.property("features-${name}", subProjectReadmeExtension.features)
+                    }
+                }
+
+                val readmeFile = this@allprojects.file("README.md")
                 outputs.file(readmeFile)
 
                 doLast {
@@ -148,76 +175,13 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 }
             }
 
-//            tasks.withType<AbstractDokkaTask> {
-//                dependsOn(generateReadme)
-//            }
-        }
-
-        val generateReadme by tasks.creating {
-            group = "documentation"
-            description = "Generate a README file and a feature matrix if stub is present"
-
-            subprojects {
-                tasks.findByName("generateReadme")?.let {
-                    dependsOn(it)
-                }
-            }
-
-            inputs.property("extension", rootReadmeExtension)
-
-            if (rootReadmeExtension.readmeTemplate.exists()) {
-                inputs.file(rootReadmeExtension.readmeTemplate)
-            }
-
-            rootReadmeExtension.inputFiles.forEach {
-                if (it.exists()) {
-                    inputs.file(it)
-                }
-            }
-
-            val readmeFile = project.file("README.md")
-            outputs.file(readmeFile)
-
-            doLast {
-//                val projects = subprojects.associate {
-//                    val normalizedPath = it.path.replaceFirst(":","").replace(":","/")
-//                    it.path.replace(":","/") to it.extensions.findByType<KScienceReadmeExtension>()
-//                }
-
-                if (rootReadmeExtension.readmeTemplate.exists()) {
-
-                    val modulesString = buildString {
-                        subprojects.forEach { subproject ->
-//                            val name = subproject.name
-                            subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
-                                val path = subproject.path.replaceFirst(":", "").replace(":", "/")
-                                appendLine("\n### [$path]($path)")
-                                ext.description?.let { appendLine("> ${ext.description}") }
-                                appendLine(">\n> **Maturity**: ${ext.maturity}")
-                                val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
-                                if (featureString.isNotBlank()) {
-                                    appendLine(">\n> **Features:**")
-                                    appendLine(featureString)
-                                }
-                            }
-                        }
-                    }
-
-                    rootReadmeExtension.property("modules", modulesString)
-
-                    rootReadmeExtension.readmeString()?.let {
-                        readmeFile.writeText(it)
-                    }
-                }
-
+            tasks.withType<AbstractDokkaTask> {
+                dependsOn(generateReadme)
             }
         }
 
-        tasks.withType<AbstractDokkaTask> {
-            dependsOn(generateReadme)
-        }
 
-        tasks.create("version") {
+        tasks.register("version") {
             group = "publishing"
             val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
             outputs.file(versionFileProvider)

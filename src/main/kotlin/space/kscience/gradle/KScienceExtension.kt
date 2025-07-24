@@ -2,20 +2,16 @@ package space.kscience.gradle
 
 import org.gradle.api.Project
 import org.gradle.api.file.DuplicatesStrategy
-import org.gradle.api.plugins.ApplicationPlugin
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -24,9 +20,7 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlinx.jupyter.api.plugin.tasks.JupyterApiResourcesTask
-import space.kscience.gradle.internal.defaultKotlinJvmArgs
-import space.kscience.gradle.internal.fromJsDependencies
+import space.kscience.gradle.internal.defaultKotlinJvmOpts
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
 import javax.inject.Inject
@@ -54,7 +48,7 @@ public val Project.isInDevelopment: Boolean
 
 private const val defaultJdkVersion = 17
 
-public abstract class KScienceExtension @Inject constructor(public val project: Project): ExtensionAware {
+public abstract class KScienceExtension @Inject constructor(public val project: Project) : ExtensionAware {
 
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
         set(defaultJdkVersion)
@@ -103,47 +97,6 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
             dependencyConfiguration = configuration
         )
         SerializationTargets(sourceSet, configuration).block()
-    }
-
-    public fun useKtor(version: String = KScienceVersions.ktorVersion): Unit = with(project) {
-        pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
-            configure<KotlinMultiplatformExtension> {
-                sourceSets.findByName("commonMain")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-        pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            configure<KotlinJvmProjectExtension> {
-                sourceSets.findByName("main")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-        pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            configure<KotlinJsProjectExtension> {
-                sourceSets.findByName("main")?.apply {
-                    dependencies {
-                        api(project.dependencies.platform("io.ktor:ktor-bom:$version"))
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Apply jupyter plugin and add entry point for the jupyter library.
-     * If left empty applies a plugin without declaring library producers
-     */
-    public fun jupyterLibrary(vararg pluginClasses: String) {
-        project.plugins.apply("org.jetbrains.kotlin.jupyter.api")
-        project.tasks.named("processJupyterApiResources", JupyterApiResourcesTask::class.java) {
-            libraryProducers = pluginClasses.toList()
-        }
     }
 
     /**
@@ -195,49 +148,18 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
 
 
     /**
-     * Mark this module as an application module. JVM application should be enabled separately
+     * Add context parameters to the project
      */
-    @Deprecated("Use platform-specific applications")
-    public fun application() {
-        project.extensions.findByType<KotlinProjectExtension>()?.apply {
-            explicitApi = null
-        }
-
-        project.pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-            project.apply<ApplicationPlugin>()
-        }
-
-        project.extensions.findByType<KotlinJsProjectExtension>()?.apply {
-            js(IR) {
-                binaries.executable()
-            }
-        }
-
-        project.extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            targets.withType<KotlinJsTargetDsl> {
-                binaries.executable()
-            }
-
-            targets.withType<KotlinNativeTarget> {
-                binaries.executable()
-            }
-
-            targets.withType<KotlinWasmJsTargetDsl> {
-                binaries.executable()
-            }
-        }
-    }
-
-    /**
-     * Add context receivers to this project and all subprojects
-     */
-    public fun useContextReceivers() {
+    public fun useContextParameters() {
         project.tasks.withType<KotlinCompile> {
-            compilerOptions{
-              freeCompilerArgs.add("-Xcontext-receivers")
+            compilerOptions {
+                freeCompilerArgs.addAll("-Xcontext-parameters")
             }
         }
     }
+
+    @Deprecated("Use useContextParameters", ReplaceWith("useContextParameters()"))
+    public fun useContextReceivers(): Unit = useContextParameters()
 
     public operator fun DefaultSourceSet.invoke(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         dependencies(this, dependencyBlock)
@@ -287,13 +209,9 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
 
     internal companion object {
-        private fun defaultNativeTargets(project: Project): Map<KotlinNativePreset, KScienceNativeTarget> {
-            val hostOs = System.getProperty("os.name")
-
-            val targets = project.requestPropertyOrNull("publishing.targets")
-
-            return when {
-                targets == "all" -> listOf(
+        private fun defaultNativeTargets(project: Project): Set<KScienceNativeTarget> =
+            when (val targets = project.requestPropertyOrNull("publishing.targets")) {
+                null -> setOf(
                     KScienceNativeTarget.linuxX64,
                     KScienceNativeTarget.mingwX64,
                     KScienceNativeTarget.macosX64,
@@ -303,48 +221,28 @@ public class KScienceNativeConfiguration(private val project: Project) {
                     KScienceNativeTarget.iosSimulatorArm64,
                 )
 
-                targets != null -> {
-                    targets.split(",").map { KScienceNativeTarget(KotlinNativePreset.valueOf(it)) }
+                else -> targets.split(",").mapTo(HashSet()) {
+                    KScienceNativeTarget(KotlinNativePreset.valueOf(it))
                 }
-
-                hostOs.startsWith("Windows") -> listOf(
-                    KScienceNativeTarget.linuxX64,
-                    KScienceNativeTarget.mingwX64
-                )
-
-                hostOs == "Mac OS X" -> listOf(
-                    KScienceNativeTarget.macosX64,
-                    KScienceNativeTarget.macosArm64,
-                    KScienceNativeTarget.iosX64,
-                    KScienceNativeTarget.iosArm64,
-                    KScienceNativeTarget.iosSimulatorArm64,
-                )
-
-                hostOs == "Linux" -> listOf(KScienceNativeTarget.linuxX64)
-
-                else -> {
-                    emptyList()
-                }
-            }.associateBy { it.preset }
-        }
+            }
     }
 
 
-    internal var targets: Map<KotlinNativePreset, KScienceNativeTarget> = defaultNativeTargets(project)
+    internal var targets: Set<KScienceNativeTarget> = defaultNativeTargets(project)
 
 
     /**
      * Replace all targets
      */
     public fun setTargets(vararg target: KScienceNativeTarget) {
-        targets = target.associateBy { it.preset }
+        targets = target.toSet()
     }
 
     /**
      * Add a native target
      */
     public fun target(target: KScienceNativeTarget) {
-        targets += target.preset to target
+        targets += target
     }
 
     public fun target(
@@ -356,6 +254,28 @@ public class KScienceNativeConfiguration(private val project: Project) {
 
 public abstract class KScienceMppExtension @Inject constructor(project: Project) : KScienceExtension(project) {
 
+
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    public fun KotlinJvmTarget.application(
+        mainClassName: String
+    ) {
+        binaries {
+            executable {
+                mainClass.set(mainClassName)
+            }
+        }
+    }
+
+    public fun KotlinJsTargetDsl.application(
+        moduleName: String? = null,
+    ) {
+        binaries.executable()
+        this.project.plugins.apply("dev.opensavvy.resources.consumer")
+        moduleName?.let {
+            outputModuleName.set(moduleName)
+        }
+    }
+
     /**
      * Enable jvm target
      */
@@ -363,9 +283,8 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
                 jvm {
-                    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-                    compilerOptions{
-                        freeCompilerArgs.addAll(defaultKotlinJvmArgs)
+                    compilerOptions {
+                        defaultKotlinJvmOpts()
                     }
                     block()
                 }
@@ -393,7 +312,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
     public fun js(block: KotlinJsTargetDsl.() -> Unit = {}) {
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
-                js(IR) {
+                js {
                     browser()
                     useEsModules()
                     block()
@@ -406,17 +325,15 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                     }
                 }
             }
-            (project.tasks.findByName("jsProcessResources") as? Copy)?.apply {
-                fromJsDependencies("jsRuntimeClasspath")
-            }
         }
+        project.plugins.apply("dev.opensavvy.resources.producer")
     }
 
     /**
      * Add Wasm/Js target
      */
     @OptIn(ExperimentalWasmDsl::class)
-    public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
+    public fun wasmJs(block: KotlinWasmJsTargetDsl.() -> Unit = {}) {
 
         project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             project.configure<KotlinMultiplatformExtension> {
@@ -428,6 +345,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                             }
                         }
                     }
+                    useEsModules()
                     block()
                 }
                 sourceSets {
@@ -441,6 +359,9 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         }
     }
 
+    @Deprecated("Use wasmJs", ReplaceWith("wasmJs(block)"))
+    public fun wasm(block: KotlinWasmJsTargetDsl.() -> Unit = {}): Unit = wasmJs(block)
+
     public fun jvmAndJs() {
         jvm()
         js()
@@ -448,9 +369,12 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
 
     /**
      * Jvm and Js source sets including copy of Js bundle into JVM resources
+     *
+     * @param mainClassName if present, create a jvm application with it as an entry point
      */
     public fun fullStack(
         bundleName: String = "js/bundle.js",
+        mainClassName: String? = null,
         development: Boolean = false,
         jvmConfig: KotlinJvmTarget.() -> Unit = {},
         jsConfig: KotlinJsTargetDsl.() -> Unit = {},
@@ -458,14 +382,14 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
     ) {
         js {
             browser {
-                commonWebpackConfig{
+                commonWebpackConfig {
                     outputFileName = bundleName
                 }
                 browserConfig()
             }
             useEsModules()
             jsConfig()
-            binaries.executable()
+            application()
         }
         jvm {
             val processResourcesTaskName =
@@ -481,9 +405,36 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                 dependsOn(jsBrowserDistribution)
                 from(jsBrowserDistribution)
             }
+            mainClassName?.let {
+                application(it)
+            }
+
             jvmConfig()
         }
     }
+
+    /**
+     * Executable fullstack application
+     */
+    @Deprecated(
+        "Use fullStack",
+        ReplaceWith("fullStack(bundleName, mainClassName, development, jvmConfig, jsConfig, browserConfig)")
+    )
+    public fun fullStackApplication(
+        mainClassName: String,
+        bundleName: String = "js/bundle.js",
+        development: Boolean = false,
+        jvmConfig: KotlinJvmTarget.() -> Unit = {},
+        jsConfig: KotlinJsTargetDsl.() -> Unit = {},
+        browserConfig: KotlinJsBrowserDsl.() -> Unit = {},
+    ): Unit = fullStack(
+        bundleName = bundleName,
+        mainClassName = mainClassName,
+        development = development,
+        jvmConfig = jvmConfig,
+        jsConfig = jsConfig,
+        browserConfig = browserConfig
+    )
 
     /**
      * Enable all supported native targets
@@ -492,7 +443,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
         val nativeConfiguration = KScienceNativeConfiguration(this).apply(block)
         pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             configure<KotlinMultiplatformExtension> {
-                nativeConfiguration.targets.values.forEach { nativeTarget ->
+                nativeConfiguration.targets.forEach { nativeTarget ->
                     when (nativeTarget.preset) {
                         KotlinNativePreset.linuxX64 -> linuxX64(
                             nativeTarget.targetName,
@@ -537,7 +488,7 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
 }
 
 
-internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension():T {
+internal inline fun <reified T : KScienceExtension> Project.registerKScienceExtension(): T {
 //    extensions.findByType<T>()?.let { return it }
 //    return constructor(this).also {
 //        extensions.add("kscience", it)

@@ -1,5 +1,14 @@
 rootProject.name = "gradle-tools"
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version("0.8.0")
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven("https://repo.kotlin.link")
+    }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version("0.9.0")
+}
+

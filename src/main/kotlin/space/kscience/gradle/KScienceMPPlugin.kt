@@ -6,12 +6,13 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.dokka.gradle.DokkaPlugin
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.internal.applySettings
 import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
-public open class KScienceMPPlugin : Plugin<Project> {
+public interface KSciencePlugin: Plugin<Project>
+
+public open class KScienceMPPlugin : KSciencePlugin {
 
     override fun apply(project: Project): Unit = project.run {
         if (!plugins.hasPlugin("org.jetbrains.kotlin.multiplatform")) {
@@ -25,11 +26,6 @@ public open class KScienceMPPlugin : Plugin<Project> {
 
         configure<KotlinMultiplatformExtension> {
             sourceSets {
-                getByName("commonMain") {
-                    dependencies {
-                        api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
-                    }
-                }
                 getByName("commonTest") {
                     dependencies {
                         implementation(kotlin("test"))
@@ -38,11 +34,8 @@ public open class KScienceMPPlugin : Plugin<Project> {
                 }
                 all {
                     languageSettings.applySettings()
+                    compilerOptions.freeCompilerArgs.addAll(defaultKotlinCommonArgs)
                 }
-            }
-            @OptIn(ExperimentalKotlinGradlePluginApi::class)
-            compilerOptions {
-                freeCompilerArgs.addAll(defaultKotlinCommonArgs)
             }
 
             if (explicitApi == null) explicitApiWarning()

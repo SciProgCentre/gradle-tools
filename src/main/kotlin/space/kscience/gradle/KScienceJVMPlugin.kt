@@ -1,6 +1,5 @@
 package space.kscience.gradle
 
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.jvm.toolchain.JavaLanguageVersion
@@ -11,12 +10,13 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import space.kscience.gradle.internal.applySettings
-import space.kscience.gradle.internal.defaultKotlinJvmArgs
+import space.kscience.gradle.internal.defaultKotlinCommonArgs
+import space.kscience.gradle.internal.defaultKotlinJvmOpts
 
-public open class KScienceJVMPlugin : Plugin<Project> {
+public open class KScienceJVMPlugin : KSciencePlugin {
     override fun apply(project: Project): Unit = project.run {
 
-        logger.warn("KSCience JVM plugin is deprecated. Use MPP.")
+        logger.warn("KScience JVM plugin is deprecated. Use MPP.")
         if (!plugins.hasPlugin("org.jetbrains.kotlin.jvm")) {
             plugins.apply("org.jetbrains.kotlin.jvm")
         } else {
@@ -29,7 +29,8 @@ public open class KScienceJVMPlugin : Plugin<Project> {
             sourceSets.all {
                 languageSettings.applySettings()
                 compilerOptions{
-                    freeCompilerArgs.addAll(defaultKotlinJvmArgs)
+                    defaultKotlinJvmOpts()
+                    compilerOptions.freeCompilerArgs.addAll(defaultKotlinCommonArgs)
                 }
             }
 

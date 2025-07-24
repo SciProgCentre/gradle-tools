@@ -18,6 +18,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## 0.19.0-kotlin-2.2.0 - 2025-07-24
+
+### Changed
+
+- Replace manual JS dependency resource handling with `opensavvy` plugin.
+- Replace `useContextRecievers` with `useContextParameters`.
+- Submodule readme generated for all projects, not only for root
+- Replace `wasm` plugin configuration block with `wasmJs`
+
+### Deprecated
+
+- `useContextRecievers`
+- `wasm` configuration block
+
+### Removed
+
+- `fullStackApplication` configuration. Replaced by optional field in `fullStack`
+- Jupyter integration
+
+## 0.17.x
+
+### Added
+
+- kotlinx-io dependency in version catalog
+
+### Changed
+
+- Use the new jvm executable option for full-stack instead of gradle application plugin.
+
+### Removed
+
+- `application` option
+
+### Fixed
+
+- Fix readme generation
+
+## 0.16.0-kotlin-2.1.0 - 2025-01-02
+
+### Changed
+
+- Kotlin 2.1.0
+- Publication to central via `com.vanniktech.maven.publish.base`
+
 ## 0.15.4-kotlin-2.0.0 - 2024-06-04
 
 ### Added

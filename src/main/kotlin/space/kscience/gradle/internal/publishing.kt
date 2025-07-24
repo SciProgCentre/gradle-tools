@@ -1,15 +1,14 @@
 package space.kscience.gradle.internal
 
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.vanniktech.maven.publish.MavenPublishBasePlugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPom
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.*
-import org.gradle.plugins.signing.SigningExtension
-import org.gradle.plugins.signing.SigningPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import space.kscience.gradle.isInDevelopment
 
 internal fun Project.requestPropertyOrNull(propertyName: String): String? = findProperty(propertyName) as? String
     ?: System.getenv(propertyName)
@@ -20,12 +19,14 @@ internal fun Project.requestProperty(propertyName: String): String = requestProp
 
 internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit = {}) = allprojects {
     plugins.withId("maven-publish") {
+        apply<MavenPublishBasePlugin>()
+
         configure<PublishingExtension> {
 
             plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
-                val sourcesJar by tasks.creating(Jar::class) {
+                val sourcesJar by tasks.registering(Jar::class) {
                     archiveClassifier.set("sources")
                     kotlin.sourceSets.forEach {
                         from(it.kotlin)
@@ -54,32 +55,22 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             }
 
             plugins.withId("org.jetbrains.dokka") {
-                val dokkaJar by tasks.creating(Jar::class) {
+                val dokkaJar by tasks.registering(Jar::class) {
                     group = "documentation"
                     archiveClassifier.set("javadoc")
-                    from(tasks.findByName("dokkaHtml"))
+                    from(tasks.findByName("dokkaGenerate"))
                 }
                 publications.withType<MavenPublication> {
                     artifact(dokkaJar)
                 }
             }
 
-            if (requestPropertyOrNull("publishing.signing.id") != null || requestPropertyOrNull("signing.gnupg.keyName") != null) {
-
-                if (!plugins.hasPlugin("signing")) {
-                    apply<SigningPlugin>()
-                }
-
-                extensions.configure<SigningExtension>("signing") {
-                    val signingId: String? = requestPropertyOrNull("publishing.signing.id")
-                    if (!signingId.isNullOrBlank()) {
-                        val signingKey: String = requestProperty("publishing.signing.key")
-                        val signingPassphrase: String = requestProperty("publishing.signing.passPhrase")
-
-                        // if a key is provided, use it
-                        useInMemoryPgpKeys(signingId, signingKey, signingPassphrase)
-                    } // else use agent signing
-                    sign(publications)
+            //apply signing if signing configuration is available
+            if (requestPropertyOrNull("signing.password") != null || requestPropertyOrNull("signing.secretKeyRingFile") != null) {
+                plugins.withType<MavenPublishBasePlugin> {
+                    extensions.configure<MavenPublishBaseExtension> {
+                        signAllPublications()
+                    }
                 }
             } else {
                 logger.warn("Signing information is not provided. Skipping artefact signing.")
@@ -90,9 +81,9 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
 
 internal fun Project.addPublishing(
     repositoryName: String,
-    urlString:String
-){
-    require(repositoryName.matches("\\w*".toRegex())){"Repository name must contain only letters or numbers"}
+    urlString: String
+) {
+    require(repositoryName.matches("\\w*".toRegex())) { "Repository name must contain only letters or numbers" }
     val user: String? = requestPropertyOrNull("publishing.$repositoryName.user")
     val token: String? = requestPropertyOrNull("publishing.$repositoryName.token")
 
@@ -117,14 +108,5 @@ internal fun Project.addPublishing(
                 }
             }
         }
-    }
-}
-
-
-internal fun Project.addSonatypePublishing(sonatypeRoot: String) {
-    if (isInDevelopment) {
-        logger.info("Sonatype publishing skipped for development version")
-    } else {
-        addPublishing("sonatype", "$sonatypeRoot/service/local/staging/deploy/maven2")
     }
 }

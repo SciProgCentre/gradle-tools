@@ -1,45 +1,48 @@
 [versions]
 # @pin
-kotlin = "2.1.0"
+kotlin = "2.2.0"
 # @pin
-tools = "0.15.8-kotlin-2.1.0"
-atomicfu = "0.26.1"
+tools = "0.19.0-kotlin-2.2.0"
+atomicfu = "0.29.0"
 changelog = "2.2.1"
-compose = "1.7.1"
-dokka = "2.0.0-Beta"
-jsBom = "1.0.0-pre.847"
+compose = "1.8.2"
+dokka = "2.0.0"
+jsBom = "2025.7.1"
 junit = "5.10.2"
-kotlin-jupyter = "0.12.0-352"
-kotlinx-benchmark = "0.4.13"
+kotlin-jupyter = "0.14.1-544-1"
+kotlinx-benchmark = "0.4.14"
 kotlinx-cli = "0.3.6"
-kotlinx-coroutines = "1.9.0"
-kotlinx-datetime = "0.6.1"
-kotlinx-html = "0.11.0"
+kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.7.1"
+kotlinx-html = "0.12.0"
 kotlinx-knit = "0.5.0"
 kotlinx-nodejs = "0.0.7"
-kotlinx-serialization = "1.7.3"
-kover = "0.8.3"
-ktor = "3.0.2"
-ksp = "2.1.0-1.0.29"
-logback = "1.5.12"
-slf4j = "2.0.16"
-xmlutil = "0.90.3"
+kotlinx-serialization = "1.9.0"
+kotlinx-io = "0.8.0"
+kover = "0.9.1"
+ktor = "3.2.1"
+ksp = "2.2.0-2.0.2"
+logback = "1.5.18"
+slf4j = "2.0.17"
+xmlutil = "0.91.1"
 yamlkt = "0.13.0"
+opensavvy-resources = "0.5.1"
 
 [plugins]
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
+maven-publish = "com.vanniktech.maven.publish:0.33.0"
+maven-publish-base = "com.vanniktech.maven.publish.base:0.33.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
-jetbrains-changelog = "org.jetbrains.changelog:2.2.1"
+jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:5.1.2"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.1.2"
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
 kotlin-jupyter-api = { id = "org.jetbrains.kotlin.jupyter.api", version.ref = "kotlin-jupyter" }
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-native-cocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 kotlin-plugin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlin-plugin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
@@ -49,32 +52,22 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-scripting = { id = "org.jetbrains.kotlin.plugin.scripting", version.ref = "kotlin" }
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
 kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
-versions = "com.github.ben-manes.versions:0.51.0"
-versions-update = "nl.littlerobots.version-catalog-update:0.8.5"
+opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer", version.ref = "opensavvy-resources" }
+opensavvy-resources-consumer = { id = "dev.opensavvy.resources.consumer", version.ref = "opensavvy-resources" }
+versions = "com.github.ben-manes.versions:0.52.0"
+versions-update = "nl.littlerobots.version-catalog-update:1.0.0"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
-atomicfu-gradle = { module = "org.jetbrains.kotlinx:atomicfu-gradle-plugin", version.ref = "atomicfu" }
-binary-compatibility-validator = "org.jetbrains.kotlinx:binary-compatibility-validator:0.15.0-Beta.3"
-changelog-gradle = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
-dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
-dokka-gradle = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-foojay-resolver = "org.gradle.toolchains:foojay-resolver:0.9.0"
-freemarker = "org.freemarker:freemarker:2.3.33"
-gradle-changelog-plugin = { module = "org.jetbrains.intellij.plugins:gradle-changelog-plugin", version.ref = "changelog" }
-kotlin-assignment-compiler-plugin-embeddable = { module = "org.jetbrains.kotlin:kotlin-assignment-compiler-plugin-embeddable", version.ref = "kotlin" }
-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+freemarker = "org.freemarker:freemarker:2.3.34"
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "jsBom" }
-kotlin-jupyter-api-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin", version.ref = "kotlin" }
-kotlin-jupyter-gradle = { module = "org.jetbrains.kotlin:kotlin-jupyter-api-gradle-plugin", version.ref = "kotlin-jupyter" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlin-sam-with-receiver-compiler-plugin-embeddable = { module = "org.jetbrains.kotlin:kotlin-sam-with-receiver-compiler-plugin-embeddable", version.ref = "kotlin" }
 kotlin-scripting-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable", version.ref = "kotlin" }
@@ -107,6 +100,9 @@ kotlinx-serialization-hocon = { module = "org.jetbrains.kotlinx:kotlinx-serializ
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-properties = { module = "org.jetbrains.kotlinx:kotlinx-serialization-properties", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "kotlinx-serialization" }
+kotlinx-browser = "org.jetbrains.kotlinx:kotlinx-browser:0.3"
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
+kotlinx-io-bytestring = { module = "org.jetbrains.kotlinx:kotlinx-io-bytestring", version.ref = "kotlinx-io" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }

@@ -1,15 +1,12 @@
-
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     `maven-publish`
-//    signing
     `version-catalog`
-    alias(libs.plugins.maven.publish)
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
-    alias(libs.plugins.versions)
     alias(libs.plugins.versions.update)
+    alias(libs.plugins.maven.publish.base)
 }
 
 group = "space.kscience"
@@ -26,12 +23,16 @@ repositories {
 }
 
 dependencies {
-    api(libs.kotlin.gradle)
-    api(libs.foojay.resolver)
-    implementation(libs.binary.compatibility.validator)
-    implementation(libs.changelog.gradle)
-    implementation(libs.dokka.gradle)
-    implementation(libs.kotlin.jupyter.gradle)
+    api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
+    api("org.gradle.toolchains:foojay-resolver:1.0.0")
+    api("com.vanniktech:gradle-maven-publish-plugin:0.33.0")
+    api("org.jetbrains.kotlinx:binary-compatibility-validator:0.18.0")
+    api("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
+    api("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
+
+    implementation("dev.opensavvy.resources.producer:dev.opensavvy.resources.producer.gradle.plugin:${libs.versions.opensavvy.resources.get()}")
+    implementation("dev.opensavvy.resources.consumer:dev.opensavvy.resources.consumer.gradle.plugin:${libs.versions.opensavvy.resources.get()}")
+
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
@@ -71,7 +72,7 @@ gradlePlugin {
     }
 }
 
-tasks.create("version") {
+tasks.register("version") {
     group = "publishing"
     val versionFileProvider = project.layout.buildDirectory.file("project-version.txt")
     outputs.file(versionFileProvider)
@@ -89,40 +90,21 @@ catalog.versionCatalog {
 }
 
 //publishing the artifact
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.named("main").get().allSource)
-}
-
-val javadocsJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    archiveClassifier.set("javadoc")
-    from(tasks.dokkaHtml)
-}
-
-val emptyJavadocJar by tasks.creating(Jar::class) {
-    group = JavaBasePlugin.DOCUMENTATION_GROUP
-    archiveBaseName.set("empty")
-    archiveClassifier.set("javadoc")
-}
-
-
-val emptySourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    archiveBaseName.set("empty")
-}
-
 mavenPublishing {
-    configure(
-        com.vanniktech.maven.publish.GradlePlugin(
-            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaHtml"),
-            sourcesJar = true,
-        )
-    )
+//    configure(
+//        com.vanniktech.maven.publish.GradlePlugin(
+//            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
+//            sourcesJar = true,
+//        )
+//    )
 
-    project.publishing.publications.create("maven", MavenPublication::class.java) {
-        from(project.components.getByName("versionCatalog"))
+    publishing.publications.create<MavenPublication>("version-catalog") {
+        from(components["versionCatalog"])
+        artifactId = "version-catalog"
+
+        pom {
+            name.set("version-catalog")
+        }
     }
 
     val vcs = "https://git.sciprog.center/kscience/gradle-tools"
@@ -175,7 +157,7 @@ mavenPublishing {
     val centralPassword: String? = project.findProperty("mavenCentralPassword") as? String
 
     if (centralUser != null && centralPassword != null) {
-        publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+        publishToMavenCentral()
         signAllPublications()
     }
 }
@@ -197,10 +179,7 @@ tasks.withType<AbstractPublishToMaven>().configureEach {
 
 versionCatalogUpdate {
     sortByKey.set(false)
-    keep {
-        keepUnusedVersions = true
-        keepUnusedPlugins = true
-        keepUnusedLibraries = true
-    }
+
+    keep.keepUnusedVersions = true
 }
  

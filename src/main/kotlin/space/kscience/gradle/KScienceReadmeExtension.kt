@@ -12,10 +12,8 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.intellij.lang.annotations.Language
 import java.io.File
+import java.io.Serializable
 import java.io.StringWriter
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 public enum class Maturity {
     PROTOTYPE,
@@ -71,14 +69,14 @@ public class KScienceReadmeExtension(public val project: Project) {
     private val fmLoader = StringTemplateLoader().apply {
         putTemplate(
             "artifact",
-            this@KScienceReadmeExtension.javaClass.getResource("/templates/ARTIFACT-TEMPLATE.md")!!.readText()
+            KScienceReadmeExtension::class.java.getResource("/templates/ARTIFACT-TEMPLATE.md")!!.readText()
         )
         if (readmeTemplate.exists()) {
             putTemplate("readme", readmeTemplate.readText())
         } else if (useDefaultReadmeTemplate) {
             putTemplate(
                 "readme",
-                this@KScienceReadmeExtension.javaClass.getResource("/templates/README-TEMPLATE.md")!!.readText()
+                KScienceReadmeExtension::class.java.getResource("/templates/README-TEMPLATE.md")!!.readText()
             )
         }
     }
@@ -88,7 +86,7 @@ public class KScienceReadmeExtension(public val project: Project) {
         templateLoader = fmLoader
     }
 
-    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
+    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id): Serializable
 
     public val features: MutableList<Feature> = mutableListOf()
 
@@ -99,7 +97,7 @@ public class KScienceReadmeExtension(public val project: Project) {
         id: String,
         @Language("File") ref: String? = null,
         name: String = id,
-        description: () -> String,
+        @Language("markdown") description: () -> String,
     ) {
         features += Feature(id, description(), ref, name)
     }
@@ -121,30 +119,47 @@ public class KScienceReadmeExtension(public val project: Project) {
         features += Feature(id, text, ref, name)
     }
 
-    private val properties: MutableMap<String, () -> Any?> = mutableMapOf(
-        "name" to { project.name },
-        "group" to { project.group },
-        "version" to { project.version },
-        "description" to { project.description ?: "" },
+    private val properties: MutableMap<String, Project.() -> Any?> = mutableMapOf(
+        "name" to { name },
+        "group" to { group },
+        "version" to { version },
+        "description" to { description ?: "" },
         "features" to { featuresString() },
-        "published" to { project.plugins.findPlugin("maven-publish") != null },
+        "published" to { plugins.findPlugin("maven-publish") != null },
         "artifact" to {
             val projectProperties = mapOf(
-                "name" to project.name,
-                "group" to project.group,
-                "version" to project.version
+                "name" to name,
+                "group" to group,
+                "version" to version
             )
             fmCfg.getTemplate("artifact").processToString(projectProperties)
+        },
+        "modules" to {
+            buildString {
+                subprojects.forEach { subproject ->
+                    subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
+                        val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                        appendLine("\n### [$path]($path)")
+                        ext.description?.let { appendLine("> ${ext.description}") }
+                        appendLine(">\n> **Maturity**: ${ext.maturity}")
+                        val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
+                        if (featureString.isNotBlank()) {
+                            appendLine(">\n> **Features:**")
+                            appendLine(featureString)
+                        }
+                    }
+                }
+            }
         }
     )
 
-    public fun getPropertyValues(): Map<String, Any?> = properties.mapValues { (_, value) -> value() }
+    public fun getPropertyValues(): Map<String, Any?> = properties.mapValues { (_, value) -> project.value() }
 
     public fun property(key: String, value: Any?) {
         properties[key] = { value }
     }
 
-    public fun property(key: String, value: () -> Any?) {
+    public fun property(key: String, value: Project.() -> Any?) {
         properties[key] = value
     }
 
@@ -177,7 +192,7 @@ public class KScienceReadmeExtension(public val project: Project) {
      */
     internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
-            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
+            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description.lines().firstOrNull() ?: ""}")
         }
     }
 

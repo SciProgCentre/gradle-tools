@@ -17,12 +17,3 @@ Includes JVM-IR and JS-IR-Browser targets.
 
 ## space.kscience.gradle.jvm
 `= kotlin("jvm") + space.kscience.gradle.common`
-
-## space.kscience.gradle.js
-`= kotlin("js") + space.kscience.gradle.common`
-
-## space.kscience.gradle.native
-add default native targets to `space.kscience.gradle.mpp`
-
-## space.kscience.gradle.node
-add node target to `space.kscience.gradle.mpp`
