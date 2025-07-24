@@ -10,6 +10,9 @@ import space.kscience.gradle.KScienceExtension
 import space.kscience.gradle.KSciencePlugin
 import space.kscience.gradle.KScienceVersions
 
+internal val defaultKotlinCommonArgs: List<String> = listOf(
+    "-Xexpect-actual-classes"
+)
 
 internal fun KotlinJvmCompilerOptions.defaultKotlinJvmOpts() {
     jvmDefault.set(JvmDefaultMode.NO_COMPATIBILITY)
@@ -31,6 +34,7 @@ internal fun LanguageSettingsBuilder.applySettings(
     optIn("kotlin.ExperimentalStdlibApi")
     optIn("kotlin.contracts.ExperimentalContracts")
     optIn("kotlin.js.ExperimentalJsExport")
+    optIn("kotlin.time.ExperimentalTime")
 }
 
 /**

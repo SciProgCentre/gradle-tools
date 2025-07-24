@@ -10,6 +10,7 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import space.kscience.gradle.internal.applySettings
+import space.kscience.gradle.internal.defaultKotlinCommonArgs
 import space.kscience.gradle.internal.defaultKotlinJvmOpts
 
 public open class KScienceJVMPlugin : KSciencePlugin {
@@ -29,6 +30,7 @@ public open class KScienceJVMPlugin : KSciencePlugin {
                 languageSettings.applySettings()
                 compilerOptions{
                     defaultKotlinJvmOpts()
+                    compilerOptions.freeCompilerArgs.addAll(defaultKotlinCommonArgs)
                 }
             }
 

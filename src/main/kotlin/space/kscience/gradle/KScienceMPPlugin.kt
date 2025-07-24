@@ -8,6 +8,7 @@ import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.internal.applySettings
+import space.kscience.gradle.internal.defaultKotlinCommonArgs
 
 public interface KSciencePlugin: Plugin<Project>
 
@@ -33,6 +34,7 @@ public open class KScienceMPPlugin : KSciencePlugin {
                 }
                 all {
                     languageSettings.applySettings()
+                    compilerOptions.freeCompilerArgs.addAll(defaultKotlinCommonArgs)
                 }
             }
 
