@@ -9,22 +9,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## 0.19.0-kotlin-2.2.0 - 2025-07-24
+
+### Changed
+
 - Replace manual JS dependency resource handling with `opensavvy` plugin.
 - Replace `useContextRecievers` with `useContextParameters`.
 - Submodule readme generated for all projects, not only for root
 - Replace `wasm` plugin configuration block with `wasmJs`
 
 ### Deprecated
+
 - `useContextRecievers`
 - `wasm` configuration block
 
 ### Removed
+
 - `fullStackApplication` configuration. Replaced by optional field in `fullStack`
 - Jupyter integration
-
-### Fixed
-
-### Security
 
 ## 0.17.x
 
