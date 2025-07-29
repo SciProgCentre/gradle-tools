@@ -91,12 +91,13 @@ catalog.versionCatalog {
 
 //publishing the artifact
 mavenPublishing {
-//    configure(
-//        com.vanniktech.maven.publish.GradlePlugin(
-//            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
-//            sourcesJar = true,
-//        )
-//    )
+    configure(
+        com.vanniktech.maven.publish.GradlePlugin(
+            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
+            sourcesJar = true,
+        )
+    )
+
 
     publishing.publications.create<MavenPublication>("version-catalog") {
         from(components["versionCatalog"])
