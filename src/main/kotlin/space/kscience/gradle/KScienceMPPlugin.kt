@@ -9,7 +9,7 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.internal.applySettings
 
-public interface KSciencePlugin: Plugin<Project>
+public interface KSciencePlugin : Plugin<Project>
 
 public open class KScienceMPPlugin : KSciencePlugin {
 
@@ -24,6 +24,9 @@ public open class KScienceMPPlugin : KSciencePlugin {
         val kscience = registerKScienceExtension<KScienceMppExtension>()
 
         configure<KotlinMultiplatformExtension> {
+            compilerOptions {
+                freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
             sourceSets {
                 getByName("commonTest") {
                     dependencies {
