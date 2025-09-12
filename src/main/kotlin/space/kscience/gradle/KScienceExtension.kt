@@ -318,6 +318,11 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                     block()
                 }
                 sourceSets {
+                    getByName("jsMain") {
+                        dependencies {
+                            api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                        }
+                    }
                     getByName("jsTest") {
                         dependencies {
                             implementation(kotlin("test-js"))

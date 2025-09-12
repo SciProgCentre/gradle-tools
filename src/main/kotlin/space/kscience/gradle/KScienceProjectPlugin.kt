@@ -17,6 +17,8 @@ import org.jetbrains.dokka.gradle.DokkaPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
+import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnPlugin
+import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension
 import space.kscience.gradle.internal.addPublishing
 import space.kscience.gradle.internal.setupPublication
 import space.kscience.gradle.internal.withKScience
@@ -200,9 +202,15 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        plugins.withType<YarnPlugin>() {
+        plugins.withType<YarnPlugin> {
             rootProject.configure<YarnRootExtension> {
-                lockFileDirectory = rootDir.resolve("gradle")
+                lockFileDirectory = rootDir.resolve("gradle/js")
+                yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+            }
+        }
+        plugins.withType<WasmYarnPlugin> {
+            rootProject.configure<WasmYarnRootExtension> {
+                lockFileDirectory = rootDir.resolve("gradle/wasm")
                 yarnLockMismatchReport = YarnLockMismatchReport.WARNING
             }
         }
