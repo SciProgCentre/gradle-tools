@@ -1,7 +1,7 @@
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
-    `maven-publish`
+//    `maven-publish`
     `version-catalog`
     alias(libs.plugins.jetbrains.changelog)
     alias(libs.plugins.jetbrains.dokka)
@@ -25,7 +25,7 @@ repositories {
 dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
     api("org.gradle.toolchains:foojay-resolver:1.0.0")
-    api("com.vanniktech:gradle-maven-publish-plugin:0.33.0")
+    api("com.vanniktech:gradle-maven-publish-plugin:0.34.0")
     api("org.jetbrains.kotlinx:binary-compatibility-validator:0.18.0")
     api("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
     api("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
@@ -36,8 +36,6 @@ dependencies {
     implementation(libs.kotlin.serialization)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
-//    // nexus publishing plugin
-//    implementation("io.github.gradle-nexus:publish-plugin:_")
 
     implementation(libs.freemarker)
 
@@ -89,16 +87,13 @@ catalog.versionCatalog {
     from(files("gradle/libs.versions.toml"))
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 //publishing the artifact
 mavenPublishing {
-    configure(
-        com.vanniktech.maven.publish.GradlePlugin(
-            javadocJar = com.vanniktech.maven.publish.JavadocJar.Dokka("dokkaGenerate"),
-            sourcesJar = true,
-        )
-    )
-
-
     publishing.publications.create<MavenPublication>("version-catalog") {
         from(components["versionCatalog"])
         artifactId = "version-catalog"
@@ -165,7 +160,7 @@ mavenPublishing {
 
 kotlin {
     explicitApiWarning()
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 tasks.processResources.configure {
