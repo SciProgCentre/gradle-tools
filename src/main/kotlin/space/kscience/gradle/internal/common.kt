@@ -31,10 +31,11 @@ internal fun LanguageSettingsBuilder.applySettings(
     apiVersion = versionString
     progressiveMode = true
 
+    optIn("kotlin.time.ExperimentalTime")
+    optIn("kotlin.ExperimentalUnsignedTypes")
     optIn("kotlin.ExperimentalStdlibApi")
     optIn("kotlin.contracts.ExperimentalContracts")
     optIn("kotlin.js.ExperimentalJsExport")
-    optIn("kotlin.time.ExperimentalTime")
 }
 
 /**

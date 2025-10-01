@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsBrowserDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
+import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import space.kscience.gradle.internal.defaultKotlinJvmOpts
@@ -318,6 +319,11 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                     block()
                 }
                 sourceSets {
+                    getByName("jsMain") {
+                        dependencies {
+                            api(project.dependencies.platform("org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom:${KScienceVersions.jsBom}"))
+                        }
+                    }
                     getByName("jsTest") {
                         dependencies {
                             implementation(kotlin("test-js"))
@@ -352,6 +358,24 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                     getByName("wasmJsTest") {
                         dependencies {
                             implementation(kotlin("test-wasm-js"))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalWasmDsl::class)
+    public fun wasmWasi(block: KotlinWasmWasiTargetDsl.() -> Unit = {}) {
+        project.pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+            project.configure<KotlinMultiplatformExtension> {
+                wasmWasi {
+                    block()
+                }
+                sourceSets {
+                    getByName("wasmWasiTest") {
+                        dependencies {
+                            implementation(kotlin("test-wasm-wasi"))
                         }
                     }
                 }
