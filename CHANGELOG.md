@@ -10,12 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WasmWasi target
 
 ### Changed
+- Kotlin 2.3.0
+- Maturity moved to kscience extension.
+- Readme extension now requires kscience extension.
 
 ### Deprecated
 
 ### Removed
 
 ### Fixed
+- Context parameter flag
 
 ### Security
 

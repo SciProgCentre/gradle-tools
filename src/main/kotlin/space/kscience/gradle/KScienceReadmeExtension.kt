@@ -7,7 +7,6 @@ import freemarker.template.TemplateNotFoundException
 import kotlinx.html.TagConsumer
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
-import kotlinx.validation.ApiValidationExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.intellij.lang.annotations.Language
@@ -15,13 +14,7 @@ import java.io.File
 import java.io.Serializable
 import java.io.StringWriter
 
-public enum class Maturity {
-    PROTOTYPE,
-    EXPERIMENTAL,
-    DEVELOPMENT,
-    STABLE,
-    DEPRECATED
-}
+
 
 private fun Template.processToString(args: Map<String, Any?>): String {
     val writer = StringWriter()
@@ -29,26 +22,13 @@ private fun Template.processToString(args: Map<String, Any?>): String {
     return writer.toString()
 }
 
+public class KScienceReadmeExtension(private val kscience: KScienceExtension) {
+    public val project: Project get() = kscience.project
 
-public class KScienceReadmeExtension(public val project: Project) {
     public var description: String? = null
         get() = field ?: project.description
 
-    public var maturity: Maturity = Maturity.EXPERIMENTAL
-        set(value) {
-            field = value
-            val projectName = project.name
-            if (value == Maturity.EXPERIMENTAL || value == Maturity.PROTOTYPE) {
-                project.rootProject.run {
-                    plugins.withId("org.jetbrains.kotlinx.binary-compatibility-validator") {
-                        extensions.findByType<ApiValidationExtension>()?.apply {
-                            project.logger.warn("$value project $projectName is excluded from API validation")
-                            ignoredProjects.add(projectName)
-                        }
-                    }
-                }
-            }
-        }
+    public var maturity: Maturity by kscience::maturity
 
     /**
      * If true, use default templates provided by plugin if override is not defined
@@ -86,7 +66,8 @@ public class KScienceReadmeExtension(public val project: Project) {
         templateLoader = fmLoader
     }
 
-    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id): Serializable
+    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id) :
+        Serializable
 
     public val features: MutableList<Feature> = mutableListOf()
 
@@ -192,7 +173,11 @@ public class KScienceReadmeExtension(public val project: Project) {
      */
     internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
-            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description.lines().firstOrNull() ?: ""}")
+            appendLine(
+                "$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${
+                    it.description.lines().firstOrNull() ?: ""
+                }"
+            )
         }
     }
 

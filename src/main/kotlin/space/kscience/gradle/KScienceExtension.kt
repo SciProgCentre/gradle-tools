@@ -38,6 +38,13 @@ public enum class DependencySourceSet(public val setName: String, public val suf
     TEST("test", "Test")
 }
 
+public enum class Maturity {
+    PROTOTYPE,
+    EXPERIMENTAL,
+    DEVELOPMENT,
+    STABLE,
+    DEPRECATED
+}
 
 /**
  * Check if this project version has a development tag (`development` property to true, "dev" in the middle or "SNAPSHOT" in the end).
@@ -46,6 +53,14 @@ public val Project.isInDevelopment: Boolean
     get() = findProperty("development") == true
             || "dev" in version.toString()
             || version.toString().endsWith("SNAPSHOT")
+
+
+/**
+ *  Check if the project has a kscience extension that declares it as immature. Returns true if the project does not have readme extension
+ */
+public fun Project.isMature(): Boolean = extensions.findByType<KScienceExtension>()?.let { ext ->
+    ext.maturity != Maturity.EXPERIMENTAL && ext.maturity != Maturity.PROTOTYPE && ext.maturity != Maturity.DEPRECATED
+} ?: true
 
 
 private const val defaultJdkVersion = 21
@@ -57,6 +72,9 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
     }
 
     public var jdkVersion: Int by jdkVersionProperty
+
+
+    public var maturity: Maturity = Maturity.EXPERIMENTAL
 
     /**
      * Use coroutines-core with default version or [version]

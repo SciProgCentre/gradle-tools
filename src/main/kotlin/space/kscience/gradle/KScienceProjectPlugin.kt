@@ -2,8 +2,6 @@ package space.kscience.gradle
 
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.MavenPublishBasePlugin
-import kotlinx.validation.ApiValidationExtension
-import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPom
@@ -14,6 +12,8 @@ import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension
 import space.kscience.gradle.internal.addPublishing
 import space.kscience.gradle.internal.setupPublication
 import space.kscience.gradle.internal.withKScience
+import space.kscience.gradle.internal.withKotlin
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
@@ -95,10 +96,11 @@ public class KSciencePublishingExtension(public val project: Project) {
  * generation.
  */
 public open class KScienceProjectPlugin : Plugin<Project> {
+
+    @OptIn(ExperimentalAbiValidation::class)
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
         apply<DokkaPlugin>()
-        apply<BinaryCompatibilityValidatorPlugin>()
 
         val ksciencePublish = KSciencePublishingExtension(this)
         extensions.add("ksciencePublish", ksciencePublish)
@@ -107,7 +109,17 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             extensions.add("publish", ksciencePublish)
         }
 
+        afterEvaluate {
+            if (!isInDevelopment) {
+                configure<ChangelogPluginExtension> {
+                    version.set(project.version.toString())
+                }
+            }
+        }
+
         allprojects {
+
+            //Add repositories
             repositories {
                 mavenCentral()
                 maven("https://repo.kotlin.link")
@@ -118,67 +130,66 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             tasks.withType<AbstractPublishToMaven>().configureEach {
                 mustRunAfter(tasks.withType<Sign>())
             }
-        }
 
-        afterEvaluate {
-            if (isInDevelopment) {
-                configure<ApiValidationExtension> {
-                    validationDisabled = true
-                }
-            } else {
-                configure<ChangelogPluginExtension> {
-                    version.set(project.version.toString())
-                }
-            }
-        }
-
-        //Add readme generators to individual subprojects and root project
-        allprojects {
-            val readmeExtension = KScienceReadmeExtension(this)
-            extensions.add("readme", readmeExtension)
 
             withKScience {
+
+                //Add readme generators to individual subprojects and root project
+                val readmeExtension = KScienceReadmeExtension(this)
+                project.extensions.add("readme", readmeExtension)
+
                 extensions.add("readme", readmeExtension)
-            }
 
-            val generateReadme by tasks.registering {
-                group = "documentation"
-                description = "Generate a README file if stub is present"
 
-                inputs.property("features", readmeExtension.features)
+                val generateReadme by tasks.registering {
+                    group = "documentation"
+                    description = "Generate a README file if stub is present"
 
-                if (readmeExtension.readmeTemplate.exists()) {
-                    inputs.file(readmeExtension.readmeTemplate)
-                }
+                    inputs.property("features", readmeExtension.features)
 
-                readmeExtension.inputFiles.forEach {
-                    if (it.exists()) {
-                        inputs.file(it)
+                    if (readmeExtension.readmeTemplate.exists()) {
+                        inputs.file(readmeExtension.readmeTemplate)
                     }
-                }
 
-                subprojects {
-                    extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
-                        tasks.findByName("generateReadme")?.let { readmeTask ->
-                            dependsOn(readmeTask)
+                    readmeExtension.inputFiles.forEach {
+                        if (it.exists()) {
+                            inputs.file(it)
                         }
-                        inputs.property("features-${name}", subProjectReadmeExtension.features)
+                    }
+
+                    subprojects {
+                        extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
+                            tasks.findByName("generateReadme")?.let { readmeTask ->
+                                dependsOn(readmeTask)
+                            }
+                            inputs.property("features-${name}", subProjectReadmeExtension.features)
+                        }
+                    }
+
+                    val readmeFile = this@allprojects.file("README.md")
+                    outputs.file(readmeFile)
+
+                    doLast {
+                        val readmeString = readmeExtension.readmeString()
+                        if (readmeString != null) {
+                            readmeFile.writeText(readmeString)
+                        }
                     }
                 }
 
-                val readmeFile = this@allprojects.file("README.md")
-                outputs.file(readmeFile)
+                tasks.withType<AbstractDokkaTask> {
+                    dependsOn(generateReadme)
+                }
 
-                doLast {
-                    val readmeString = readmeExtension.readmeString()
-                    if (readmeString != null) {
-                        readmeFile.writeText(readmeString)
+
+                // Enable API validation for production releases
+                if (!isInDevelopment && isMature()) {
+                    withKotlin {
+                        extensions.configure<AbiValidationExtension> {
+                            enabled.set(true)
+                        }
                     }
                 }
-            }
-
-            tasks.withType<AbstractDokkaTask> {
-                dependsOn(generateReadme)
             }
         }
 
@@ -194,13 +205,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        // Disable API validation for snapshots
-        if (isInDevelopment) {
-            extensions.findByType<ApiValidationExtension>()?.apply {
-                validationDisabled = true
-                logger.warn("API validation is disabled for snapshot or dev version")
-            }
-        }
+
 
         plugins.withType<YarnPlugin> {
             rootProject.configure<YarnRootExtension> {
