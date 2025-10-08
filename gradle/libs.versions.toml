@@ -1,15 +1,16 @@
 [versions]
 # @pin
-kotlin = "2.2.20"
+kotlin = "2.3.0-Beta1"
 # @pin
-tools = "0.19.2-kotlin-2.2.20"
+tools = "0.19.3-kotlin-2.3.0-Beta1"
 atomicfu = "0.29.0"
 changelog = "2.4.0"
-compose = "1.8.2"
+compose = "1.9.0"
 dokka = "2.0.0"
-jsBom = "2025.9.6"
+jsBom = "2025.10.3"
 junit = "5.10.2"
-kotlin-jupyter = "0.15.0-616"
+# @pin
+kotlin-jupyter = "0.15.0-634"
 kotlinx-benchmark = "0.4.14"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.10.2"
@@ -19,10 +20,10 @@ kotlinx-knit = "0.5.0"
 kotlinx-nodejs = "0.0.7"
 kotlinx-serialization = "1.9.0"
 kotlinx-io = "0.8.0"
-kover = "0.9.1"
-ktor = "3.2.3"
-ksp = "2.2.20-2.0.3"
-logback = "1.5.18"
+kover = "0.9.2"
+ktor = "3.3.0"
+ksp = "2.2.20-2.0.4"
+logback = "1.5.19"
 slf4j = "2.0.17"
 xmlutil = "0.91.2"
 yamlkt = "0.13.0"
@@ -58,11 +59,11 @@ kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
 kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-ktor = "io.ktor.plugin:3.2.3"
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer", version.ref = "opensavvy-resources" }
 opensavvy-resources-consumer = { id = "dev.opensavvy.resources.consumer", version.ref = "opensavvy-resources" }
-versions = "com.github.ben-manes.versions:0.52.0"
-versions-update = "nl.littlerobots.version-catalog-update:1.0.0"
+versions = "com.github.ben-manes.versions:0.53.0"
+versions-update = "nl.littlerobots.version-catalog-update:1.0.1"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }

@@ -10,6 +10,8 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -20,7 +22,6 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import space.kscience.gradle.internal.defaultKotlinJvmOpts
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
@@ -47,7 +48,7 @@ public val Project.isInDevelopment: Boolean
             || version.toString().endsWith("SNAPSHOT")
 
 
-private const val defaultJdkVersion = 17
+private const val defaultJdkVersion = 21
 
 public abstract class KScienceExtension @Inject constructor(public val project: Project) : ExtensionAware {
 
@@ -152,10 +153,9 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
      * Add context parameters to the project
      */
     public fun useContextParameters() {
-        project.tasks.withType<KotlinCompile> {
-            compilerOptions {
-                freeCompilerArgs.addAll("-Xcontext-parameters")
-            }
+        @Suppress("UNCHECKED_CAST")
+        (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions {
+            freeCompilerArgs.addAll("-Xcontext-parameters")
         }
     }
 
