@@ -8,12 +8,16 @@ import kotlinx.html.TagConsumer
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.*
 import org.intellij.lang.annotations.Language
+import org.jetbrains.dokka.gradle.AbstractDokkaTask
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+import space.kscience.gradle.internal.withKScience
+import space.kscience.gradle.internal.withKotlin
 import java.io.File
 import java.io.Serializable
 import java.io.StringWriter
-
 
 
 private fun Template.processToString(args: Map<String, Any?>): String {
@@ -22,7 +26,7 @@ private fun Template.processToString(args: Map<String, Any?>): String {
     return writer.toString()
 }
 
-public class KScienceReadmeExtension(private val kscience: KScienceExtension) {
+public class KScienceReadmeExtension(private val kscience: KSciencePlatformExtension) {
     public val project: Project get() = kscience.project
 
     public var description: String? = null
@@ -224,4 +228,72 @@ public class KScienceReadmeExtension(private val kscience: KScienceExtension) {
     }
 
 
+}
+
+
+internal fun KSciencePlatformExtension.configureReadme() = with(project) {
+
+    //early return is readme is already configured
+    if (extensions.findByType<KScienceReadmeExtension>() != null) return@with
+
+    //Add readme generators to individual subprojects and root project
+    val readmeExtension = KScienceReadmeExtension(this@configureReadme)
+    this.extensions.add("readme", readmeExtension)
+
+    this@configureReadme.extensions.add("readme", readmeExtension)
+
+
+    val generateReadme by tasks.registering {
+        group = "documentation"
+        description = "Generate a README file if stub is present"
+
+        inputs.property("features", readmeExtension.features)
+
+        if (readmeExtension.readmeTemplate.exists()) {
+            inputs.file(readmeExtension.readmeTemplate)
+        }
+
+        readmeExtension.inputFiles.forEach {
+            if (it.exists()) {
+                inputs.file(it)
+            }
+        }
+
+        // add dependency for this task on subprojects readme tasks
+        subprojects {
+            withKScience {
+                extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
+                    tasks.findByName("generateReadme")?.let { readmeTask ->
+                        dependsOn(readmeTask)
+                    }
+                    inputs.property("features-${name}", subProjectReadmeExtension.features)
+                }
+            }
+        }
+
+        val readmeFile = file("README.md")
+        outputs.file(readmeFile)
+
+        doLast {
+            val readmeString = readmeExtension.readmeString()
+            if (readmeString != null) {
+                readmeFile.writeText(readmeString)
+            }
+        }
+    }
+
+    tasks.withType<AbstractDokkaTask> {
+        dependsOn(generateReadme)
+    }
+
+
+    // Enable API validation for production releases
+    if (!isInDevelopment && isMature()) {
+        withKotlin {
+            extensions.configure<AbiValidationExtension> {
+                @OptIn(ExperimentalAbiValidation::class)
+                enabled.set(true)
+            }
+        }
+    }
 }

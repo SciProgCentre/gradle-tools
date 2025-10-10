@@ -58,14 +58,19 @@ public val Project.isInDevelopment: Boolean
 /**
  *  Check if the project has a kscience extension that declares it as immature. Returns true if the project does not have readme extension
  */
-public fun Project.isMature(): Boolean = extensions.findByType<KScienceExtension>()?.let { ext ->
-    ext.maturity != Maturity.EXPERIMENTAL && ext.maturity != Maturity.PROTOTYPE && ext.maturity != Maturity.DEPRECATED
+public fun Project.isMature(): Boolean = extensions.findByType<KSciencePlatformExtension>()?.let { ext ->
+    ext.maturity == Maturity.DEVELOPMENT && ext.maturity == Maturity.STABLE
 } ?: true
 
 
 private const val defaultJdkVersion = 21
 
-public abstract class KScienceExtension @Inject constructor(public val project: Project) : ExtensionAware {
+public interface KSciencePlatformExtension: ExtensionAware {
+    public val project: Project
+    public var maturity: Maturity
+}
+
+public abstract class KScienceExtension @Inject constructor(override val project: Project) : KSciencePlatformExtension {
 
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
         set(defaultJdkVersion)
@@ -74,7 +79,7 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
     public var jdkVersion: Int by jdkVersionProperty
 
 
-    public var maturity: Maturity = Maturity.EXPERIMENTAL
+    override var maturity: Maturity = Maturity.EXPERIMENTAL
 
     /**
      * Use coroutines-core with default version or [version]
