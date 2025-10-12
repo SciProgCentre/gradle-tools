@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Kotlin 2.3.0
 - Maturity moved to kscience extension.
 - Readme extension now requires kscience extension.
+- Project plugin overhaul (not only publish)
 
 ### Deprecated
 

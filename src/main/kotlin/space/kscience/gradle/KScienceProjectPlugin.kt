@@ -11,6 +11,8 @@ import org.gradle.plugins.signing.Sign
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -24,7 +26,8 @@ import javax.inject.Inject
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
  */
-public abstract class KScienceProjectExtension @Inject constructor(override val project: Project): KSciencePlatformExtension {
+public abstract class KScienceProjectExtension @Inject constructor(override val project: Project) :
+    KSciencePlatformExtension {
 
     override var maturity: Maturity = Maturity.EXPERIMENTAL
 
@@ -89,8 +92,16 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
             }
         }
     }
-}
 
+    /**
+     * Configure ABI validation for the project and all subprojects.
+     */
+    public fun abiValidation(block: AbiValidationVariantSpec.() -> Unit): Unit = project.allprojects {
+        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+            extensions.findByType<AbiValidationVariantSpec>()?.apply(block)
+        }
+    }
+}
 
 
 /**
