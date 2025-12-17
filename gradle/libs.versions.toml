@@ -10,7 +10,7 @@ dokka = "2.1.0"
 jsBom = "2025.12.6"
 junit = "5.10.2"
 # @pin
-kotlin-jupyter = "0.15.0-634"
+kotlin-jupyter = "0.16.0.742"
 kotlinx-benchmark = "0.4.15"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.10.2"
