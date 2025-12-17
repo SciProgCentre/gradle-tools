@@ -1,16 +1,17 @@
 [versions]
 # @pin
-kotlin = "2.2.20"
+kotlin = "2.3.0"
 # @pin
-tools = "0.19.2-kotlin-2.2.20"
+tools = "0.20.2-kotlin-2.3.0"
 atomicfu = "0.29.0"
-changelog = "2.4.0"
-compose = "1.8.2"
-dokka = "2.0.0"
-jsBom = "2025.9.6"
+changelog = "2.5.0"
+compose = "1.9.3"
+dokka = "2.1.0"
+jsBom = "2025.12.6"
 junit = "5.10.2"
-kotlin-jupyter = "0.15.0-616"
-kotlinx-benchmark = "0.4.14"
+# @pin
+kotlin-jupyter = "0.15.0-634"
+kotlinx-benchmark = "0.4.15"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
@@ -18,26 +19,26 @@ kotlinx-html = "0.12.0"
 kotlinx-knit = "0.5.0"
 kotlinx-nodejs = "0.0.7"
 kotlinx-serialization = "1.9.0"
-kotlinx-io = "0.8.0"
-kover = "0.9.1"
-ktor = "3.2.3"
-ksp = "2.2.20-2.0.3"
-logback = "1.5.18"
+kotlinx-io = "0.8.2"
+kover = "0.9.4"
+ktor = "3.3.3"
+ksp = "2.3.4"
+logback = "1.5.22"
 slf4j = "2.0.17"
-xmlutil = "0.91.2"
+xmlutil = "0.91.3"
 yamlkt = "0.13.0"
-opensavvy-resources = "0.5.1"
+opensavvy-resources = "0.6.0"
 
 [plugins]
-maven-publish = "com.vanniktech.maven.publish:0.34.0"
-maven-publish-base = "com.vanniktech.maven.publish.base:0.34.0"
+maven-publish = "com.vanniktech.maven.publish:0.35.0"
+maven-publish-base = "com.vanniktech.maven.publish.base:0.35.0"
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.4.0"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.5.1"
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
@@ -58,11 +59,11 @@ kotlinx-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 kscience-mpp = { id = "space.kscience.gradle.mpp", version.ref = "tools" }
 kscience-project = { id = "space.kscience.gradle.project", version.ref = "tools" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-ktor = "io.ktor.plugin:3.2.3"
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer", version.ref = "opensavvy-resources" }
 opensavvy-resources-consumer = { id = "dev.opensavvy.resources.consumer", version.ref = "opensavvy-resources" }
-versions = "com.github.ben-manes.versions:0.52.0"
-versions-update = "nl.littlerobots.version-catalog-update:1.0.0"
+versions = "com.github.ben-manes.versions:0.53.0"
+versions-update = "nl.littlerobots.version-catalog-update:1.0.1"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }

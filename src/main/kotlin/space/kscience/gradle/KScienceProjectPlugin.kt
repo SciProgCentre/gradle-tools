@@ -2,8 +2,6 @@ package space.kscience.gradle
 
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import com.vanniktech.maven.publish.MavenPublishBasePlugin
-import kotlinx.validation.ApiValidationExtension
-import kotlinx.validation.BinaryCompatibilityValidatorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPom
@@ -12,8 +10,9 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.plugins.signing.Sign
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
-import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -22,11 +21,16 @@ import org.jetbrains.kotlin.gradle.targets.wasm.yarn.WasmYarnRootExtension
 import space.kscience.gradle.internal.addPublishing
 import space.kscience.gradle.internal.setupPublication
 import space.kscience.gradle.internal.withKScience
+import javax.inject.Inject
 
 /**
  * Simplifies adding repositories for Maven publishing, responds for releasing tasks for projects.
  */
-public class KSciencePublishingExtension(public val project: Project) {
+public abstract class KScienceProjectExtension @Inject constructor(override val project: Project) :
+    KSciencePlatformExtension {
+
+    override var maturity: Maturity = Maturity.EXPERIMENTAL
+
     private var isVcsInitialized = false
 
     /**
@@ -63,7 +67,7 @@ public class KSciencePublishingExtension(public val project: Project) {
      * Add a repository with [repositoryName]. Uses "publishing.$repositoryName.user" and "publishing.$repositoryName.token"
      * properties pattern to store user and token
      */
-    public fun repository(
+    public fun publishTo(
         repositoryName: String,
         url: String,
     ) {
@@ -74,7 +78,7 @@ public class KSciencePublishingExtension(public val project: Project) {
     /**
      * Add publishing to maven central "new" API
      */
-    public fun central(): Unit = with(project) {
+    public fun publishToCentral(): Unit = with(project) {
         require(isVcsInitialized) { "The project vcs is not set up use 'pom' method to do so" }
         if (isInDevelopment) {
             logger.info("Maven central publishing skipped for development version")
@@ -88,26 +92,44 @@ public class KSciencePublishingExtension(public val project: Project) {
             }
         }
     }
+
+    /**
+     * Configure ABI validation for the project and all subprojects.
+     */
+    public fun abiValidation(block: AbiValidationVariantSpec.() -> Unit): Unit = project.allprojects {
+        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+            extensions.findByType<AbiValidationVariantSpec>()?.apply(block)
+        }
+    }
+//
+//    @Suppress("UNCHECKED_CAST")
+//    public fun kotlinCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit): Unit = project.allprojects {
+//        (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions(
+//            block
+//        )
+//    }
 }
 
+
 /**
- * Applies third-party plugins (Dokka, Changelog, binary compatibility validator); configures Maven publishing, README
+ * Applies third-party plugins (Dokka, Changelog); configures Maven publishing, README
  * generation.
  */
 public open class KScienceProjectPlugin : Plugin<Project> {
+
+
     override fun apply(target: Project): Unit = target.run {
         apply<ChangelogPlugin>()
         apply<DokkaPlugin>()
-        apply<BinaryCompatibilityValidatorPlugin>()
 
-        val ksciencePublish = KSciencePublishingExtension(this)
-        extensions.add("ksciencePublish", ksciencePublish)
+        val kscienceProjectExtension = extensions.create("kscienceProject", KScienceProjectExtension::class.java)
 
-        withKScience {
-            extensions.add("publish", ksciencePublish)
-        }
+        //configure readme for root project
+        kscienceProjectExtension.configureReadme()
 
         allprojects {
+
+            //Add repositories
             repositories {
                 mavenCentral()
                 maven("https://repo.kotlin.link")
@@ -118,67 +140,10 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             tasks.withType<AbstractPublishToMaven>().configureEach {
                 mustRunAfter(tasks.withType<Sign>())
             }
-        }
 
-        afterEvaluate {
-            if (isInDevelopment) {
-                configure<ApiValidationExtension> {
-                    validationDisabled = true
-                }
-            } else {
-                configure<ChangelogPluginExtension> {
-                    version.set(project.version.toString())
-                }
-            }
-        }
-
-        //Add readme generators to individual subprojects and root project
-        allprojects {
-            val readmeExtension = KScienceReadmeExtension(this)
-            extensions.add("readme", readmeExtension)
-
+            //configure readme for all subprojects that have KScience plugins. If the root project also has the kscience plugin, it is skipped.
             withKScience {
-                extensions.add("readme", readmeExtension)
-            }
-
-            val generateReadme by tasks.registering {
-                group = "documentation"
-                description = "Generate a README file if stub is present"
-
-                inputs.property("features", readmeExtension.features)
-
-                if (readmeExtension.readmeTemplate.exists()) {
-                    inputs.file(readmeExtension.readmeTemplate)
-                }
-
-                readmeExtension.inputFiles.forEach {
-                    if (it.exists()) {
-                        inputs.file(it)
-                    }
-                }
-
-                subprojects {
-                    extensions.findByType<KScienceReadmeExtension>()?.let { subProjectReadmeExtension ->
-                        tasks.findByName("generateReadme")?.let { readmeTask ->
-                            dependsOn(readmeTask)
-                        }
-                        inputs.property("features-${name}", subProjectReadmeExtension.features)
-                    }
-                }
-
-                val readmeFile = this@allprojects.file("README.md")
-                outputs.file(readmeFile)
-
-                doLast {
-                    val readmeString = readmeExtension.readmeString()
-                    if (readmeString != null) {
-                        readmeFile.writeText(readmeString)
-                    }
-                }
-            }
-
-            tasks.withType<AbstractDokkaTask> {
-                dependsOn(generateReadme)
+                configureReadme()
             }
         }
 
@@ -194,11 +159,11 @@ public open class KScienceProjectPlugin : Plugin<Project> {
             }
         }
 
-        // Disable API validation for snapshots
-        if (isInDevelopment) {
-            extensions.findByType<ApiValidationExtension>()?.apply {
-                validationDisabled = true
-                logger.warn("API validation is disabled for snapshot or dev version")
+        afterEvaluate {
+            if (!isInDevelopment) {
+                configure<ChangelogPluginExtension> {
+                    version.set(project.version.toString())
+                }
             }
         }
 
@@ -208,6 +173,7 @@ public open class KScienceProjectPlugin : Plugin<Project> {
                 yarnLockMismatchReport = YarnLockMismatchReport.WARNING
             }
         }
+
         plugins.withType<WasmYarnPlugin> {
             rootProject.configure<WasmYarnRootExtension> {
                 lockFileDirectory = rootDir.resolve("gradle/wasm")

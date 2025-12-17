@@ -7,7 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- WasmWasi target
 
 ### Changed
 
@@ -18,6 +17,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## 0.20.2-kotlin-2.3.0 - 2025-12-17
+
+### Added
+
+- WasmWasi target
+
+### Changed
+
+- Kotlin 2.3.0
+- Maturity moved to kscience extension.
+- Readme extension now requires kscience extension.
+- Project plugin overhaul (not only publish)
+- ABI validation is configurable from the root project
+
+### Fixed
+
+- Context parameter flag
+- Deploy problem with opensavvy-resources
 
 ## 0.19.0-kotlin-2.2.0 - 2025-07-24
 
@@ -38,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `fullStackApplication` configuration. Replaced by optional field in `fullStack`
 - Jupyter integration
 
-## 0.17.x
+## 0.17.0
 
 ### Added
 

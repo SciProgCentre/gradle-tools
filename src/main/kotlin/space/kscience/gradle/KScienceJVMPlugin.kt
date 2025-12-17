@@ -42,6 +42,7 @@ public open class KScienceJVMPlugin : KSciencePlugin {
             }
 
             if (explicitApi == null) explicitApiWarning()
+
             jvmToolchain {
                 languageVersion.set(extension.jdkVersionProperty.map { JavaLanguageVersion.of(it) })
             }

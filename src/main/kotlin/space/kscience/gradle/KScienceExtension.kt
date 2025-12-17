@@ -10,6 +10,8 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -20,7 +22,6 @@ import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmJsTargetDsl
 import org.jetbrains.kotlin.gradle.targets.js.dsl.KotlinWasmWasiTargetDsl
 import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import space.kscience.gradle.internal.defaultKotlinJvmOpts
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
@@ -37,6 +38,13 @@ public enum class DependencySourceSet(public val setName: String, public val suf
     TEST("test", "Test")
 }
 
+public enum class Maturity {
+    PROTOTYPE,
+    EXPERIMENTAL,
+    DEVELOPMENT,
+    STABLE,
+    DEPRECATED
+}
 
 /**
  * Check if this project version has a development tag (`development` property to true, "dev" in the middle or "SNAPSHOT" in the end).
@@ -47,15 +55,31 @@ public val Project.isInDevelopment: Boolean
             || version.toString().endsWith("SNAPSHOT")
 
 
-private const val defaultJdkVersion = 17
+/**
+ *  Check if the project has a kscience extension that declares it as immature. Returns true if the project does not have readme extension
+ */
+public fun Project.isMature(): Boolean = extensions.findByType<KSciencePlatformExtension>()?.let { ext ->
+    ext.maturity == Maturity.DEVELOPMENT && ext.maturity == Maturity.STABLE
+} ?: true
 
-public abstract class KScienceExtension @Inject constructor(public val project: Project) : ExtensionAware {
+
+private const val defaultJdkVersion = 21
+
+public interface KSciencePlatformExtension: ExtensionAware {
+    public val project: Project
+    public var maturity: Maturity
+}
+
+public abstract class KScienceExtension @Inject constructor(override val project: Project) : KSciencePlatformExtension {
 
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
         set(defaultJdkVersion)
     }
 
     public var jdkVersion: Int by jdkVersionProperty
+
+
+    override var maturity: Maturity = Maturity.EXPERIMENTAL
 
     /**
      * Use coroutines-core with default version or [version]
@@ -152,10 +176,9 @@ public abstract class KScienceExtension @Inject constructor(public val project: 
      * Add context parameters to the project
      */
     public fun useContextParameters() {
-        project.tasks.withType<KotlinCompile> {
-            compilerOptions {
-                freeCompilerArgs.addAll("-Xcontext-parameters")
-            }
+        @Suppress("UNCHECKED_CAST")
+        (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions {
+            freeCompilerArgs.addAll("-Xcontext-parameters")
         }
     }
 
