@@ -101,6 +101,13 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
             extensions.findByType<AbiValidationVariantSpec>()?.apply(block)
         }
     }
+//
+//    @Suppress("UNCHECKED_CAST")
+//    public fun kotlinCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit): Unit = project.allprojects {
+//        (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions(
+//            block
+//        )
+//    }
 }
 
 
