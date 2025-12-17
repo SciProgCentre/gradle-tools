@@ -26,7 +26,6 @@ dependencies {
     api("org.jetbrains.kotlin:kotlin-gradle-plugin:${libs.versions.kotlin.asProvider().get()}")
     api("org.gradle.toolchains:foojay-resolver:1.0.0")
     api("com.vanniktech:gradle-maven-publish-plugin:0.34.0")
-    api("org.jetbrains.kotlinx:binary-compatibility-validator:0.18.0")
     api("org.jetbrains.intellij.plugins:gradle-changelog-plugin:${libs.versions.changelog.get()}")
     api("org.jetbrains.dokka:dokka-gradle-plugin:${libs.versions.dokka.get()}")
 
@@ -159,6 +158,7 @@ mavenPublishing {
 }
 
 kotlin {
+    abiValidation
     explicitApiWarning()
     jvmToolchain(21)
 }

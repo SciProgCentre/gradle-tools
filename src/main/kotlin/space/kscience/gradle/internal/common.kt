@@ -4,7 +4,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.plugin.LanguageSettingsBuilder
 import space.kscience.gradle.KScienceExtension
 import space.kscience.gradle.KSciencePlugin
@@ -50,5 +52,17 @@ internal fun LanguageSettingsBuilder.applySettings(
 internal fun Project.withKScience(block: KScienceExtension.() -> Unit) {
     plugins.withType<KSciencePlugin>().configureEach {
         extensions.findByType<KScienceExtension>()?.apply(block)
+    }
+}
+
+/**
+ * Configures the Kotlin environment in the current project by finding and applying a provided configuration block
+ * to the KotlinBaseExtension if the KotlinBasePlugin is applied.
+ *
+ * @param block The configuration block to apply to the KotlinBaseExtension.
+ */
+internal fun Project.withKotlin(block: KotlinBaseExtension.() -> Unit) {
+    plugins.withType<KotlinBasePlugin>().configureEach {
+        extensions.findByType<KotlinBaseExtension>()?.apply(block)
     }
 }
