@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+* `disabled` key for readme to avoid including demos in project readme
 
 ### Changed
 

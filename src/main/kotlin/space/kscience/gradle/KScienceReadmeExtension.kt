@@ -10,7 +10,7 @@ import kotlinx.html.stream.createHTML
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 import org.intellij.lang.annotations.Language
-import org.jetbrains.dokka.gradle.AbstractDokkaTask
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
 import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import space.kscience.gradle.internal.withKScience
@@ -33,6 +33,8 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         get() = field ?: project.description
 
     public var maturity: Maturity by kscience::maturity
+
+    public var disabled: Boolean = false
 
     /**
      * If true, use default templates provided by plugin if override is not defined
@@ -122,7 +124,7 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         "modules" to {
             buildString {
                 subprojects.forEach { subproject ->
-                    subproject.extensions.findByType<KScienceReadmeExtension>()?.let { ext ->
+                    subproject.extensions.findByType<KScienceReadmeExtension>()?.takeIf { !it.disabled }?.let { ext ->
                         val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                         appendLine("\n### [$path]($path)")
                         ext.description?.let { appendLine("> ${ext.description}") }
@@ -173,15 +175,11 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
     }
 
     /**
-     * Generate a markdown string listing features
+     * Generate a Markdown string listing features
      */
     internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
         features.forEach {
-            appendLine(
-                "$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${
-                    it.description.lines().firstOrNull() ?: ""
-                }"
-            )
+            appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }
     }
 
@@ -282,7 +280,7 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
         }
     }
 
-    tasks.withType<AbstractDokkaTask> {
+    tasks.withType<DokkaGenerateTask> {
         dependsOn(generateReadme)
     }
 
