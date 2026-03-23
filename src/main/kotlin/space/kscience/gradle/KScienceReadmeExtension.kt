@@ -34,7 +34,10 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
 
     public var maturity: Maturity by kscience::maturity
 
-    public var disabled: Boolean = false
+    /**
+     * Set to true to disable inclusion of this module into a module list in parent readme
+     */
+    public var excludeFromModules: Boolean = false
 
     /**
      * If true, use default templates provided by plugin if override is not defined
@@ -124,7 +127,7 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         "modules" to {
             buildString {
                 subprojects.forEach { subproject ->
-                    subproject.extensions.findByType<KScienceReadmeExtension>()?.takeIf { !it.disabled }?.let { ext ->
+                    subproject.extensions.findByType<KScienceReadmeExtension>()?.takeIf { !it.excludeFromModules }?.let { ext ->
                         val path = subproject.path.replaceFirst(":", "").replace(":", "/")
                         appendLine("\n### [$path]($path)")
                         ext.description?.let { appendLine("> ${ext.description}") }

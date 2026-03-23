@@ -206,7 +206,6 @@ public abstract class KScienceExtension @Inject constructor(override val project
 public enum class KotlinNativePreset {
     linuxX64,
     mingwX64,
-    macosX64,
     macosArm64,
     iosX64,
     iosArm64,
@@ -221,7 +220,6 @@ public data class KScienceNativeTarget(
     public companion object {
         public val linuxX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.linuxX64)
         public val mingwX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.mingwX64)
-        public val macosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosX64)
         public val macosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.macosArm64)
         public val iosX64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosX64)
         public val iosArm64: KScienceNativeTarget = KScienceNativeTarget(KotlinNativePreset.iosArm64)
@@ -238,7 +236,6 @@ public class KScienceNativeConfiguration(private val project: Project) {
                 null -> setOf(
                     KScienceNativeTarget.linuxX64,
                     KScienceNativeTarget.mingwX64,
-                    KScienceNativeTarget.macosX64,
                     KScienceNativeTarget.macosArm64,
                     KScienceNativeTarget.iosX64,
                     KScienceNativeTarget.iosArm64,
@@ -498,11 +495,6 @@ public abstract class KScienceMppExtension @Inject constructor(project: Project)
                         )
 
                         KotlinNativePreset.mingwX64 -> mingwX64(
-                            nativeTarget.targetName,
-                            nativeTarget.targetConfiguration
-                        )
-
-                        KotlinNativePreset.macosX64 -> macosX64(
                             nativeTarget.targetName,
                             nativeTarget.targetConfiguration
                         )
