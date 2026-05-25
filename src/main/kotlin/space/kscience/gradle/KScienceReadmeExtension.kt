@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package space.kscience.gradle
 
 import freemarker.cache.StringTemplateLoader
@@ -7,16 +9,17 @@ import freemarker.template.TemplateNotFoundException
 import kotlinx.html.TagConsumer
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.gradle.api.Project
+import org.gradle.internal.cc.base.logger
 import org.gradle.kotlin.dsl.*
 import org.intellij.lang.annotations.Language
 import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
 import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import space.kscience.gradle.internal.withKScience
 import space.kscience.gradle.internal.withKotlin
 import java.io.File
-import java.io.Serializable
 import java.io.StringWriter
 
 
@@ -55,6 +58,8 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
             }
         }
 
+    public var featuresFile: File = project.file("docs/features.json")
+
     private val fmLoader = StringTemplateLoader().apply {
         putTemplate(
             "artifact",
@@ -75,26 +80,29 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         templateLoader = fmLoader
     }
 
-    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id) :
-        Serializable
+    @Serializable
+    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id)
 
-    public val features: MutableList<Feature> = mutableListOf()
+    @Deprecated("Put features into docs/features.json instead")
+    public val manualFeatures: MutableList<Feature> = mutableListOf()
 
     /**
      * A plain readme feature with description
      */
+    @Deprecated("Put features into docs/features.json instead")
     public fun feature(
         id: String,
         @Language("File") ref: String? = null,
         name: String = id,
         @Language("markdown") description: () -> String,
     ) {
-        features += Feature(id, description(), ref, name)
+        manualFeatures += Feature(id, description(), ref, name)
     }
 
     /**
      * A readme feature with HTML description
      */
+    @Deprecated("Put features into docs/features.json instead")
     public fun featureWithHtml(
         id: String,
         ref: String? = null,
@@ -106,7 +114,7 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
                 htmlBuilder()
             }
         }.finalize()
-        features += Feature(id, text, ref, name)
+        manualFeatures += Feature(id, text, ref, name)
     }
 
     private val properties: MutableMap<String, Project.() -> Any?> = mutableMapOf(
@@ -127,17 +135,18 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         "modules" to {
             buildString {
                 subprojects.forEach { subproject ->
-                    subproject.extensions.findByType<KScienceReadmeExtension>()?.takeIf { !it.excludeFromModules }?.let { ext ->
-                        val path = subproject.path.replaceFirst(":", "").replace(":", "/")
-                        appendLine("\n### [$path]($path)")
-                        ext.description?.let { appendLine("> ${ext.description}") }
-                        appendLine(">\n> **Maturity**: ${ext.maturity}")
-                        val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
-                        if (featureString.isNotBlank()) {
-                            appendLine(">\n> **Features:**")
-                            appendLine(featureString)
+                    subproject.extensions.findByType<KScienceReadmeExtension>()?.takeIf { !it.excludeFromModules }
+                        ?.let { ext ->
+                            val path = subproject.path.replaceFirst(":", "").replace(":", "/")
+                            appendLine("\n### [$path]($path)")
+                            ext.description?.let { appendLine("> ${ext.description}") }
+                            appendLine(">\n> **Maturity**: ${ext.maturity}")
+                            val featureString = ext.featuresString(itemPrefix = "> - ", pathPrefix = "$path/")
+                            if (featureString.isNotBlank()) {
+                                appendLine(">\n> **Features:**")
+                                appendLine(featureString)
+                            }
                         }
-                    }
                 }
             }
         }
@@ -181,6 +190,15 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
      * Generate a Markdown string listing features
      */
     internal fun featuresString(itemPrefix: String = " - ", pathPrefix: String = ""): String = buildString {
+        val features = if (featuresFile.exists()) {
+            json.decodeFromString<List<Feature>>(featuresFile.readText())
+        } else {
+            manualFeatures.also {
+                logger.info("No features file found, using manual features and writing them to ${featuresFile.absolutePath}")
+                featuresFile.writeText(json.encodeToString(manualFeatures))
+            }
+        }
+
         features.forEach {
             appendLine("$itemPrefix[${it.name}]($pathPrefix${it.ref ?: "#"}) : ${it.description}")
         }
@@ -208,7 +226,7 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         if (readmeTemplate != other.readmeTemplate) return false
         if (fmLoader != other.fmLoader) return false
         if (fmCfg != other.fmCfg) return false
-        if (features != other.features) return false
+        if (manualFeatures != other.manualFeatures) return false
         if (properties != other.properties) return false
         if (inputFiles != other.inputFiles) return false
 
@@ -222,12 +240,18 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         result = 31 * result + readmeTemplate.hashCode()
         result = 31 * result + fmLoader.hashCode()
         result = 31 * result + fmCfg.hashCode()
-        result = 31 * result + features.hashCode()
+        result = 31 * result + manualFeatures.hashCode()
         result = 31 * result + properties.hashCode()
         result = 31 * result + inputFiles.hashCode()
         return result
     }
 
+    public companion object{
+        public val json: Json = Json {
+            prettyPrint = true
+            ignoreUnknownKeys = true
+        }
+    }
 
 }
 
@@ -241,17 +265,18 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
     val readmeExtension = KScienceReadmeExtension(this@configureReadme)
     this.extensions.add("readme", readmeExtension)
 
-    this@configureReadme.extensions.add("readme", readmeExtension)
+    this@configureReadme.extensions.add("docs", readmeExtension)
 
 
     val generateReadme by tasks.registering {
         group = "documentation"
         description = "Generate a README file if stub is present"
 
-        inputs.property("features", readmeExtension.features)
+        inputs.property("features", readmeExtension.manualFeatures)
 
         if (readmeExtension.readmeTemplate.exists()) {
             inputs.file(readmeExtension.readmeTemplate)
+            inputs.file(readmeExtension.featuresFile)
         }
 
         readmeExtension.inputFiles.forEach {
@@ -267,7 +292,7 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
                     tasks.findByName("generateReadme")?.let { readmeTask ->
                         dependsOn(readmeTask)
                     }
-                    inputs.property("features-${name}", subProjectReadmeExtension.features)
+                    inputs.property("features-${name}", subProjectReadmeExtension.manualFeatures)
                 }
             }
         }
@@ -291,10 +316,9 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
     // Enable API validation for production releases
     if (!isInDevelopment && isMature()) {
         withKotlin {
-            extensions.configure<AbiValidationExtension> {
-                @OptIn(ExperimentalAbiValidation::class)
-                enabled.set(true)
-            }
+            @OptIn(ExperimentalAbiValidation::class)
+            this.abiValidation()
         }
     }
+
 }

@@ -11,8 +11,11 @@ import org.gradle.plugins.signing.Sign
 import org.jetbrains.changelog.ChangelogPlugin
 import org.jetbrains.changelog.ChangelogPluginExtension
 import org.jetbrains.dokka.gradle.DokkaPlugin
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
+import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnLockMismatchReport
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
@@ -96,18 +99,23 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
     /**
      * Configure ABI validation for the project and all subprojects.
      */
-    public fun abiValidation(block: AbiValidationVariantSpec.() -> Unit): Unit = project.allprojects {
+    @OptIn(ExperimentalAbiValidation::class)
+    public fun abiValidation(block: AbiValidationExtension.() -> Unit): Unit = project.allprojects {
         extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            extensions.findByType<AbiValidationVariantSpec>()?.apply(block)
+            this.abiValidation(block)
         }
     }
-//
-//    @Suppress("UNCHECKED_CAST")
-//    public fun kotlinCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit): Unit = project.allprojects {
-//        (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions(
-//            block
-//        )
-//    }
+
+    @Suppress("UNCHECKED_CAST")
+    public fun kotlinCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit): Unit = project.allprojects {
+        plugins.withId("org.jetbrains.kotlin.multiplatform"){
+            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()?.compilerOptions(block)
+        }
+
+        plugins.withId("org.jetbrains.kotlin.jvm"){
+            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()?.compilerOptions(block)
+        }
+    }
 }
 
 

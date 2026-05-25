@@ -1,33 +1,32 @@
 [versions]
 # @pin
-kotlin = "2.3.20"
+kotlin = "2.4.0-RC"
 # @pin
-tools = "0.20.3-kotlin-2.3.20"
-atomicfu = "0.32.0"
+tools = "0.21.0-kotlin-2.4.0-RC"
+atomicfu = "0.32.1"
 changelog = "2.5.0"
-compose = "1.10.3"
-dokka = "2.1.0"
-jsBom = "2026.3.14"
+compose = "1.11.0"
+dokka = "2.2.0"
+jsBom = "2026.5.3"
 junit = "5.10.2"
-# @pin
-kotlin-jupyter = "0.16.0-742"
-kotlinx-benchmark = "0.4.16"
+kotlin-jupyter = "0.19.0-944"
+kotlinx-benchmark = "0.4.17"
 kotlinx-cli = "0.3.6"
-kotlinx-coroutines = "1.10.2"
-kotlinx-datetime = "0.7.1"
+kotlinx-coroutines = "1.11.0"
+kotlinx-datetime = "0.8.0"
 kotlinx-html = "0.12.0"
 kotlinx-knit = "0.5.1"
 kotlinx-nodejs = "0.0.7"
-kotlinx-serialization = "1.10.0"
+kotlinx-serialization = "1.11.0"
 kotlinx-io = "0.9.0"
-kover = "0.9.7"
-ktor = "3.4.1"
-ksp = "2.3.6"
+kover = "0.9.8"
+ktor = "3.4.3"
+ksp = "2.3.8"
 logback = "1.5.32"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 xmlutil = "0.91.3"
 yamlkt = "0.13.0"
-opensavvy-resources = "0.6.0"
+opensavvy-resources = "0.6.2"
 
 [plugins]
 maven-publish = "com.vanniktech.maven.publish:0.36.0"
@@ -38,7 +37,7 @@ jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.5.6"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.7.0"
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
@@ -62,11 +61,23 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer", version.ref = "opensavvy-resources" }
 opensavvy-resources-consumer = { id = "dev.opensavvy.resources.consumer", version.ref = "opensavvy-resources" }
-versions = "com.github.ben-manes.versions:0.53.0"
+versions = "com.github.ben-manes.versions:0.54.0"
 versions-update = "nl.littlerobots.version-catalog-update:1.1.0"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+compose-material = { module = "org.jetbrains.compose.material:material", version.ref = "compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "compose" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
+compose-components-uiToolingPreview = { module = "org.jetbrains.compose.components:components-ui-tooling-preview", version.ref = "compose" }
+compose-components-splitPane = { module = "org.jetbrains.compose.components:components-splitpane", version.ref = "compose" }
+compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "compose" }
+compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "compose" }
+compose-html-core = { module = "org.jetbrains.compose.html:html-core", version.ref = "compose" }
+compose-html-svg = { module = "org.jetbrains.compose.html:html-svg", version.ref = "compose" }
 freemarker = "org.freemarker:freemarker:2.3.34"
 kotlin-js-wrappers = { module = "org.jetbrains.kotlin-wrappers:kotlin-wrappers-bom", version.ref = "jsBom" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }

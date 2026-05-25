@@ -3,7 +3,6 @@ package space.kscience.gradle.internal
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.invoke
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import space.kscience.gradle.DependencyConfiguration
@@ -49,23 +48,6 @@ internal fun Project.useDependency(
             }
         }
     }
-
-    pairs.find { it.first == "js" }?.let { dep ->
-        pluginManager.withPlugin("org.jetbrains.kotlin.js") {
-            configure<KotlinJsProjectExtension> {
-                sourceSets.findByName(dependencySourceSet.setName)?.apply {
-                    dependencies.apply {
-                        val configurationName = when (dependencyConfiguration) {
-                            DependencyConfiguration.API -> apiConfigurationName
-                            DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                            DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
-                        }
-                        add(configurationName, dep.second)
-                    }
-                }
-            }
-        }
-    }
 }
 
 internal fun Project.useCommonDependency(
@@ -89,21 +71,6 @@ internal fun Project.useCommonDependency(
 
     withPlugin("org.jetbrains.kotlin.jvm") {
         configure<KotlinJvmProjectExtension> {
-            sourceSets.findByName(dependencySourceSet.setName)?.apply {
-                dependencies.apply {
-                    val configurationName = when (dependencyConfiguration) {
-                        DependencyConfiguration.API -> apiConfigurationName
-                        DependencyConfiguration.IMPLEMENTATION -> implementationConfigurationName
-                        DependencyConfiguration.COMPILE_ONLY -> compileOnlyConfigurationName
-                    }
-                    add(configurationName, dep)
-                }
-            }
-        }
-    }
-
-    withPlugin("org.jetbrains.kotlin.js") {
-        configure<KotlinJsProjectExtension> {
             sourceSets.findByName(dependencySourceSet.setName)?.apply {
                 dependencies.apply {
                     val configurationName = when (dependencyConfiguration) {
