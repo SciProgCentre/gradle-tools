@@ -33,7 +33,6 @@ dependencies {
     implementation("dev.opensavvy.resources.consumer:dev.opensavvy.resources.consumer.gradle.plugin:${libs.versions.opensavvy.resources.get()}")
 
     implementation(libs.kotlin.serialization)     //base serialization plugin
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.html)
     implementation(libs.tomlj)
 
@@ -159,7 +158,6 @@ mavenPublishing {
 }
 
 kotlin {
-    abiValidation
     explicitApiWarning()
     jvmToolchain(21)
 }

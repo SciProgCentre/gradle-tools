@@ -10,10 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `excludeFromModules` key for readme to avoid including demos in project readme
 
 ### Changed
-- Features are moved to `docs/features.json`
 
 ### Deprecated
-- Features inside the build file are deprecated
+- `useContextParameters` are deprecated because they are enabled by default.
 
 ### Removed
 - js plugin

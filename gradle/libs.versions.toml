@@ -1,15 +1,15 @@
 [versions]
 # @pin
-kotlin = "2.4.0-RC"
+kotlin = "2.4.0"
 # @pin
-tools = "0.21.0-kotlin-2.4.0-RC"
-atomicfu = "0.32.1"
+tools = "0.22.0-kotlin-2.4.0"
+atomicfu = "0.33.0"
 changelog = "2.5.0"
-compose = "1.11.0"
+compose = "1.11.1"
 dokka = "2.2.0"
-jsBom = "2026.5.3"
+jsBom = "2026.6.2"
 junit = "5.10.2"
-kotlin-jupyter = "0.19.0-944"
+kotlin-jupyter = "0.19.0-950"
 kotlinx-benchmark = "0.4.17"
 kotlinx-cli = "0.3.6"
 kotlinx-coroutines = "1.11.0"
@@ -20,9 +20,9 @@ kotlinx-nodejs = "0.0.7"
 kotlinx-serialization = "1.11.0"
 kotlinx-io = "0.9.0"
 kover = "0.9.8"
-ktor = "3.4.3"
-ksp = "2.3.8"
-logback = "1.5.32"
+ktor = "3.5.0"
+ksp = "2.3.9"
+logback = "1.5.34"
 slf4j = "2.0.18"
 xmlutil = "0.91.3"
 yamlkt = "0.13.0"
@@ -37,7 +37,7 @@ jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog
 jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-android-extensions = { id = "org.jetbrains.kotlin.android.extensions", version.ref = "kotlin" }
-kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.7.0"
+kotlin-dsl = "org.gradle.kotlin.kotlin-dsl:6.7.3"
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }

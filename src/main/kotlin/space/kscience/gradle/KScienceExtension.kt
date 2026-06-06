@@ -65,7 +65,7 @@ public fun Project.isMature(): Boolean = extensions.findByType<KSciencePlatformE
 
 private const val defaultJdkVersion = 21
 
-public interface KSciencePlatformExtension: ExtensionAware {
+public interface KSciencePlatformExtension : ExtensionAware {
     public val project: Project
     public var maturity: Maturity
 }
@@ -175,15 +175,13 @@ public abstract class KScienceExtension @Inject constructor(override val project
     /**
      * Add context parameters to the project
      */
+    @Deprecated("Not needed in Kotlin 2.4", replaceWith = ReplaceWith(""))
     public fun useContextParameters() {
         @Suppress("UNCHECKED_CAST")
         (project.extensions.getByName("kotlin") as? HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>)?.compilerOptions {
             freeCompilerArgs.addAll("-Xcontext-parameters")
         }
     }
-
-    @Deprecated("Use useContextParameters", ReplaceWith("useContextParameters()"))
-    public fun useContextReceivers(): Unit = useContextParameters()
 
     public operator fun DefaultSourceSet.invoke(dependencyBlock: KotlinDependencyHandler.() -> Unit) {
         dependencies(this, dependencyBlock)
