@@ -75,7 +75,12 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         templateLoader = fmLoader
     }
 
-    public data class Feature(val id: String, val description: String, val ref: String?, val name: String = id): java.io.Serializable
+    public data class Feature(
+        val id: String,
+        val description: String,
+        val ref: String?,
+        val name: String = id
+    ) : java.io.Serializable
 
     public val features: MutableList<Feature> = mutableListOf()
 
@@ -228,7 +233,7 @@ public class KScienceReadmeExtension(private val kscience: KSciencePlatformExten
         return result
     }
 
-    public companion object{
+    public companion object {
     }
 
 }
@@ -290,11 +295,13 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
     }
 
 
-    // Enable API validation for production releases
-    if (!isInDevelopment && isMature()) {
-        withKotlin {
-            @OptIn(ExperimentalAbiValidation::class)
-            this.abiValidation()
+    project.afterEvaluate {
+        // Enable API validation for production releases
+        if (!isInDevelopment && isMature()) {
+            withKotlin {
+                @OptIn(ExperimentalAbiValidation::class)
+                this.abiValidation()
+            }
         }
     }
 

@@ -108,12 +108,14 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
 
     @Suppress("UNCHECKED_CAST")
     public fun kotlinCompilerOptions(block: KotlinCommonCompilerOptions.() -> Unit): Unit = project.allprojects {
-        plugins.withId("org.jetbrains.kotlin.multiplatform"){
-            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()?.compilerOptions(block)
+        plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()
+                ?.compilerOptions(block)
         }
 
-        plugins.withId("org.jetbrains.kotlin.jvm"){
-            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()?.compilerOptions(block)
+        plugins.withId("org.jetbrains.kotlin.jvm") {
+            project.extensions.findByType<HasConfigurableKotlinCompilerOptions<KotlinCommonCompilerOptions>>()
+                ?.compilerOptions(block)
         }
     }
 }
@@ -177,15 +179,15 @@ public open class KScienceProjectPlugin : Plugin<Project> {
 
         plugins.withType<YarnPlugin> {
             rootProject.configure<YarnRootExtension> {
-                lockFileDirectory = rootDir.resolve("gradle/js")
-                yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+                lockFileDirectoryProperty.set(rootDir.resolve("gradle/js"))
+                yarnLockMismatchReportProperty.set(YarnLockMismatchReport.WARNING)
             }
         }
 
         plugins.withType<WasmYarnPlugin> {
             rootProject.configure<WasmYarnRootExtension> {
-                lockFileDirectory = rootDir.resolve("gradle/wasm")
-                yarnLockMismatchReport = YarnLockMismatchReport.WARNING
+                lockFileDirectoryProperty.set(rootDir.resolve("gradle/wasm"))
+                yarnLockMismatchReportProperty.set(YarnLockMismatchReport.WARNING)
             }
         }
     }
