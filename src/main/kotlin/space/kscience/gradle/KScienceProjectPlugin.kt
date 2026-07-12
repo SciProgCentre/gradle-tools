@@ -101,8 +101,10 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
      */
     @OptIn(ExperimentalAbiValidation::class)
     public fun abiValidation(block: AbiValidationExtension.() -> Unit): Unit = project.allprojects {
-        extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-            this.abiValidation(block)
+        plugins.withId("org.jetbrains.kotlin.multiplatform") {
+            extensions.findByType<KotlinMultiplatformExtension>()?.apply {
+                this.abiValidation(block)
+            }
         }
     }
 
