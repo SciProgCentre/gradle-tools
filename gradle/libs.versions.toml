@@ -27,10 +27,11 @@ slf4j = "2.0.18"
 xmlutil = "0.91.3"
 yamlkt = "0.13.0"
 opensavvy-resources = "0.6.2"
+maven-publish = "0.37.0"
 
 [plugins]
-maven-publish = "com.vanniktech.maven.publish:0.36.0"
-maven-publish-base = "com.vanniktech.maven.publish.base:0.36.0"
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+maven-publish-base = { id = "com.vanniktech.maven.publish.base", version.ref = "maven-publish" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-jb = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-changelog = { id = "org.jetbrains.changelog", version.ref = "changelog" }
@@ -61,8 +62,8 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 opensavvy-resources-producer = { id = "dev.opensavvy.resources.producer", version.ref = "opensavvy-resources" }
 opensavvy-resources-consumer = { id = "dev.opensavvy.resources.consumer", version.ref = "opensavvy-resources" }
-versions = "com.github.ben-manes.versions:0.54.0"
-versions-update = "nl.littlerobots.version-catalog-update:1.1.0"
+versions = "com.github.ben-manes.versions:0.61.0"
+versions-update = "nl.littlerobots.version-catalog-update:1.1.1"
 
 [libraries]
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
