@@ -7,19 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- `excludeFromModules` key for readme to avoid including demos in project readme
 
 ### Changed
 
 ### Deprecated
-- `useContextParameters` are deprecated because they are enabled by default.
 
 ### Removed
-- js plugin
 
 ### Fixed
 
 ### Security
+
+## 0.22.1-kotlin-2.4.20 - 2026-09-07
+
+### Added
+
+- `excludeFromModules` key for readme to avoid including demos in project readme
+
+### Changed
+
+- Gradle 9.7+
+
+### Deprecated
+
+- `useContextParameters` are deprecated because they are enabled by default.
+
+### Removed
+
+- js plugin
+
+### Fixed
+
+- lazy apply for abi validation
 
 ## 0.20.2-kotlin-2.3.0 - 2025-12-17
 
