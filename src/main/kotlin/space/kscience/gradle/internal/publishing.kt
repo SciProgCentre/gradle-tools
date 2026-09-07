@@ -26,7 +26,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             plugins.withId("org.jetbrains.kotlin.jvm") {
                 val kotlin = extensions.findByType<KotlinJvmProjectExtension>()!!
 
-                val sourcesJar by tasks.registering(Jar::class) {
+                val sourcesJar = tasks.register("sourceJar", Jar::class) {
                     archiveClassifier.set("sources")
                     kotlin.sourceSets.forEach {
                         from(it.kotlin)
@@ -55,7 +55,7 @@ internal fun Project.setupPublication(mavenPomConfiguration: MavenPom.() -> Unit
             }
 
             plugins.withId("org.jetbrains.dokka") {
-                val dokkaJar by tasks.registering(Jar::class) {
+                val dokkaJar = tasks.register("dokkaJar", Jar::class) {
                     group = "documentation"
                     archiveClassifier.set("javadoc")
                     from(tasks.findByName("dokkaGenerate"))

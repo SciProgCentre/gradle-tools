@@ -1,8 +1,8 @@
 [versions]
 # @pin
-kotlin = "2.4.20-Beta1"
+kotlin = "2.4.20"
 # @pin
-tools = "0.22.1-kotlin-2.4.20-Beta1"
+tools = "0.22.1-kotlin-2.4.20"
 atomicfu = "0.33.0"
 changelog = "2.5.0"
 compose = "1.11.1"

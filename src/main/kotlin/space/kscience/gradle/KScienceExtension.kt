@@ -72,12 +72,7 @@ public interface KSciencePlatformExtension : ExtensionAware {
 
 public abstract class KScienceExtension @Inject constructor(override val project: Project) : KSciencePlatformExtension {
 
-    public val jdkVersionProperty: Property<Int> = project.objects.property<Int>().apply {
-        set(defaultJdkVersion)
-    }
-
-    public var jdkVersion: Int by jdkVersionProperty
-
+    public val jdkVersionProperty: Property<Int> = project.objects.property<Int>()
 
     override var maturity: Maturity = Maturity.EXPERIMENTAL
 
