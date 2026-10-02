@@ -13,9 +13,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.*
 import org.intellij.lang.annotations.Language
 import org.jetbrains.dokka.gradle.tasks.DokkaGenerateTask
-import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import space.kscience.gradle.internal.withKScience
-import space.kscience.gradle.internal.withKotlin
 import java.io.File
 import java.io.StringWriter
 
@@ -293,16 +291,4 @@ internal fun KSciencePlatformExtension.configureReadme() = with(project) {
     tasks.withType<DokkaGenerateTask> {
         dependsOn(generateReadme)
     }
-
-
-    project.afterEvaluate {
-        // Enable API validation for production releases
-        if (!isInDevelopment && isMature()) {
-            withKotlin {
-                @OptIn(ExperimentalAbiValidation::class)
-                this.abiValidation()
-            }
-        }
-    }
-
 }

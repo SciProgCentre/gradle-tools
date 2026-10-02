@@ -103,7 +103,10 @@ public abstract class KScienceProjectExtension @Inject constructor(override val 
     public fun abiValidation(block: AbiValidationExtension.() -> Unit): Unit = project.allprojects {
         plugins.withId("org.jetbrains.kotlin.multiplatform") {
             extensions.findByType<KotlinMultiplatformExtension>()?.apply {
-                this.abiValidation(block)
+                //Check if abi validation is enabled to avoid turning it on
+                if (isMature()) {
+                   abiValidation(block)
+                }
             }
         }
     }

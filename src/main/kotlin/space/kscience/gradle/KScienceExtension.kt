@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
@@ -25,6 +26,7 @@ import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
 import space.kscience.gradle.internal.defaultKotlinJvmOpts
 import space.kscience.gradle.internal.requestPropertyOrNull
 import space.kscience.gradle.internal.useCommonDependency
+import space.kscience.gradle.internal.withKotlin
 import javax.inject.Inject
 
 public enum class DependencyConfiguration {
@@ -47,6 +49,11 @@ public enum class Maturity {
 }
 
 /**
+ * Check if is mature
+ */
+public fun Maturity.isMature(): Boolean = this == Maturity.DEVELOPMENT || this == Maturity.STABLE
+
+/**
  * Check if this project version has a development tag (`development` property to true, "dev" in the middle or "SNAPSHOT" in the end).
  */
 public val Project.isInDevelopment: Boolean
@@ -58,12 +65,8 @@ public val Project.isInDevelopment: Boolean
 /**
  *  Check if the project has a kscience extension that declares it as immature. Returns true if the project does not have readme extension
  */
-public fun Project.isMature(): Boolean = extensions.findByType<KSciencePlatformExtension>()?.let { ext ->
-    ext.maturity == Maturity.DEVELOPMENT && ext.maturity == Maturity.STABLE
-} ?: true
+public fun Project.isMature(): Boolean = extensions.findByType<KSciencePlatformExtension>()?.maturity?.isMature() ?: true
 
-
-private const val defaultJdkVersion = 21
 
 public interface KSciencePlatformExtension : ExtensionAware {
     public val project: Project
@@ -75,6 +78,16 @@ public abstract class KScienceExtension @Inject constructor(override val project
     public val jdkVersionProperty: Property<Int> = project.objects.property<Int>()
 
     override var maturity: Maturity = Maturity.EXPERIMENTAL
+        set(value) {
+            field = value
+            //enable abi validation for stable and development builds
+            if(value.isMature()) {
+                project.withKotlin {
+                    @OptIn(ExperimentalAbiValidation::class)
+                    abiValidation()
+                }
+            }
+        }
 
     /**
      * Use coroutines-core with default version or [version]
